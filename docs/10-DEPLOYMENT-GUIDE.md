@@ -108,6 +108,7 @@ Passenger hooks `server.listen`, so the standalone `server.js` works as-is (it r
 2. ✅ Deploy key `artifex-deploy` (ed25519, no passphrase) imported and authorized in cPanel → SSH Access (done 2026-11-12). The private key is on the owner's PC at `C:\Users\<you>\.ssh\artifex-deploy`.
 3. cPanel → **MySQL® Databases**: create the database and user (§2) and note the names and password.
 4. cPanel → **Setup Node.js App** → create the app (§4) with its runtime env vars. These stay in cPanel only.
+   > Test server (ADR-019): steps 3–4 were done over SSH with `uapi Mysql …` and `cloudlinux-selector create --interpreter nodejs …`. The generated values are in `~/artifex-secrets.txt` on the server. The subdomain's DNS record lives in Cloudflare (`artifex` → `198.54.125.98`).
 5. GitHub repo → **Settings → Environments → New environment** `production`, then add these **environment secrets**:
 
 | Secret | Value |

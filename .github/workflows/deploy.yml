@@ -61,8 +61,16 @@ jobs:
           SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
         run: |
           install -m 700 -d ~/.ssh
-          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+          # Strip Windows line endings that sneak in when the key is copied from a Windows editor.
+          printf '%s\n' "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
+          if ! ssh-keygen -y -P "" -f ~/.ssh/deploy_key > /dev/null 2>&1; then
+            echo "::error::SSH_PRIVATE_KEY is not a valid private key. Paste the whole file 'artifex-deploy' (not .pub), including the BEGIN/END lines."
+            echo "First line seen: $(head -1 ~/.ssh/deploy_key | cut -c1-40)"
+            echo "Line count: $(wc -l < ~/.ssh/deploy_key) (expected 7)"
+            exit 1
+          fi
+          echo "Key fingerprint: $(ssh-keygen -l -f ~/.ssh/deploy_key | awk '{print $2}')"
           printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
           {
             echo "Host artifex"

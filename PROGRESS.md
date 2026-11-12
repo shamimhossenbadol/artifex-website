@@ -9,17 +9,17 @@
 
 | Item | Value |
 |---|---|
-| **Current phase** | Phase 1: Project foundation (code done; waiting on the first CI run) |
-| **Overall state** | 🟡 Next.js 16.4 scaffold, Prisma 7 schema + migration + seed, env validation, tests, packaging and CI/deploy workflows written. Typecheck, lint, 14 unit tests, 2 e2e tests and the production build pass locally. |
+| **Current phase** | Phase 2: Design system & layout shell (next) |
+| **Overall state** | ✅ Phase 1 complete. Code is on GitHub (`shamimhossenbadol/artifex-website`, private); CI is green (typecheck, lint, unit, migrate + seed on MariaDB 11.4, build, e2e, bundle). |
 | **Last updated** | 2026-11-12 |
-| **Next action** | Owner: create a private GitHub repo and add the secrets/variables (10 §5.1). Then push, let CI apply the migration + seed on MariaDB 11.4 (Phase 1 exit check), and start Phase 2 (design system & layout shell). |
+| **Next action** | Owner: add the Cloudflare DNS record for `artifex.codespherestudio.site` and the GitHub `production` secrets/variables (10 §5.1), then run **Deploy**. Agent: Phase 2 (design system & layout shell). |
 
 ## Phase overview
 
 | # | Phase | Status |
 |---|---|---|
 | 0 | Planning & hosting verification | 🟡 Hosting verified over SSH; R2 smoke test waits for the Cloudflare account |
-| 1 | Project foundation (scaffold, Prisma, env, design tokens) | 🟡 Code done; exit check (migrate + seed on MariaDB) pending the first CI run |
+| 1 | Project foundation (scaffold, Prisma, env, design tokens) | ✅ Done 2026-11-12 (CI green) |
 | 2 | Design system & layout shell | ⚪ Not started |
 | 3 | Product catalogue (listing, detail, WhatsApp) | ⚪ Not started |
 | 4 | Global search | ⚪ Not started |
@@ -45,10 +45,14 @@ Legend: ⚪ not started · 🟡 in progress · ✅ done · ⛔ blocked
 | Database | **MariaDB 11.4** client on the server (server version to confirm in phpMyAdmin; ≥ 10.6 required) | 2026-11-12 |
 | Server tools | curl, tar, unzip, **rsync**, **mysqldump**, git all present → deploy workflow can use rsync + mysqldump | 2026-11-12 |
 | Outbound HTTPS | ✅ cloudflare.com 200, api.cloudflare.com reachable, npm registry 200. R2 endpoint test pending real bucket/account ID (a fake ID fails TLS from any machine, so that's expected) | 2026-11-12 |
+| Account contents | Main domain `codespherestudio.site` (unrelated live site in `public_html`; DNS on **Cloudflare**). Server hostname `server355.web-hosting.com`. Never touch `public_html` | 2026-11-12 |
+| Test deployment (ADR-019) | ✅ Subdomain `artifex.codespherestudio.site` created (docroot `~/artifex.codespherestudio.site`), Node 24 app `~/artifex-app` (startup `server.js`, production, env vars set), DB + user `shamimhossen_artifex` (utf8mb4, privileges on this DB only), secrets in `~/artifex-secrets.txt` (chmod 600). App answers 200 on the server. **Needs a Cloudflare DNS record** `artifex` → `198.54.125.98` before it's public | 2026-11-12 |
+| AutoSSL | Can't be triggered from the account (feature disabled); Namecheap runs it automatically. Cloudflare proxy (orange cloud) gives HTTPS immediately | 2026-11-12 |
+| Artifex production domain | Not chosen yet; production hosting comes later (open question #2) | 2026-11-12 |
 
 ## Blockers
 
-- **GitHub repo needed** to run CI (migration + seed verification) and deploys. Doesn't block Phase 2 work locally.
+- **Before the first test deploy:** Cloudflare DNS record for `artifex` + GitHub `production` secrets/variables. cPanel side is done (ADR-019). Doesn't block Phase 2.
 - No local MySQL/MariaDB or WSL on the dev PC, so DB-backed checks run in CI. Optional: install MariaDB 11.4 locally for `npm run db:migrate` during development.
 
 ## Open questions (need the business owner's answer)
@@ -58,7 +62,7 @@ Answer these by editing this list. Agents: use the **default** until an answer i
 | # | Question | Default used until answered |
 |---|---|---|
 | 1 | ~~Which Namecheap plan? SSH?~~ **Answered 2026-11-12: Stellar.** SSH enabled and verified 2026-11-12 (ADR-016) | — |
-| 2 | Final domain name? | `artifexfurniture.com` (placeholder) |
+| 2 | Final production domain and hosting? (`artifexfurniture.com` currently points to someone else's servers.) | Test deploys go to `artifex.codespherestudio.site` (ADR-019) |
 | 3 | Logo files (SVG/PNG) and brand colours, if any? | Text wordmark "ARTIFEX" plus the palette in the design system |
 | 4 | WhatsApp business number, phone, email, showroom address, opening hours | Placeholders in the seed, editable in admin |
 | 5 | Product photos: do professional photos exist? | Seed with placeholder images; real photos uploaded via admin |
@@ -67,7 +71,7 @@ Answer these by editing this list. Agents: use the **default** until an answer i
 | 8 | Does custom-size / made-to-order work need mentioning (doors, curtains)? | Yes: a "Made to order" flag per product |
 | 9 | Exact admin email for the predefined admin account | Set via `ADMIN_EMAIL` env var |
 | 10 | Who manages the domain DNS? It has to move to Cloudflare nameservers for the R2 media domain (10 §6.1). Do you use cPanel email on this domain? (Its MX records must be copied over) | Assume cPanel email exists, so copy all MX/TXT records |
-| 11 | Do you have a Cloudflare account, or should one be created for the business? | A new free account owned by the business email |
+| 11 | Do you have a Cloudflare account, or should one be created for the business? The developer's Cloudflare already hosts `codespherestudio.site` DNS; R2 for production should probably live in an account the business owns | A new free account owned by the business email |
 | 12 | Agent assumption (2026-11-12): `R2_*` env vars are optional until Phase 3 so the site can deploy before Cloudflare is set up. They become required for uploads when the media module lands | Optional until Phase 3 (ADR-018) |
 | 13 | The dev PC runs Node **26**; the project pins Node **24** (ADR-015). npm only warns locally, and CI/production use 24. Install Node 24 locally (e.g. nvm-windows) to match exactly? | Keep 26 locally; CI enforces 24 |
 | 14 | The sofa ad shows WhatsApp **01757-758388** and an Uttara showroom address. Are these the official website contact details? | Seed keeps placeholders, editable in admin |
@@ -75,6 +79,10 @@ Answer these by editing this list. Agents: use the **default** until an answer i
 ## Session log
 
 Add one line per session, newest first: `YYYY-MM-DD — summary — files touched`.
+
+- 2026-11-12 — Set up the test deployment over SSH (ADR-019): subdomain, Node 24 app, utf8mb4 database + user, private secrets file. Found that the root domain's DNS is on Cloudflare, so the subdomain record goes there. — `DECISIONS.md`, `PROGRESS.md`, `docs/10`, `CHANGELOG.md`
+
+- 2026-11-12 — Pushed to GitHub (private repo); first CI run green, so the Phase 1 exit check passed (migrate + seed on MariaDB 11.4). — `PROGRESS.md`, `docs/12`, `CHANGELOG.md`
 
 - 2026-11-12 — Phase 1 build: Next.js 16.4.6 scaffold (strict TS, Tailwind 4, ESLint with Prisma import ban), Zod env + boot validation, Prisma 7.10 schema/migration/seed with the MariaDB adapter, security headers, custom image loader, Vitest (14) + Playwright (2) tests, standalone packaging script, CI + deploy workflows (migrations via SSH tunnel, ADR-017). ADR-017/018 recorded. — `package.json`, `next.config.ts`, `prisma/`, `src/`, `scripts/`, `tests/`, `.github/workflows/`, `DECISIONS.md`, `docs/02`, `04`, `10`, `12`, `README.md`, `CHANGELOG.md`
 

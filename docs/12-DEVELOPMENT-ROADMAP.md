@@ -24,14 +24,14 @@ Each phase ends with a short manual review of the phase's acceptance checks.
 - [x] Scaffold Next.js (latest stable, App Router, TS, Tailwind, ESLint, `src/`); record the exact versions in DECISIONS (ADR-018)
 - [x] Configure strict tsconfig, path alias, Prettier + Tailwind plugin, ESLint restricted-import rules
 - [x] `src/lib/env.ts` (Zod env) + `.env.example` (validated at boot via `src/instrumentation.ts`)
-- [ ] Prisma + MySQL driver adapter, `schema.prisma` from 04, first migration, `lib/db.ts` singleton. Written and generated; the migration is first applied to MariaDB 11.4 in CI (needs the GitHub repo)
-- [ ] Idempotent `prisma/seed.ts` (categories, settings, hero, admin, optional demo data). Written; first run happens in CI. Demo products move to Phase 3 (they need the image pipeline)
+- [x] Prisma + MySQL driver adapter, `schema.prisma` from 04, first migration, `lib/db.ts` singleton (migration applied on MariaDB 11.4 in CI, 2026-11-12)
+- [x] Idempotent `prisma/seed.ts` (categories, settings, hero, admin). Runs twice cleanly in CI. Demo products move to Phase 3 (they need the image pipeline)
 - [x] `next.config.ts`: standalone, custom image loader, security headers, server action limits
 - [x] Vitest + Playwright set up with one sample test each
 - [x] `scripts/package-standalone.mjs` producing a deploy bundle (`.tar.gz`). Tested on Windows (bundle boots, 92 MB RSS, exits on bad env); Linux run happens in CI (no WSL on the dev PC)
-- [x] `.github/workflows/deploy.yml` + `ci.yml`: build on Linux, upload over SSH, migrate/seed through a tunnel, restart, health check, auto-rollback (ADR-016/017, 10 §5.1). Not run yet: needs the GitHub repo and secrets
+- [x] `.github/workflows/deploy.yml` + `ci.yml`: build on Linux, upload over SSH, migrate/seed through a tunnel, restart, health check, auto-rollback (ADR-016/017, 10 §5.1). CI ✅ green on first push; Deploy not run yet (needs the production secrets)
 
-**Exit check:** `npm run build` succeeds, and the seed runs on a local MySQL/MariaDB.
+**Exit check:** `npm run build` succeeds, and the seed runs on a local MySQL/MariaDB. ✅ Passed 2026-11-12 in CI (MariaDB 11.4 service container, the same version as production).
 
 ## Phase 2 — Design system & layout shell
 - [ ] Tokens in `globals.css` (`@theme`), fonts via `next/font`

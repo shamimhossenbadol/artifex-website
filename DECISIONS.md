@@ -140,3 +140,15 @@ Format: each ADR has a number, date, status (Accepted / Superseded by ADR-x / Pr
 - **Deploy bundle:** `scripts/package-standalone.mjs` produces `deploy/artifex-app/` and a `.tar.gz` (not a zip: `tar` exists on Linux CI, Windows 10+ and the server; cPanel File Manager extracts both). It strips `.env*` files and writes a dependency-free `package.json` and `BUILD_INFO.json`.
 - **npm install scripts:** npm 11 blocks install scripts unless approved. `prisma`, `@prisma/engines` and `esbuild` are approved in `package.json` → `allowScripts`. Approve `sharp` the same way when it is added in Phase 3.
 **Consequences:** Version upgrades are deliberate: bump, run CI, and record them here. The image loader (`src/lib/image-loader.ts`) was written in Phase 1 because `next.config.ts` references it; the rest of the media module stays in Phase 3.
+
+### ADR-019 — Test (staging) deployment on artifex.codespherestudio.site
+**Date:** 2026-11-12 · **Status:** Accepted
+**Context:** The verified Namecheap Stellar account (`shamimhossen`, server355 / 198.54.125.98) belongs to the developer. Its main domain `codespherestudio.site` runs an unrelated live site from `public_html`, and its DNS is on Cloudflare. The owner wants to test the Artifex site there first and move it to separate production hosting later.
+**Decision:**
+- Deploy test builds to **https://artifex.codespherestudio.site**: subdomain docroot `~/artifex.codespherestudio.site` (only Passenger's `.htaccess`), app root `~/artifex-app`, Node 24 app created with `cloudlinux-selector`, database `shamimhossen_artifex` (utf8mb4_unicode_ci) with a user that has privileges on that database only.
+- Server-side secrets were generated on the server and stored in `~/artifex-secrets.txt` (`chmod 600`). They are never printed in agent output or committed.
+- The DNS record for `artifex` goes in **Cloudflare** (the authoritative DNS), not in the cPanel zone.
+- `NEXT_PUBLIC_MEDIA_URL` temporarily equals the site URL until R2 exists (no content images before Phase 3).
+- The GitHub environment stays named `production`. It targets this test server until the real production hosting exists; moving means replacing that environment's secrets and variables only.
+**Consequences:** The existing codespherestudio.site is never touched: deploys only write `~/artifex-app*` and `~/backups`. Moving to production later = create the DB and Node app on the new host (10 §2, §4), update the GitHub secrets/variables, and run Deploy. A new ADR records the production host when it's chosen.
+

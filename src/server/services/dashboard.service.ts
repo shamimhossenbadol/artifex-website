@@ -28,7 +28,7 @@ export async function getDashboard() {
   if (setup.whatsappNumber.replace(/\D/g, "").length < 8) {
     warnings.push({
       text: "The WhatsApp number isn't set.",
-      href: "/admin/settings",
+      href: "/admin/settings/contact",
       action: "Set it",
     });
   }

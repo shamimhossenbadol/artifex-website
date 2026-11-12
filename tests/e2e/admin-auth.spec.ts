@@ -108,3 +108,60 @@ test("admin pages are noindex and never cached", async ({ page }) => {
   expect(response?.headers()["x-robots-tag"]).toContain("noindex");
   expect(response?.headers()["cache-control"]).toContain("no-store");
 });
+
+// --- Milestone 7b: settings and homepage editor. Non-destructive: invalid input is rejected,
+// and valid saves re-save the current values. ---------------------------------------------------
+
+test("settings tabs reject bad input and save valid values", async ({ page }) => {
+  await signIn(page, EMAIL!, NEW_PASSWORD);
+  await expect(page).toHaveURL(/\/admin$/);
+
+  await page.goto("/admin/settings/contact");
+  await expect(page.getByRole("link", { name: "Contact", exact: true })).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
+  const number = page.getByLabel("WhatsApp number");
+  const original = await number.inputValue();
+  await number.fill("12345");
+  await page.getByRole("button", { name: "Save changes" }).click();
+  await expect(page.getByText(/Use a full number/).first()).toBeVisible();
+  // A failed save keeps what was typed.
+  await expect(number).toHaveValue("12345");
+
+  await number.fill(original);
+  await expect(page.getByRole("link", { name: /Test link/ })).toHaveAttribute(
+    "href",
+    /^https:\/\/wa\.me\/\d+/,
+  );
+  await page.getByRole("button", { name: "Save changes" }).click();
+  await expect(page.getByText("Settings saved. The website is updated.").first()).toBeVisible();
+
+  await page.goto("/admin/settings/location");
+  const map = page.getByLabel("Map embed");
+  await map.fill("https://evil.example/embed");
+  await page.getByRole("button", { name: "Save changes" }).click();
+  await expect(page.getByText(/Paste the embed link from Google Maps/).first()).toBeVisible();
+});
+
+test("homepage editor saves the hero and validates new banners", async ({ page }) => {
+  await signIn(page, EMAIL!, NEW_PASSWORD);
+  await page.goto("/admin/homepage");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Homepage");
+
+  // The live preview follows the heading field.
+  const heading = page.getByLabel("Heading", { exact: true });
+  const original = await heading.inputValue();
+  await heading.fill(`${original} preview`);
+  await expect(page.getByText(`${original} preview`)).toBeVisible();
+  await heading.fill(original);
+  await page.getByRole("button", { name: "Save hero" }).click();
+  await expect(page.getByText("Hero saved. The homepage is updated.").first()).toBeVisible();
+
+  await page.getByRole("link", { name: "New banner" }).click();
+  await expect(page).toHaveURL(/\/admin\/homepage\/banners\/new$/);
+  await page.getByLabel("Title").fill("Test banner");
+  await page.getByLabel("Image description").fill("A sofa");
+  await page.getByRole("button", { name: "Create banner" }).click();
+  await expect(page.getByText("Choose an image for the banner.").first()).toBeVisible();
+});

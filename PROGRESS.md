@@ -9,10 +9,10 @@
 
 | Item | Value |
 |---|---|
-| **Current phase** | Phase 7: Admin dashboard (7a done; 7b next) |
+| **Current phase** | Phase 7: Admin dashboard (7a–7b done; 7c next) |
 | **Overall state** | ✅ Phase 1 complete. Code is on GitHub (`shamimhossenbadol/artifex-website`, private); CI is green. ✅ **First deploy succeeded 2026-11-12**: https://artifex.codespherestudio.site serves the placeholder page with security headers (via Cloudflare). Migration applied; seed created 7 categories, settings, hero and the admin (`mustChangePassword = 1`); backup saved in `~/backups`. |
 | **Last updated** | 2026-11-12 |
-| **Next action** | Owner: Deploy, then sign in at /admin with ADMIN_EMAIL + the temporary password from `~/artifex-secrets.txt` and set your own password. Agent: Phase 7 milestone 7b (settings + homepage hero/banners). |
+| **Next action** | Owner: Deploy, sign in at /admin (first sign-in asks for a new password), then try Settings and Homepage on your phone and upload a hero photo. Agent: Phase 7 milestone 7c (categories). |
 
 ## Phase overview
 
@@ -25,7 +25,7 @@
 | 4 | Global search | ✅ Done 2026-11-12 |
 | 5 | Blog, About, Contact/Location | ✅ Done 2026-11-12 |
 | 6 | Homepage | ✅ Done 2026-11-12 |
-| 7 | Admin dashboard | 🟡 7a done (auth, account, shell, dashboard); 7b–7f next |
+| 7 | Admin dashboard | 🟡 7a–7b done (auth, account, shell, dashboard, settings, hero/banners); 7c–7f next |
 | 8 | SEO, security & performance hardening | ⚪ Not started |
 | 9 | Production build, deployment & QA | ⚪ Not started |
 
@@ -83,6 +83,8 @@ Answer these by editing this list. Agents: use the **default** until an answer i
 ## Session log
 
 Add one line per session, newest first: `YYYY-MM-DD — summary — files touched`.
+
+- 2026-11-13 — Phase 7b: Settings (Business, Contact with WhatsApp test link + message preview, Location with map-snippet paste + hours editor, Social, SEO with share image) and Homepage editor (hero with live preview + photo, promo banners with dates, order, edit, delete). AdminForm (no reset on failed save), ImageField, media.service (upload → save → delete old). 199 unit tests; admin e2e extended (CI only). Signed-in screens not checked locally (no test admin locally); CI covers them. ADR-031. — `src/lib/validation/{settings,home}.ts`, `src/server/{actions/settings,actions/home,services/settings-admin,services/home-admin,services/media}*`, `src/server/repositories/{settings,home}.repo.ts`, `src/app/admin/(panel)/{settings,homepage}/`, `src/components/admin/`, `src/app/(site)/page.tsx`, `tests/`, `DECISIONS.md`, `docs/12`, `CHANGELOG.md`
 
 - 2026-11-13 — Phase 7a: admin auth (bcrypt, jose JWT cookie, requireAdmin with sessionVersion, DB-backed lockout, decoy-hash timing), proxy.ts (redirect, sliding renewal, no-store/noindex), login, forced first-login password change, account (profile, password, log out everywhere), admin shell (sidebar, mobile drawer, toasts, confirm), dashboard (counts, recent, warnings), reset-password CLI, placeholders for 7b–7e sections. 160 unit tests; auth e2e runs in CI only. Verified locally that a forged cookie gets no admin content. ADR-030. — `src/lib/auth/`, `src/server/{services/auth,services/dashboard,actions/auth,repositories/admin,repositories/dashboard}*`, `src/proxy.ts`, `src/app/admin/`, `src/components/admin/`, `scripts/admin-reset-password.ts`, `tests/`, `.github/workflows/ci.yml`, `DECISIONS.md`, `docs/07`, `10`, `12`, `CHANGELOG.md`
 

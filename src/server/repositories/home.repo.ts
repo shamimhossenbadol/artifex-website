@@ -41,3 +41,89 @@ export async function findActiveBanners() {
 }
 
 export type PromoBannerRow = Awaited<ReturnType<typeof findActiveBanners>>[number];
+
+// --- Admin (07 §3.5) ---------------------------------------------------------------------------
+
+export type HeroData = {
+  eyebrow: string | null;
+  heading: string;
+  subheading: string | null;
+  imagePath: string;
+  imageAlt: string;
+  ctaLabel: string;
+  ctaHref: string;
+  secondaryLabel: string | null;
+  secondaryHref: string | null;
+};
+
+export async function saveHomeHero(data: HeroData): Promise<void> {
+  await db.homeHero.upsert({ where: { id: 1 }, update: data, create: { ...data, id: 1 } });
+}
+
+const BANNER_ADMIN_SELECT = {
+  id: true,
+  title: true,
+  subtitle: true,
+  imagePath: true,
+  imageAlt: true,
+  linkHref: true,
+  linkLabel: true,
+  isActive: true,
+  startsAt: true,
+  endsAt: true,
+  sortOrder: true,
+  updatedAt: true,
+} as const;
+
+export async function findAllBanners() {
+  return db.promoBanner.findMany({
+    orderBy: [{ sortOrder: "asc" }, { id: "asc" }],
+    take: 100,
+    select: BANNER_ADMIN_SELECT,
+  });
+}
+
+export async function findBannerById(id: number) {
+  return db.promoBanner.findUnique({ where: { id }, select: BANNER_ADMIN_SELECT });
+}
+
+export type AdminBannerRow = NonNullable<Awaited<ReturnType<typeof findBannerById>>>;
+
+export type BannerData = {
+  title: string;
+  subtitle: string | null;
+  imagePath: string;
+  imageAlt: string;
+  linkHref: string | null;
+  linkLabel: string | null;
+  isActive: boolean;
+  startsAt: Date | null;
+  endsAt: Date | null;
+};
+
+/** New banners go to the end of the list. */
+export async function createBanner(data: BannerData): Promise<number> {
+  const last = await db.promoBanner.aggregate({ _max: { sortOrder: true } });
+  const row = await db.promoBanner.create({
+    data: { ...data, sortOrder: (last._max.sortOrder ?? 0) + 10 },
+    select: { id: true },
+  });
+  return row.id;
+}
+
+export async function updateBanner(id: number, data: BannerData): Promise<void> {
+  await db.promoBanner.update({ where: { id }, data });
+}
+
+export async function deleteBanner(id: number): Promise<void> {
+  await db.promoBanner.delete({ where: { id } });
+}
+
+/** Rewrites sortOrder as 10, 20, 30… in the given id order, in one transaction. */
+export async function reorderBanners(ids: number[]): Promise<void> {
+  await db.$transaction(
+    ids.map((id, index) =>
+      db.promoBanner.update({ where: { id }, data: { sortOrder: (index + 1) * 10 } }),
+    ),
+  );
+}

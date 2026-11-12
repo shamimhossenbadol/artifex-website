@@ -12,7 +12,12 @@ import { Container } from "@/components/ui/Container";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { toOpeningHoursSpecification } from "@/lib/opening-hours";
-import { localBusinessJsonLd, organizationJsonLd, websiteJsonLd } from "@/lib/seo";
+import {
+  absoluteImageUrl,
+  localBusinessJsonLd,
+  organizationJsonLd,
+  websiteJsonLd,
+} from "@/lib/seo";
 import { getLatestPosts } from "@/server/services/blog.service";
 import {
   getHomeCategories,
@@ -33,7 +38,10 @@ export async function generateMetadata(): Promise<Metadata> {
       title: settings.defaultSeoTitle,
       description: settings.defaultSeoDescription,
       url: "/",
-      images: [{ url: "/logo-mark-512.png", width: 512, height: 512, alt: settings.businessName }],
+      // The admin's share image (Settings → SEO), else the logo mark.
+      images: settings.ogImagePath
+        ? [{ url: absoluteImageUrl(settings.ogImagePath), alt: settings.businessName }]
+        : [{ url: "/logo-mark-512.png", width: 512, height: 512, alt: settings.businessName }],
     },
   };
 }

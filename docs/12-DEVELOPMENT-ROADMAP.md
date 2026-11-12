@@ -84,8 +84,8 @@ Each phase ends with a short manual review of the phase's acceptance checks.
 - [ ] Products: list/filter, create/edit form (all sections), image uploader (sharp variants → R2, reorder, primary, alt, R2 delete on remove), duplicate, delete
 - [ ] Categories: CRUD, reorder, toggles
 - [ ] Blog: CRUD with Markdown editor + image insert
-- [ ] Homepage: hero, promo banners, featured lists
-- [ ] Settings: business, contact/WhatsApp (test link), location/map/hours, social, SEO
+- [ ] Homepage: hero, promo banners, featured lists — hero + banners done (7b, ADR-031); featured lists in 7f
+- [x] Settings: business, contact/WhatsApp (test link), location/map/hours, social, SEO (ADR-031)
 - [ ] Revalidation wired per 07 §5 (verify each)
 
 **Exit check:** the owner can do every workflow in 07 on a phone, and the auth tests pass.

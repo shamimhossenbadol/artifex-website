@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import { formatPostDate, parseTags, readingTimeMinutes } from "@/lib/blog";
 import {
   dhakaClock,
+  formatClock,
+  formatHoursRange,
   getOpenStatus,
   parseDays,
   toOpeningHoursSpecification,
@@ -45,7 +47,7 @@ describe("getOpenStatus", () => {
   it("is open during hours on an open day", () => {
     expect(getOpenStatus(HOURS, dhaka("2026-11-12T15:00:00"))).toEqual({
       open: true,
-      label: "Open now · until 21:00",
+      label: "Open now · until 9:00 PM",
     });
   });
 
@@ -99,5 +101,33 @@ describe("blog helpers", () => {
 
   it("formats dates in Dhaka time", () => {
     expect(formatPostDate(new Date("2026-11-12T20:00:00Z"))).toBe("13 November 2026");
+  });
+});
+
+describe("12-hour display", () => {
+  it.each([
+    ["10:00", "10:00 AM"],
+    ["22:00", "10:00 PM"],
+    ["12:00", "12:00 PM"],
+    ["00:30", "12:30 AM"],
+  ])("%s → %s", (input, output) => {
+    expect(formatClock(input)).toBe(output);
+  });
+
+  it("formats a range and closed days", () => {
+    expect(formatHoursRange({ days: "Every day", open: "10:00", close: "22:00" })).toBe(
+      "10:00 AM – 10:00 PM",
+    );
+    expect(formatHoursRange({ days: "Fri", closed: true })).toBe("Closed");
+  });
+
+  it("handles the confirmed 'Every day, 10 AM – 10 PM' hours", () => {
+    const everyDay = [{ days: "Every day", open: "10:00", close: "22:00" }];
+    expect(getOpenStatus(everyDay, dhaka("2026-11-13T12:00:00"))).toEqual({
+      open: true,
+      label: "Open now · until 10:00 PM",
+    });
+    expect(getOpenStatus(everyDay, dhaka("2026-11-13T22:30:00"))?.open).toBe(false);
+    expect(getOpenStatus(everyDay, dhaka("2026-11-13T09:59:00"))?.open).toBe(false);
   });
 });

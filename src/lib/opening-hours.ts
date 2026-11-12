@@ -44,6 +44,19 @@ export function parseDays(label: string): number[] | null {
   return days.size > 0 ? [...days] : null;
 }
 
+/** "22:00" → "10:00 PM", "10:00" → "10:00 AM", "00:30" → "12:30 AM" (display only; stored as 24 h). */
+export function formatClock(hhmm: string): string {
+  const [h = 0, m = 0] = hhmm.split(":").map(Number);
+  const suffix = h >= 12 ? "PM" : "AM";
+  const hour12 = h % 12 === 0 ? 12 : h % 12;
+  return `${hour12}:${String(m).padStart(2, "0")} ${suffix}`;
+}
+
+/** "10:00 AM – 10:00 PM" or "Closed". */
+export function formatHoursRange(entry: OpeningHoursEntry): string {
+  return "closed" in entry ? "Closed" : `${formatClock(entry.open)} – ${formatClock(entry.close)}`;
+}
+
 function toMinutes(hhmm: string): number {
   const [h, m] = hhmm.split(":").map(Number);
   return (h ?? 0) * 60 + (m ?? 0);
@@ -80,7 +93,7 @@ export function getOpenStatus(entries: OpeningHoursEntry[], now: Date): OpenStat
     const open = toMinutes(entry.open);
     const close = toMinutes(entry.close);
     if (minutes >= open && minutes < close)
-      return { open: true, label: `Open now · until ${entry.close}` };
+      return { open: true, label: `Open now · until ${formatClock(entry.close)}` };
   }
   return understood ? { open: false, label: "Closed now" } : null;
 }

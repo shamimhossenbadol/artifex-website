@@ -12,7 +12,7 @@
 | **Current phase** | Phase 6: Homepage (next) |
 | **Overall state** | ✅ Phase 1 complete. Code is on GitHub (`shamimhossenbadol/artifex-website`, private); CI is green. ✅ **First deploy succeeded 2026-11-12**: https://artifex.codespherestudio.site serves the placeholder page with security headers (via Cloudflare). Migration applied; seed created 7 categories, settings, hero and the admin (`mustChangePassword = 1`); backup saved in `~/backups`. |
 | **Last updated** | 2026-11-12 |
-| **Next action** | Owner: Deploy; send the showroom's Google Maps **embed** link + real opening hours + email (if any); R2 setup. Agent: Phase 6 (homepage). |
+| **Next action** | Owner: Deploy; R2 setup; email address (optional). Agent: Phase 6 (homepage). |
 
 ## Phase overview
 
@@ -64,7 +64,7 @@ Answer these by editing this list. Agents: use the **default** until an answer i
 | 1 | ~~Which Namecheap plan? SSH?~~ **Answered 2026-11-12: Stellar.** SSH enabled and verified 2026-11-12 (ADR-016) | — |
 | 2 | Final production domain and hosting? (`artifexfurniture.com` currently points to someone else's servers.) | Test deploys go to `artifex.codespherestudio.site` (ADR-019) |
 | 3 | ~~Logo files?~~ **Answered 2026-11-12:** logo supplied and in use (ADR-022). Brand red refined to `#D2161E` for the web; confirm the owner is happy with that tone | — |
-| 4 | ~~WhatsApp, phone, address~~ **Answered 2026-11-12:** WhatsApp 01757-758388 (also used as the phone number), House 02, Road 05, Sector 01, Uttara, Dhaka 1230; Facebook/Instagram/YouTube links. **Still open:** email, real opening hours, showroom map pin | Hours default Sat–Thu 10:00–21:00, Fri closed; no email |
+| 4 | ~~WhatsApp, phone, address, hours, map~~ **Answered 2026-11-12:** WhatsApp/phone 01757-758388; House 02, Road 05, Sector 01, Uttara, Dhaka 1230; **every day 10:00 AM – 10:00 PM**; Google Maps embed + coordinates (23.8570, 90.4001); Facebook/Instagram/YouTube. **Still open:** email address | No email shown |
 | 5 | Product photos: do professional photos exist? | Seed with placeholder images; real photos uploaded via admin |
 | 6 | Show prices publicly for all products, or "Price on request" for some (e.g. custom curtains/chandeliers)? | Both are supported per product |
 | 7 | Language: English only, or Bangla too? | English only (Bangla on the future list) |
@@ -76,12 +76,14 @@ Answer these by editing this list. Agents: use the **default** until an answer i
 | 13 | The dev PC runs Node **26**; the project pins Node **24** (ADR-015). npm only warns locally, and CI/production use 24. Install Node 24 locally (e.g. nvm-windows) to match exactly? | Keep 26 locally; CI enforces 24 |
 | 14 | ~~Official contact details?~~ Answered 2026-11-12 (see #4) | — |
 | 15 | Agent assumption (2026-11-12): the phone number shown is the WhatsApp number (no separate landline was given) | +880 1757-758388 for both |
-| 16 | Google Maps **embed** link for the showroom (Google Maps → Share → Embed a map → copy the `src` URL) so the contact page can show the map | Contact page shows an "Open in Google Maps" card |
+| 16 | ~~Google Maps embed link~~ Answered 2026-11-12 (see #4) | — |
 | 17 | The **test** database contains 31 demo products (`demo-…` slugs, SEED_DEMO; doors/tables demos removed, 2 chandeliers added 2026-11-12). Remove them before entering real products? (`DELETE FROM Product WHERE slug LIKE 'demo-%'`) | Keep until real products exist |
 
 ## Session log
 
 Add one line per session, newest first: `YYYY-MM-DD — summary — files touched`.
+
+- 2026-11-12 — Owner confirmed hours (every day 10 AM – 10 PM) and sent the showroom map embed. Times now display in 12-hour format (formatClock/formatHoursRange); seed + test DB updated with hours, map embed and coordinates (from the embed URL); contact e2e covers tap-to-load map. — `src/lib/opening-hours.ts`, `src/app/(site)/contact/page.tsx`, `src/components/site/Footer.tsx`, `prisma/seed.ts`, `tests/`, `PROGRESS.md`, `CHANGELOG.md`
 
 - 2026-11-12 — Phase 5: Journal (`/blog`, `/blog/[slug]`: featured post, reading time, Markdown with media-only images, share links, related by tag, BlogPosting JSON-LD), Contact (hours table, Dhaka-time open status, click-to-load map, directions, FurnitureStore JSON-LD), About (story from settings, values, CTAs). Libs: opening-hours, blog. Seed: default About text + 4 demo posts; test DB About filled (was empty) and demo posts seeded. 130 unit tests; 12 new e2e tests. ADR-028. — `src/app/(site)/{blog,contact,about}`, `src/components/{blog,contact}`, `src/lib/{opening-hours,blog,seo}.ts`, `src/components/ui/Markdown.tsx`, `prisma/seed*.ts`, `tests/`, `DECISIONS.md`, `docs/06`, `12`, `TESTING-GUIDELINES.md`, `CHANGELOG.md`
 

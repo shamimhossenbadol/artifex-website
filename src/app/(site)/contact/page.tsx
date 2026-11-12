@@ -10,7 +10,7 @@ import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Container } from "@/components/ui/Container";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { toOpeningHoursSpecification } from "@/lib/opening-hours";
+import { formatHoursRange, toOpeningHoursSpecification } from "@/lib/opening-hours";
 import { breadcrumbJsonLd, localBusinessJsonLd } from "@/lib/seo";
 import { getSiteSettings, type SiteSettings } from "@/server/services/settings.service";
 
@@ -118,9 +118,7 @@ async function ContactDetails() {
                       <th scope="row" className="text-ink py-2 pr-4 font-normal">
                         {entry.days}
                       </th>
-                      <td className="py-2 text-right tabular-nums">
-                        {"closed" in entry ? "Closed" : `${entry.open} – ${entry.close}`}
-                      </td>
+                      <td className="py-2 text-right tabular-nums">{formatHoursRange(entry)}</td>
                     </tr>
                   ))}
                 </tbody>

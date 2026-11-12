@@ -63,24 +63,32 @@ test.describe("Contact & location (F5)", () => {
     await expect(main.getByText(/Uttara/).first()).toBeVisible();
     await expect(main.locator('a[href^="tel:+880"]').first()).toBeVisible();
     await expect(main.locator('a[href^="https://wa.me/"]').first()).toBeVisible();
-    await expect(main.getByRole("row", { name: /Fri\s+Closed/ })).toBeVisible();
+    await expect(main.getByRole("row", { name: /Every day\s+10:00 AM – 10:00 PM/ })).toBeVisible();
     await expect(main.getByRole("link", { name: "Get directions" })).toHaveAttribute(
       "href",
       /^https:\/\/www\.google\.com\/maps\//,
     );
-    // No Google Maps iframe is loaded unless the visitor asks for it.
-    await expect(page.locator("iframe")).toHaveCount(0);
     expect(await jsonLdTypes(page)).toContain("FurnitureStore");
   });
 
+  test("the map loads only when the visitor taps it", async ({ page }) => {
+    await page.goto("/contact");
+    await expect(page.locator("iframe")).toHaveCount(0);
+    await page.getByRole("button", { name: /Tap to load the map/ }).click();
+    await expect(page.locator("iframe")).toHaveAttribute(
+      "src",
+      /^https:\/\/www\.google\.com\/maps\/embed\?pb=/,
+    );
+  });
+
   test("open status follows Dhaka time", async ({ page }) => {
-    // Thursday 15:00 in Dhaka (UTC+6): open until 21:00.
+    // 15:00 in Dhaka (UTC+6): open every day until 10 PM.
     await page.clock.setFixedTime(new Date("2026-11-12T15:00:00+06:00"));
     await page.goto("/contact");
-    await expect(page.getByText("Open now · until 21:00")).toBeVisible();
+    await expect(page.getByText("Open now · until 10:00 PM")).toBeVisible();
 
-    // Friday noon in Dhaka: closed all day.
-    await page.clock.setFixedTime(new Date("2026-11-13T12:00:00+06:00"));
+    // 22:30 in Dhaka: closed for the night.
+    await page.clock.setFixedTime(new Date("2026-11-12T22:30:00+06:00"));
     await page.reload();
     await expect(page.getByText("Closed now")).toBeVisible();
   });

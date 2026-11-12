@@ -45,6 +45,9 @@ async function seedCategories(): Promise<void> {
   }
 }
 
+const SHOWROOM_MAP_EMBED =
+  "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3648.919045102521!2d90.40010057491315!3d23.85700827859821!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755c7005163b74b%3A0xaf2051d6a1ae9f48!2sArtifex%20Furniture!5e0!3m2!1sen!2sbd!4v1794503735595!5m2!1sen!2sbd";
+
 /** Starter About text (F7): only facts the owner has confirmed. Edit in admin. */
 const DEFAULT_ABOUT = `Artifex Furniture brings crafted furniture to modern homes in Dhaka: sofas, dining tables, chairs, beds, curtains and chandeliers.
 
@@ -53,8 +56,8 @@ We believe good furniture should be **comfortable, well made and built to last**
 Visit our showroom in Uttara to see and feel the pieces in person, or message us on WhatsApp with a photo of your room. We're happy to help you choose.`;
 
 async function seedSettings(): Promise<void> {
-  // Contact details confirmed by the owner on 2026-11-12. Email and opening hours are still
-  // defaults (PROGRESS open question #4); everything is editable in admin later.
+  // Contact details, hours and map confirmed by the owner on 2026-11-12. Email is still unknown
+  // (PROGRESS open question #4); everything is editable in admin later.
   await db.siteSetting.upsert({
     where: { id: 1 },
     update: {},
@@ -75,10 +78,12 @@ async function seedSettings(): Promise<void> {
       facebookUrl: "https://www.facebook.com/artifexfurniturebd",
       instagramUrl: "https://www.instagram.com/artifexdecoryourdreams",
       youtubeUrl: "https://www.youtube.com/@ArtifexFurniture",
-      openingHours: [
-        { days: "Sat–Thu", open: "10:00", close: "21:00" },
-        { days: "Fri", closed: true },
-      ],
+      // Confirmed by the owner on 2026-11-12: every day, 10:00 AM – 10:00 PM.
+      openingHours: [{ days: "Every day", open: "10:00", close: "22:00" }],
+      // Showroom map (owner's Google Maps embed, 2026-11-12) and its coordinates.
+      mapEmbedUrl: SHOWROOM_MAP_EMBED,
+      latitude: 23.8570083,
+      longitude: 90.4001006,
       aboutContent: DEFAULT_ABOUT,
       aboutShort:
         "Artifex Furniture makes sofas, dining tables, beds and chandeliers for modern homes in Dhaka.",

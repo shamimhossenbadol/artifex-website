@@ -2,6 +2,7 @@ import { MapPin, Phone } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { COMPANY_LINKS } from "@/config/site";
+import { formatHoursRange } from "@/lib/opening-hours";
 import { Container } from "@/components/ui/Container";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { getNavCategories } from "@/server/services/catalog.service";
@@ -130,9 +131,7 @@ export async function Footer() {
               {settings.openingHours.map((entry) => (
                 <div key={entry.days} className="contents">
                   <dt className="text-ink">{entry.days}</dt>
-                  <dd className="text-ink-soft tabular-nums">
-                    {"closed" in entry ? "Closed" : `${entry.open} – ${entry.close}`}
-                  </dd>
+                  <dd className="text-ink-soft tabular-nums">{formatHoursRange(entry)}</dd>
                 </div>
               ))}
             </dl>

@@ -40,7 +40,8 @@ async function seedCategories(): Promise<void> {
 }
 
 async function seedSettings(): Promise<void> {
-  // Placeholders until the owner confirms contact details (PROGRESS open question #4).
+  // Contact details confirmed by the owner on 2026-11-12. Email and opening hours are still
+  // defaults (PROGRESS open question #4); everything is editable in admin later.
   await db.siteSetting.upsert({
     where: { id: 1 },
     update: {},
@@ -48,14 +49,19 @@ async function seedSettings(): Promise<void> {
       id: 1,
       businessName: "Artifex Furniture",
       tagline: "Crafted furniture for modern Bangladeshi homes.",
-      phone: "+880 1XXX-XXXXXX",
-      whatsappNumber: "8801000000000",
+      phone: "+880 1757-758388",
+      whatsappNumber: "8801757758388",
       whatsappDefaultMessage:
         "Hello Artifex Furniture, I'd like to know more about your furniture.",
       whatsappProductTemplate: "Hello {business}, I'm interested in {product}{color}. {url}",
       email: null,
-      addressLine: "Showroom address to be confirmed",
-      city: "Dhaka",
+      addressLine: "House 02, Road 05, Sector 01, Uttara",
+      city: "Dhaka 1230",
+      mapLinkUrl:
+        "https://www.google.com/maps/search/?api=1&query=House%2002%2C%20Road%2005%2C%20Sector%2001%2C%20Uttara%2C%20Dhaka%201230",
+      facebookUrl: "https://www.facebook.com/artifexfurniturebd",
+      instagramUrl: "https://www.instagram.com/artifexdecoryourdreams",
+      youtubeUrl: "https://www.youtube.com/@ArtifexFurniture",
       openingHours: [
         { days: "Sat–Thu", open: "10:00", close: "21:00" },
         { days: "Fri", closed: true },

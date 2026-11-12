@@ -173,3 +173,13 @@ Format: each ADR has a number, date, status (Accepted / Superseded by ADR-x / Pr
 - Never animate the opacity of the LCP element (hero image/heading, product main image).
 **Consequences:** Zero added JavaScript and a few hundred bytes of CSS. AGENTS §5 ("animation libraries") still applies.
 
+### ADR-022 — Brand logo as cached static SVGs, refined brand red
+**Date:** 2026-11-12 · **Status:** Accepted (replaces the temporary text wordmark in 03 §8)
+**Context:** The owner supplied the Artifex logo (traced SVG + 4000 px PNG in `VideoEditing/.../brand/`): a red "A" with a swoosh, RTIFEX, an underline and the tagline "DECOR YOUR DREAMS". The site must stay very fast on mobile, even with a large catalogue.
+**Decision:**
+- Two web SVGs in `src/assets/brand/`: `artifex-wordmark.svg` (A + RTIFEX, header) and `artifex-logo.svg` (with tagline, footer). Coordinates are rounded to whole units (27 KB → 15 KB; 4.4 KB and 6 KB gzipped). They're imported through `next/image`, so they get **content-hashed, immutable URLs**: phones download them once, not with every page or navigation (inlining would add ~6 KB to every HTML/RSC response).
+- The neon source red `#FF0707` is refined to **`--color-brand: #D2161E`** for a more premium look on ivory; the tagline uses charcoal `#3A3F42`. The brand red is used **only for the logo**; the UI palette (ink/walnut) is unchanged.
+- Favicons from the "A" mark: `src/app/icon.svg`, `favicon.ico` (16/32/48) and `apple-icon.png` (180 px, ivory background). `public/logo-mark-512.png` is kept for JSON-LD/OG use later.
+- Motion: one CSS `clip-path` wipe on the header logo at page load (`animate-logo`, 0.9 s, off for reduced motion). It costs no JavaScript and doesn't affect layout. It only replays on a full page load, not on in-app navigation.
+**Consequences:** If the owner later supplies an official vector or exact brand colour, replace the two SVGs and the token. Regenerating needs the one-off script described in PROGRESS's session log (Pillow for the raster icons).
+

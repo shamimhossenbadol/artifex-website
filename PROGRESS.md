@@ -63,8 +63,8 @@ Answer these by editing this list. Agents: use the **default** until an answer i
 |---|---|---|
 | 1 | ~~Which Namecheap plan? SSH?~~ **Answered 2026-11-12: Stellar.** SSH enabled and verified 2026-11-12 (ADR-016) | — |
 | 2 | Final production domain and hosting? (`artifexfurniture.com` currently points to someone else's servers.) | Test deploys go to `artifex.codespherestudio.site` (ADR-019) |
-| 3 | Logo files (SVG/PNG) and brand colours, if any? | Text wordmark "ARTIFEX" plus the palette in the design system |
-| 4 | WhatsApp business number, phone, email, showroom address, opening hours | Placeholders in the seed, editable in admin |
+| 3 | ~~Logo files?~~ **Answered 2026-11-12:** logo supplied and in use (ADR-022). Brand red refined to `#D2161E` for the web; confirm the owner is happy with that tone | — |
+| 4 | ~~WhatsApp, phone, address~~ **Answered 2026-11-12:** WhatsApp 01757-758388 (also used as the phone number), House 02, Road 05, Sector 01, Uttara, Dhaka 1230; Facebook/Instagram/YouTube links. **Still open:** email, real opening hours, showroom map pin | Hours default Sat–Thu 10:00–21:00, Fri closed; no email |
 | 5 | Product photos: do professional photos exist? | Seed with placeholder images; real photos uploaded via admin |
 | 6 | Show prices publicly for all products, or "Price on request" for some (e.g. custom doors/curtains)? | Both are supported per product |
 | 7 | Language: English only, or Bangla too? | English only (Bangla on the future list) |
@@ -74,13 +74,15 @@ Answer these by editing this list. Agents: use the **default** until an answer i
 | 11 | Do you have a Cloudflare account, or should one be created for the business? The developer's Cloudflare already hosts `codespherestudio.site` DNS; R2 for production should probably live in an account the business owns | A new free account owned by the business email |
 | 12 | Agent assumption (2026-11-12): `R2_*` env vars are optional until Phase 3 so the site can deploy before Cloudflare is set up. They become required for uploads when the media module lands | Optional until Phase 3 (ADR-018) |
 | 13 | The dev PC runs Node **26**; the project pins Node **24** (ADR-015). npm only warns locally, and CI/production use 24. Install Node 24 locally (e.g. nvm-windows) to match exactly? | Keep 26 locally; CI enforces 24 |
-| 14 | The sofa ad shows WhatsApp **01757-758388** and an Uttara showroom address. Are these the official website contact details? | Seed keeps placeholders, editable in admin |
-| 15 | Agent assumption (2026-11-12): header/footer show placeholder phone `+880 1XXX-XXXXXX` and WhatsApp `8801000000000` from the seed until #14 is answered (they're links, so they don't work yet) | Placeholders |
+| 14 | ~~Official contact details?~~ Answered 2026-11-12 (see #4) | — |
+| 15 | Agent assumption (2026-11-12): the phone number shown is the WhatsApp number (no separate landline was given) | +880 1757-758388 for both |
 | 16 | Agent assumption (2026-11-12): category links, `/search`, `/blog`, `/about`, `/contact`, `/products` currently 404 (branded) until Phases 3–5 build them | Expected during development |
 
 ## Session log
 
 Add one line per session, newest first: `YYYY-MM-DD — summary — files touched`.
+
+- 2026-11-12 — Brand logo in place (ADR-022): compact cached SVGs for header (animated clip-path wipe) and footer, favicons from the A mark, brand red token. Real contact details + social links in the seed and applied to the test DB by SQL over SSH. Logo SVGs were generated from `VideoEditing/.../brand/artifex-logo.svg` by rounding coordinates (one-off Python script, not in the repo). — `src/assets/brand/`, `src/components/site/Logo.tsx`, `src/app/icon.svg`, `favicon.ico`, `apple-icon.png`, `prisma/seed.ts`, `DECISIONS.md`, `docs/03`, `CHANGELOG.md`
 
 - 2026-11-12 — Phase 2: design tokens + type scale + CSS-only motion (ADR-021), Inter/Cormorant via next/font, UI primitives, header (utility bar, sticky shrink, More menu), mobile drawer (native dialog), footer, WhatsApp FAB, branded 404/error/global-error, dev style guide, settings + nav-category services with request-time caching (ADR-020), lib/format, lib/whatsapp, lib/phone. 29 unit + 9 e2e tests. Mobile home weight on a local prod build: HTML 38 KB, CSS 7 KB, JS 154 KB (framework), fonts 84 KB, 12 requests. — `src/`, `tests/`, `DECISIONS.md`, `docs/02`, `03`, `12`, `CHANGELOG.md`
 

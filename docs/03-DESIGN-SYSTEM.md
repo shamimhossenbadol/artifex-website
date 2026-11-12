@@ -23,6 +23,7 @@ Defined as CSS variables in `src/styles/globals.css` and exposed to Tailwind (`@
 | `--color-danger` | `#B3261E` | Errors, destructive admin actions |
 | `--color-whatsapp` | `#25D366` | **Only** the WhatsApp icon/button accent |
 | `--color-whatsapp-dark` | `#128C4B` | WhatsApp button background, which passes AA with white text |
+| `--color-brand` | `#D2161E` | **Only** the logo (refined from the source `#FF0707`; ADR-022) |
 
 Contrast: ink on bg is ≈ 16:1, muted on bg ≈ 4.6:1 (AA for body text), and white on walnut ≈ 6.9:1.
 Dark mode: **not in scope** for the public site. Furniture photography is shot for light backgrounds.
@@ -94,6 +95,10 @@ Rules: headings are serif, while everything functional (nav, buttons, prices, fo
 
 **Lucide React** only, `strokeWidth={1.5}`, 20 px default (24 px in nav). The WhatsApp brand glyph isn't in Lucide, so use a single inline SVG component `components/site/WhatsAppIcon.tsx`.
 
-## 8. Logo & wordmark (until real logo is provided)
+## 8. Logo (ADR-022)
+
+The real logo is in use: `src/components/site/Logo.tsx` renders `src/assets/brand/artifex-wordmark.svg` (header: 40 px mobile, 48 px desktop, 40 px when scrolled) and `artifex-logo.svg` with the "DECOR YOUR DREAMS" tagline (footer, 80 px). Brand red `--color-brand: #D2161E` is for the logo only. Favicons are generated from the "A" mark. Keep clear space of at least half the logo height around it, and never recolour or stretch it.
+
+### Previous text wordmark (retired)
 
 The text wordmark "ARTIFEX" is set in Cormorant Garamond 600, tracking 0.24em, with "FURNITURE" below in Inter 500 at 10 px, tracking 0.32em. Swap in the real SVG logo when it's supplied (PROGRESS open question #3).

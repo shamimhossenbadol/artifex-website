@@ -6,7 +6,7 @@ import { Container } from "@/components/ui/Container";
 import { MobileNav } from "./MobileNav";
 import { StickyHeader } from "./StickyHeader";
 import { WhatsAppIcon } from "./WhatsAppIcon";
-import { Wordmark } from "./Wordmark";
+import { Logo } from "./Logo";
 
 export type HeaderViewProps = {
   categories: { name: string; slug: string; href: string; imagePath: string | null }[];
@@ -57,7 +57,7 @@ export function HeaderView({
       </div>
 
       <StickyHeader>
-        {/* Mobile: [Menu] [Wordmark] [Search] */}
+        {/* Mobile: [Menu] [Logo] [Search] */}
         <Container className="grid h-16 grid-cols-[1fr_auto_1fr] items-center lg:hidden">
           <div className="justify-self-start">
             <MobileNav
@@ -69,16 +69,19 @@ export function HeaderView({
               facebookUrl={facebookUrl}
             />
           </div>
-          <Wordmark />
+          <Logo animated className="h-10" />
           <Link href="/search" className={`${ICON_LINK} -mr-2 justify-self-end`}>
             <Search aria-hidden strokeWidth={1.5} className="size-6" />
             <span className="sr-only">Search</span>
           </Link>
         </Container>
 
-        {/* Desktop: [Wordmark] categories [Search] [Phone] [Inquire] */}
+        {/* Desktop: [Logo] categories [Search] [Phone] [Inquire] */}
         <Container className="hidden h-20 items-center gap-8 transition-[height] duration-200 ease-out group-data-[scrolled=true]/header:h-16 lg:flex">
-          <Wordmark />
+          <Logo
+            animated
+            className="h-12 transition-[height] duration-200 ease-out group-data-[scrolled=true]/header:h-10"
+          />
           <nav aria-label="Categories" className="flex-1">
             <ul className="flex items-center justify-center gap-x-6 xl:gap-x-8">
               {primary.map((category) => (

@@ -25,6 +25,8 @@
   --color-danger: #b3261e;
   --color-whatsapp: #25d366;
   --color-whatsapp-dark: #128c4b;
+  /* Brand red from the Artifex logo, refined from the source #FF0707. Logo only (ADR-022). */
+  --color-brand: #d2161e;
 
   --font-serif: var(--font-cormorant), Georgia, serif;
   --font-sans: var(--font-inter), system-ui, sans-serif;
@@ -171,6 +173,22 @@
     animation: none;
   }
 }
+/* Logo entrance: a one-time left-to-right wipe (clip-path only, no layout or paint of others). */
+@keyframes logo-wipe {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@utility animate-logo {
+  animation: logo-wipe 900ms var(--ease-out) 80ms both;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
 /* Stagger steps for entrance animations (Tailwind's delay-* only affects transitions). */
 @utility stagger-1 {
   animation-delay: 100ms;

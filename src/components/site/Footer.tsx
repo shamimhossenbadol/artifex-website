@@ -9,7 +9,7 @@ import { getSiteSettings } from "@/server/services/settings.service";
 import { getContactLinks } from "./contact-links";
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from "./SocialIcons";
 import { WhatsAppIcon } from "./WhatsAppIcon";
-import { Wordmark } from "./Wordmark";
+import { Logo } from "./Logo";
 
 const HEADING = "text-eyebrow mb-4 text-ink";
 const LINK =
@@ -39,7 +39,7 @@ export async function Footer() {
     <footer className="border-line bg-sand border-t">
       <Container className="reveal grid gap-10 py-16 md:grid-cols-2 md:py-20 lg:grid-cols-[1.4fr_1fr_1fr_1.4fr]">
         <div className="flex flex-col items-start gap-4">
-          <Wordmark />
+          <Logo variant="full" className="h-20" />
           {(settings.aboutShort ?? settings.tagline) && (
             <p className="text-ink-soft max-w-sm">{settings.aboutShort ?? settings.tagline}</p>
           )}

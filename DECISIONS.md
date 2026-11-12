@@ -277,3 +277,9 @@ Format: each ADR has a number, date, status (Accepted / Superseded by ADR-x / Pr
 - **Share image:** Settings → SEO can upload a default OG image (`site/` folder); the homepage uses it, otherwise the logo mark.
 **Consequences:** Uploads need R2 configured on the server (they are). Locally without dev R2 keys, saving an image shows "Image storage isn't set up". Featured lists on the Homepage screen arrive in 7f.
 
+### ADR-032 — Ship sharp's full native packages in the deploy bundle (extends ADR-023)
+**Date:** 2026-11-13 · **Status:** Accepted
+**Context:** Milestone 7b is the first time server code imports `sharp`. Turbopack then adds a `sharp-<hash>` alias next to Prisma's, and file tracing copies sharp's `.node` binary but not libvips (the `.dll` files on Windows; the separate `@img/sharp-libvips-<platform>` package on Linux). The bundle's sharp couldn't load ("Could not load the sharp module"), so uploads would have failed on the server. The alias check also failed because sharp's `exports` map hides `package.json`.
+**Decision:** `scripts/package-standalone.mjs` copies every installed `@img/*` package in full into the bundle (npm installs only the build machine's platform, so CI ships the linux-x64 ones). The alias check resolves `<alias>/package.json` as before. When a package hides that path (sharp), the check **loads** the package instead, which proves its native parts work. CI runs this on Linux for every push. Server checked: glibc 2.28 and x86-64-v2 CPU features (SSE4.2, POPCNT), as sharp's Linux binary requires.
+**Consequences:** About 8 MB more in the bundle. Any future native package that is traced the same way gets the same load check.
+

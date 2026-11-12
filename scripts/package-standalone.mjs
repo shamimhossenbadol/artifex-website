@@ -53,6 +53,21 @@ cpSync(standalone, appDir, {
   filter: (src) => !src.startsWith(aliasSrcRoot),
 });
 
+// 1a. sharp's native binary (@img/sharp-<platform>) needs libvips, which file tracing misses: the
+//     .dll files on Windows, and the separate @img/sharp-libvips-<platform> package on Linux.
+//     Without them uploads fail on the server ("Could not load the sharp module"). Copy the complete
+//     installed @img packages (npm installs only the build machine's platform). Step 1c loads sharp
+//     from the bundle to prove it works.
+const imgSrc = join(root, "node_modules", "@img");
+if (existsSync(imgSrc)) {
+  for (const name of readdirSync(imgSrc)) {
+    cpSync(join(imgSrc, name), join(appDir, "node_modules", "@img", name), {
+      recursive: true,
+      dereference: true,
+    });
+  }
+}
+
 // 1b. Turbopack refers to server-external packages (e.g. Prisma) through hashed aliases such as
 //     .next/node_modules/@prisma/client-2c3a283f134fdcb6, created as symlinks with ABSOLUTE paths
 //     to the build machine. Those break on the server (white page, "Cannot find module"). Recreate
@@ -84,12 +99,22 @@ if (existsSync(aliasSrcRoot)) {
 }
 
 // 1c. Prove each alias resolves exactly like the server will (from the server chunks folder).
+//     Packages whose "exports" map hides package.json (e.g. sharp) are loaded instead, which also
+//     proves their native parts (sharp's linux binary) made it into the bundle. Prisma's alias only
+//     contains the runtime files the server uses, so it is resolved, not loaded.
 const probe = createRequire(join(appDir, ".next", "server", "chunks", "ssr", "probe.js"));
 for (const { alias, target } of aliases) {
   try {
     probe.resolve(`${alias}/package.json`);
   } catch (err) {
-    fail(`Alias ${alias} → ${target} does not resolve in the bundle: ${err.message}`);
+    if (err.code !== "ERR_PACKAGE_PATH_NOT_EXPORTED") {
+      fail(`Alias ${alias} → ${target} does not resolve in the bundle: ${err.message}`);
+    }
+    try {
+      probe(alias);
+    } catch (loadErr) {
+      fail(`Alias ${alias} → ${target} does not load in the bundle: ${loadErr.message}`);
+    }
   }
   console.log(`✔ Alias ${alias} → node_modules/${target}`);
 }

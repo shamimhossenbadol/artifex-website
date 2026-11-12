@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { blockAppJavaScript } from "./helpers";
+import { blockAppJavaScript, delayAppJavaScript } from "./helpers";
 
 // Uses the demo catalogue (SEED_DEMO=true), like catalogue.spec.ts.
 
@@ -51,6 +51,8 @@ test.describe("search API (F2)", () => {
 test.describe("search overlay", () => {
   test("shows suggestions and opens a product with the keyboard", async ({ page }) => {
     await page.goto("/");
+    // This test is about the loaded overlay; typing during hydration is covered below.
+    await page.waitForLoadState("networkidle");
     const dialog = await openSearch(page);
     const input = dialog.getByRole("combobox");
     await expect(input).toBeFocused();
@@ -85,6 +87,17 @@ test.describe("search overlay", () => {
   });
 
   test.describe("before JavaScript loads", () => {
+    test("text typed while loading gets suggestions once the page is ready", async ({ page }) => {
+      const release = await delayAppJavaScript(page);
+      await page.goto("/", { waitUntil: "commit" });
+      const dialog = await openSearch(page);
+      await dialog.getByRole("combobox").fill("chand");
+      release();
+      await expect(dialog.getByRole("option", { name: /Aurelia Crystal Chandelier/ })).toBeVisible({
+        timeout: 15_000,
+      });
+    });
+
     test("the overlay opens and submits to /search", async ({ page }) => {
       await blockAppJavaScript(page);
       await page.goto("/");

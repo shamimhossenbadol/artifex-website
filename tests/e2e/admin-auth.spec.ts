@@ -1,4 +1,4 @@
-import { expect, test, type Browser, type Page } from "@playwright/test";
+import { expect as baseExpect, test, type Browser, type Page } from "@playwright/test";
 
 // Admin authentication (07 §1, 09 §2, TESTING §4). These tests CHANGE the admin password, so they
 // only run when E2E_ADMIN_EMAIL / E2E_ADMIN_PASSWORD are set: in CI, against the throwaway CI DB.
@@ -6,6 +6,13 @@ import { expect, test, type Browser, type Page } from "@playwright/test";
 const EMAIL = process.env.E2E_ADMIN_EMAIL;
 const INITIAL = process.env.E2E_ADMIN_PASSWORD;
 const NEW_PASSWORD = "Walnut-Sofa-Testing-2026";
+
+// Every sign-in runs bcrypt (pure JS, cost 12). On a busy 2-core CI runner a few in a row can pass
+// the default 5 s assertion timeout, so this file waits longer.
+const expect = baseExpect.configure({ timeout: 15_000 });
+
+/** The sign-in form's own message (Next's route announcer is also role="alert"). */
+const loginMessage = (page: Page) => page.locator("form").getByRole("alert");
 
 test.describe.configure({ mode: "serial" });
 test.skip(!EMAIL || !INITIAL, "admin e2e only runs in CI (E2E_ADMIN_EMAIL/PASSWORD)");
@@ -50,10 +57,11 @@ test("too many failures lock the email out", async ({ page }) => {
   const victim = "nobody-lockout@example.com";
   for (let i = 0; i < 5; i++) {
     await signIn(page, victim, `wrong-${i}`);
-    await expect(page.getByText("Invalid email or password.")).toBeVisible();
+    // toHaveText reports what the form actually said if this ever fails.
+    await expect(loginMessage(page), `attempt ${i + 1}`).toHaveText("Invalid email or password.");
   }
   await signIn(page, victim, "wrong-again");
-  await expect(page.getByText(/Too many attempts/)).toBeVisible();
+  await expect(loginMessage(page)).toHaveText(/Too many attempts/);
 });
 
 test("first login forces a password change and logs out other sessions", async ({
@@ -163,7 +171,7 @@ test("homepage editor saves the hero and validates new banners", async ({ page }
 
   await page.getByRole("link", { name: "New banner" }).click();
   await expect(page).toHaveURL(/\/admin\/homepage\/banners\/new$/);
-  await page.getByLabel("Title").fill("Test banner");
+  await page.getByLabel("Title", { exact: true }).fill("Test banner");
   await page.getByLabel("Image description").fill("A sofa");
   await page.getByRole("button", { name: "Create banner" }).click();
   await expect(page.getByText("Choose an image for the banner.").first()).toBeVisible();

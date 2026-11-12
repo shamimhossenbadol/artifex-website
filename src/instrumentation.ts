@@ -3,15 +3,9 @@
 export async function register(): Promise<void> {
   // Skip during `next build`: CI only has the NEXT_PUBLIC_* values, not runtime secrets.
   if (process.env.NEXT_PHASE === "phase-production-build") return;
-  if (process.env.NEXT_RUNTIME !== "nodejs") return;
-
-  const { serverEnv } = await import("@/lib/env");
-  try {
-    serverEnv();
-  } catch (err) {
-    console.error("[startup]", err instanceof Error ? err.message : err);
-    // Next only logs instrumentation errors and keeps running; exit so Passenger reports the
-    // failure instead of serving a half-configured app.
-    process.exit(1);
+  // Node-only code lives in its own module so it is never bundled for the Edge runtime.
+  if (process.env.NEXT_RUNTIME === "nodejs") {
+    const { validateEnvOrExit } = await import("./instrumentation-node");
+    validateEnvOrExit();
   }
 }

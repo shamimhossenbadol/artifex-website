@@ -148,7 +148,7 @@ Slugs are unique per entity. Changing a slug in admin shows a warning (old links
 
 ## 6. Caching strategy (summary — details in 08)
 
-- Service functions are wrapped in the Next.js cache (`"use cache"` + `cacheTag()` on Next 16+, or `unstable_cache` with `tags` on older versions; pick whichever the installed version recommends and record it in DECISIONS).
+- Service functions use `"use cache"` + `cacheTag()` + `cacheLife()` (ADR-018), behind a request-time wrapper that calls `connection()` first, so nothing is read from the database during `next build` (ADR-020). DB-backed components render inside `<Suspense>` with a same-size fallback.
 - Tags: `settings`, `categories`, `products`, `product:<slug>`, `home`, `blog`, `post:<slug>`.
 - Admin actions revalidate the relevant tags. Because there's a single process, the default filesystem/in-memory cache is enough, with no external cache handler.
 

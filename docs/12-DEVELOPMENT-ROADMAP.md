@@ -34,14 +34,14 @@ Each phase ends with a short manual review of the phase's acceptance checks.
 **Exit check:** `npm run build` succeeds, and the seed runs on a local MySQL/MariaDB. ✅ Passed 2026-11-12 in CI (MariaDB 11.4 service container, the same version as production).
 
 ## Phase 2 — Design system & layout shell
-- [ ] Tokens in `globals.css` (`@theme`), fonts via `next/font`
-- [ ] UI primitives: Button, Container, Badge, Price, Input/Textarea/Select, Skeleton, SectionHeading, Breadcrumbs
-- [ ] Header (desktop + sticky), MobileNav drawer, Footer, WhatsAppIcon, WhatsAppFab
-- [ ] Root + site layout, `not-found.tsx`, `error.tsx`, skip link
-- [ ] Settings service (cached, tag `settings`) feeding the header and footer
-- [ ] A `/_styleguide` page (dev only) showing all primitives
+- [x] Tokens in `globals.css` (`@theme`), fonts via `next/font` (+ CSS-only motion utilities, ADR-021)
+- [x] UI primitives: Button, Container, Badge, Price, Input/Textarea/Select, Skeleton, SectionHeading, Breadcrumbs (+ ButtonLink, Field)
+- [x] Header (desktop + sticky), MobileNav drawer, Footer, WhatsAppIcon, WhatsAppFab
+- [x] Root + site layout, `not-found.tsx`, `error.tsx`, skip link (+ `global-error.tsx`)
+- [x] Settings service (cached, tag `settings`) feeding the header and footer (request-time, ADR-020)
+- [x] A `/_styleguide` page (dev only) showing all primitives
 
-**Exit check:** the layout passes the 360/768/1024/1440 visual check, and keyboard navigation works.
+**Exit check:** the layout passes the 360/768/1024/1440 visual check, and keyboard navigation works. ✅ 2026-11-12: checked at 375/390/768/1024/1440 on a local production build with real data; no horizontal scroll; skip link, drawer focus + Esc covered by e2e.
 
 ## Phase 3 — Product catalogue
 - [ ] Repositories + catalog service (list, by slug, related, home rails) with cache tags
@@ -49,7 +49,7 @@ Each phase ends with a short manual review of the phase's acceptance checks.
 - [ ] ProductCard + ProductGrid + Pagination + SortBar
 - [ ] `/products` and `/categories/[slug]` listing pages (sort, on-sale, pagination, metadata)
 - [ ] `/products/[slug]` detail: Gallery, ColorSwatches, Price, specs, description (Markdown), related, sticky mobile CTA
-- [ ] `lib/whatsapp.ts` + WhatsApp inquiry button with selected colour (unit tested)
+- [ ] `lib/whatsapp.ts` (✅ done in Phase 2, unit tested) + WhatsApp inquiry button with selected colour
 - [ ] Product + Breadcrumb JSON-LD
 
 **Exit check:** F1 and F3 acceptance criteria pass with seeded demo data.

@@ -18,6 +18,9 @@ export function createPrismaClient(
     password: decodeURIComponent(url.password),
     database: decodeURIComponent(url.pathname.replace(/^\//, "")),
     connectionLimit,
+    // Fail fast if MySQL is unreachable so pages fall back quickly instead of hanging (default 10 s).
+    connectTimeout: 5000,
+    acquireTimeout: 6000,
     charset: "utf8mb4",
     // Store and read DATETIME values as UTC (11 §6).
     timezone: "Z",

@@ -11,6 +11,8 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 - 2026-11-10 — Image storage moved from local disk to **Cloudflare R2** served at `media.<domain>` (ADR-014). Docs updated: architecture, database, SEO, security, deployment, roadmap, and testing.
 
 ### Added
+- 2026-11-12 — Design system & layout shell (Phase 2): colour/type tokens, Cormorant Garamond + Inter, buttons, badges, prices (৳ lakh format), form fields, breadcrumbs, skeletons; sticky header with category nav, mobile menu drawer, footer with contact and opening hours, floating WhatsApp button; branded 404 and error pages; dev style guide at `/_styleguide`.
+- 2026-11-12 — Subtle CSS-only animations (entrance, scroll reveal, hover), disabled for reduced-motion users (ADR-021).
 - 2026-11-12 — Test environment at `artifex.codespherestudio.site` (cPanel subdomain, Node 24 app, MariaDB database) (ADR-019).
 - 2026-11-12 — Code hosted on GitHub; CI green on the first push (Phase 1 complete).
 - 2026-11-12 — Project foundation (Phase 1): Next.js 16.4 app scaffold with strict TypeScript, Tailwind CSS 4, ESLint (Prisma import restrictions, unsafe-raw-query ban) and Prettier.

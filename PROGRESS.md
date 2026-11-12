@@ -9,10 +9,10 @@
 
 | Item | Value |
 |---|---|
-| **Current phase** | Phase 2: Design system & layout shell (next) |
-| **Overall state** | ✅ Phase 1 complete. Code is on GitHub (`shamimhossenbadol/artifex-website`, private); CI is green (typecheck, lint, unit, migrate + seed on MariaDB 11.4, build, e2e, bundle). |
+| **Current phase** | Phase 3: Product catalogue (next) |
+| **Overall state** | ✅ Phase 1 complete. Code is on GitHub (`shamimhossenbadol/artifex-website`, private); CI is green. ✅ **First deploy succeeded 2026-11-12**: https://artifex.codespherestudio.site serves the placeholder page with security headers (via Cloudflare). Migration applied; seed created 7 categories, settings, hero and the admin (`mustChangePassword = 1`); backup saved in `~/backups`. |
 | **Last updated** | 2026-11-12 |
-| **Next action** | Owner: add the Cloudflare DNS record for `artifex.codespherestudio.site` and the GitHub `production` secrets/variables (10 §5.1), then run **Deploy**. Agent: Phase 2 (design system & layout shell). |
+| **Next action** | Owner: create the R2 buckets in Cloudflare (10 §6.2) so Phase 3 can upload real product photos; confirm WhatsApp/phone/address (open question #14). Agent: Phase 3 (catalogue: product cards, listing, detail, gallery, R2 image pipeline). |
 
 ## Phase overview
 
@@ -20,7 +20,7 @@
 |---|---|---|
 | 0 | Planning & hosting verification | 🟡 Hosting verified over SSH; R2 smoke test waits for the Cloudflare account |
 | 1 | Project foundation (scaffold, Prisma, env, design tokens) | ✅ Done 2026-11-12 (CI green) |
-| 2 | Design system & layout shell | ⚪ Not started |
+| 2 | Design system & layout shell | ✅ Done 2026-11-12 |
 | 3 | Product catalogue (listing, detail, WhatsApp) | ⚪ Not started |
 | 4 | Global search | ⚪ Not started |
 | 5 | Blog, About, Contact/Location | ⚪ Not started |
@@ -75,10 +75,14 @@ Answer these by editing this list. Agents: use the **default** until an answer i
 | 12 | Agent assumption (2026-11-12): `R2_*` env vars are optional until Phase 3 so the site can deploy before Cloudflare is set up. They become required for uploads when the media module lands | Optional until Phase 3 (ADR-018) |
 | 13 | The dev PC runs Node **26**; the project pins Node **24** (ADR-015). npm only warns locally, and CI/production use 24. Install Node 24 locally (e.g. nvm-windows) to match exactly? | Keep 26 locally; CI enforces 24 |
 | 14 | The sofa ad shows WhatsApp **01757-758388** and an Uttara showroom address. Are these the official website contact details? | Seed keeps placeholders, editable in admin |
+| 15 | Agent assumption (2026-11-12): header/footer show placeholder phone `+880 1XXX-XXXXXX` and WhatsApp `8801000000000` from the seed until #14 is answered (they're links, so they don't work yet) | Placeholders |
+| 16 | Agent assumption (2026-11-12): category links, `/search`, `/blog`, `/about`, `/contact`, `/products` currently 404 (branded) until Phases 3–5 build them | Expected during development |
 
 ## Session log
 
 Add one line per session, newest first: `YYYY-MM-DD — summary — files touched`.
+
+- 2026-11-12 — Phase 2: design tokens + type scale + CSS-only motion (ADR-021), Inter/Cormorant via next/font, UI primitives, header (utility bar, sticky shrink, More menu), mobile drawer (native dialog), footer, WhatsApp FAB, branded 404/error/global-error, dev style guide, settings + nav-category services with request-time caching (ADR-020), lib/format, lib/whatsapp, lib/phone. 29 unit + 9 e2e tests. Mobile home weight on a local prod build: HTML 38 KB, CSS 7 KB, JS 154 KB (framework), fonts 84 KB, 12 requests. — `src/`, `tests/`, `DECISIONS.md`, `docs/02`, `03`, `12`, `CHANGELOG.md`
 
 - 2026-11-12 — Set up the test deployment over SSH (ADR-019): subdomain, Node 24 app, utf8mb4 database + user, private secrets file. Found that the root domain's DNS is on Cloudflare, so the subdomain record goes there. — `DECISIONS.md`, `PROGRESS.md`, `docs/10`, `CHANGELOG.md`
 

@@ -66,7 +66,7 @@ Rules: headings are serif, while everything functional (nav, buttons, prices, fo
 
 - **Radius:** `--radius-sm: 2px` (inputs, badges) and `--radius-md: 4px` (buttons, cards). Images have **no radius** (crisp editorial look). Pills only for colour swatches (full circle).
 - **Shadows:** none on the public site. Use borders (`--color-line`) instead. Admin may use `shadow-sm` on popovers.
-- **Motion:** 150–250 ms, `ease-out`. Allowed: image `scale-[1.03]` on card hover (desktop only), opacity/colour transitions, menu slide-in. Respect `prefers-reduced-motion` (disable transforms). **No** scroll-triggered animations, parallax, or autoplay sliders.
+- **Motion (ADR-021, CSS only):** hover/colour transitions 150–250 ms `ease-out`; image `scale-[1.03]` on card hover (desktop only); menu slide-in. Entrance animations `animate-rise` (fade + rise, staggered with `stagger-1..3`) and `animate-settle` (transform only, for the LCP heading/image); scroll reveal `reveal` (CSS scroll timeline, progressive enhancement). All defined in `globals.css` and disabled under `prefers-reduced-motion`. **No** animation libraries, parallax, looping animations, or autoplay sliders, and never fade the LCP element in.
 
 ## 5. Core components (in `src/components/ui` unless noted)
 

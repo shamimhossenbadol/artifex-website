@@ -152,3 +152,24 @@ Format: each ADR has a number, date, status (Accepted / Superseded by ADR-x / Pr
 - The GitHub environment stays named `production`. It targets this test server until the real production hosting exists; moving means replacing that environment's secrets and variables only.
 **Consequences:** The existing codespherestudio.site is never touched: deploys only write `~/artifex-app*` and `~/backups`. Moving to production later = create the DB and Node app on the new host (10 §2, §4), update the GitHub secrets/variables, and run Deploy. A new ADR records the production host when it's chosen.
 
+### ADR-020 — Database reads happen at request time, never during `next build`
+**Date:** 2026-11-12 · **Status:** Accepted (refines 02 §6 and ADR-011)
+**Context:** With Cache Components, anything cached with `"use cache"` that can run during prerendering is baked into the build's static HTML. Our builds run in CI against a **test** database, so build-time reads would ship test data to production (until the cache expired) and make every build depend on a reachable DB.
+**Decision:**
+- Every public service function is split in two: an exported request-time wrapper that calls `await connection()` (from `next/server`) and then a private `"use cache"` loader with `cacheTag()` + `cacheLife("hours")`. Example: `getSiteSettings()` → `loadSiteSettings()`.
+- On a self-hosted server (our single Passenger process) `"use cache"` results live **in memory** across requests until an admin action calls `revalidateTag()`, or the 1-hour fallback passes. This is the runtime cache (Next docs: "Runtime caching considerations").
+- Components that use these services render inside `<Suspense>` with a same-size fallback (e.g. `HeaderFallback`). The static shell is prerendered and the data parts stream in within the same response.
+- Wrappers catch DB errors, log them and return safe fallbacks (`FALLBACK_SETTINGS`, `[]`) so a DB outage degrades the chrome instead of breaking every page. The pool fails fast (`connectTimeout` 5 s, `acquireTimeout` 6 s).
+- No `generateStaticParams` with DB queries (Phase 3+ uses the ISR app-shell pattern instead).
+**Consequences:** `next build` needs no database. The first request after a deploy (or a revalidation) pays one query per cache entry; later requests are served from memory. The Next dev server's "Cache" environment was flaky over a long-distance SSH tunnel; production builds are not affected (verified locally with `next start`).
+
+### ADR-021 — CSS-only motion (supersedes the "no decorative/scroll animation" rule in 03 §4)
+**Date:** 2026-11-12 · **Status:** Accepted
+**Context:** The owner asked for a premium, **animated** site that stays fast on slow mobile networks (most visitors are on phones). 03 §4 originally banned decorative and scroll-triggered animation, and AGENTS §5 bans animation libraries.
+**Decision:**
+- Motion is **CSS only** (no library, no JS): `animate-rise` (fade + rise entrance, staggered with `stagger-1..3`), `animate-settle` (transform-only entrance for the LCP heading/image, so LCP isn't delayed by an opacity fade), and `reveal` (scroll-driven reveal via `animation-timeline: view()`; browsers without support simply show the content). Hover polish (image scale 1.03, underline, arrow nudge) stays as in 03 §4.
+- Durations 600–700 ms with `--ease-out`; nothing loops or autoplays; no parallax and no carousels.
+- Every animation is disabled under `prefers-reduced-motion`.
+- Never animate the opacity of the LCP element (hero image/heading, product main image).
+**Consequences:** Zero added JavaScript and a few hundred bytes of CSS. AGENTS §5 ("animation libraries") still applies.
+

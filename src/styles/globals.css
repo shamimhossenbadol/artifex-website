@@ -1,0 +1,259 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens (docs/03-DESIGN-SYSTEM.md). Use only these: no ad-hoc colours, sizes or shadows.
+ * Font families come from next/font CSS variables set on <html> in src/app/layout.tsx.
+ */
+@theme {
+  /* Reset Tailwind's palette so only our tokens exist (bg-ink, text-muted, border-line…). */
+  --color-*: initial;
+  --color-white: #ffffff;
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  --color-bg: #f8f6f2;
+  --color-surface: #ffffff;
+  --color-sand: #efeae2;
+  --color-line: #e2dbd0;
+  --color-ink: #1c1a17;
+  --color-ink-soft: #4a453f;
+  --color-muted: #7a7369;
+  --color-walnut: #7a5235;
+  --color-walnut-dark: #5e3e27;
+  --color-sale: #a4472e;
+  --color-success: #3f6b4e;
+  --color-danger: #b3261e;
+  --color-whatsapp: #25d366;
+  --color-whatsapp-dark: #128c4b;
+
+  --font-serif: var(--font-cormorant), Georgia, serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+
+  --radius-sm: 2px;
+  --radius-md: 4px;
+
+  --tracking-eyebrow: 0.16em;
+  --tracking-badge: 0.08em;
+  --tracking-button: 0.02em;
+
+  --container-site: 1360px;
+
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Type scale (03 §2): one class per role, mobile size first, desktop from md (768px). */
+@utility text-display {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: 2.5rem;
+  line-height: 2.75rem;
+  @media (width >= 48rem) {
+    font-size: 4.5rem;
+    line-height: 4.75rem;
+  }
+}
+@utility text-h1 {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: 2.125rem;
+  line-height: 2.5rem;
+  @media (width >= 48rem) {
+    font-size: 3.25rem;
+    line-height: 3.625rem;
+  }
+}
+@utility text-h2 {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: 1.75rem;
+  line-height: 2.125rem;
+  @media (width >= 48rem) {
+    font-size: 2.5rem;
+    line-height: 2.875rem;
+  }
+}
+@utility text-h3 {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: 1.375rem;
+  line-height: 1.75rem;
+  @media (width >= 48rem) {
+    font-size: 1.625rem;
+    line-height: 2rem;
+  }
+}
+@utility text-eyebrow {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+}
+@utility text-body-lg {
+  font-size: 1.0625rem;
+  line-height: 1.75rem;
+  @media (width >= 48rem) {
+    font-size: 1.125rem;
+    line-height: 1.875rem;
+  }
+}
+@utility text-body {
+  font-size: 0.9375rem;
+  line-height: 1.5rem;
+  @media (width >= 48rem) {
+    font-size: 1rem;
+    line-height: 1.625rem;
+  }
+}
+@utility text-small {
+  font-size: 0.8125rem;
+  line-height: 1.25rem;
+  @media (width >= 48rem) {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+}
+@utility text-price {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 1.125rem;
+  line-height: 1.5rem;
+  font-variant-numeric: tabular-nums;
+  @media (width >= 48rem) {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+  }
+}
+
+/* Container (03 §3). */
+@utility container-site {
+  width: 100%;
+  max-width: var(--container-site);
+  margin-inline: auto;
+  padding-inline: 1rem;
+  @media (width >= 40rem) {
+    padding-inline: 1.5rem;
+  }
+  @media (width >= 64rem) {
+    padding-inline: 2.5rem;
+  }
+}
+
+/*
+ * Motion (ADR-021): CSS only, no library, no JS. Entrance on load, reveal on scroll, and
+ * hover polish. Never animate the opacity of the LCP element (it would delay LCP), and
+ * everything is switched off for prefers-reduced-motion.
+ */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(1.25rem);
+  }
+}
+@keyframes settle-in {
+  from {
+    transform: translateY(0.75rem);
+  }
+}
+
+/* Entrance for above-the-fold supporting content. Stagger with delay-100/200/300. */
+@utility animate-rise {
+  animation: rise-in 700ms var(--ease-out) both;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+/* Transform-only entrance for the LCP heading/image: no opacity change, so LCP isn't delayed. */
+@utility animate-settle {
+  animation: settle-in 700ms var(--ease-out) both;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+/* Stagger steps for entrance animations (Tailwind's delay-* only affects transitions). */
+@utility stagger-1 {
+  animation-delay: 100ms;
+}
+@utility stagger-2 {
+  animation-delay: 200ms;
+}
+@utility stagger-3 {
+  animation-delay: 300ms;
+}
+
+/* Reveal as the element scrolls into view. Browsers without scroll timelines just show it. */
+@utility reveal {
+  @supports (animation-timeline: view()) {
+    animation: rise-in linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 35%;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+/* Visible walnut focus ring everywhere (05 §5). */
+@utility focus-ring {
+  outline: 2px solid var(--color-walnut);
+  outline-offset: 2px;
+}
+
+@layer base {
+  html {
+    background-color: var(--color-bg);
+    color: var(--color-ink-soft);
+    font-family: var(--font-sans);
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply text-body;
+  }
+  h1,
+  h2,
+  h3 {
+    color: var(--color-ink);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-walnut);
+    outline-offset: 2px;
+  }
+  ::selection {
+    background-color: var(--color-sand);
+    color: var(--color-ink);
+  }
+}
+
+/* No transforms or long transitions for people who ask for less motion (03 §4). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Mobile menu drawer (05 §2): slides in from the left; the page behind can't scroll. */
+dialog.drawer[open] {
+  animation: drawer-in 200ms var(--ease-out);
+}
+dialog.drawer::backdrop {
+  animation: backdrop-in 200ms var(--ease-out);
+}
+html:has(dialog[open]:modal) {
+  overflow: hidden;
+}
+@keyframes drawer-in {
+  from {
+    transform: translateX(-100%);
+  }
+}
+@keyframes backdrop-in {
+  from {
+    opacity: 0;
+  }
+}

@@ -42,6 +42,39 @@ export function breadcrumbJsonLd(
   };
 }
 
+/** Organization (home, 08 §2): name, logo and social profiles. */
+export function organizationJsonLd(
+  o: { name: string; sameAs: string[] },
+  siteUrl: string = SITE_URL,
+): JsonLdObject {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: o.name,
+    url: absoluteUrl("/", siteUrl),
+    logo: absoluteUrl("/logo-mark-512.png", siteUrl),
+    ...(o.sameAs.length > 0 ? { sameAs: o.sameAs } : {}),
+  };
+}
+
+/** WebSite with a SearchAction → /search?q= (08 §2), enabling a sitelinks search box. */
+export function websiteJsonLd(name: string, siteUrl: string = SITE_URL): JsonLdObject {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name,
+    url: absoluteUrl("/", siteUrl),
+    potentialAction: {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `${absoluteUrl("/search", siteUrl)}?q={search_term_string}`,
+      },
+      "query-input": "required name=search_term_string",
+    },
+  };
+}
+
 export type LocalBusinessInput = {
   name: string;
   phone: string | null;

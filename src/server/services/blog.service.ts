@@ -93,6 +93,17 @@ async function loadRelated(postId: number, tags: string[]): Promise<PostCardVM[]
   return [...sharing, ...rest].slice(0, 3);
 }
 
+/** Latest posts for the homepage "From the Journal" section (F6). Never throws. */
+export async function getLatestPosts(take = 3): Promise<PostCardVM[]> {
+  await connection();
+  try {
+    return (await loadPosts(1)).items.slice(0, take);
+  } catch (err) {
+    console.error("[blog.getLatestPosts]", err);
+    return [];
+  }
+}
+
 export async function listPosts(page: number): Promise<PostListing> {
   await connection();
   return loadPosts(page);

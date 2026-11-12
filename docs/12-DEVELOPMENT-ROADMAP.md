@@ -70,10 +70,10 @@ Each phase ends with a short manual review of the phase's acceptance checks.
 **Exit check:** F4, F5, and F7 acceptance criteria pass. ✅ 2026-11-12: 12 e2e tests (Journal list/post/related/share/JSON-LD, contact details + hours + Dhaka-time open status with a frozen clock + no map iframe until asked, About).
 
 ## Phase 6 — Homepage
-- [ ] Hero, category tiles, new arrivals, brand intro, featured, promo banners, popular, WhatsApp band, latest posts
-- [ ] Hide empty sections. Organization + WebSite JSON-LD
+- [x] Hero, category tiles, new arrivals, brand intro, featured, promo banners, popular, WhatsApp band, latest posts
+- [x] Hide empty sections. Organization + WebSite JSON-LD (+ FurnitureStore)
 
-**Exit check:** home Lighthouse mobile ≥ 90 locally (production build).
+**Exit check:** home Lighthouse mobile ≥ 90 locally (production build). ✅ 2026-11-12 (proxy measurement, ADR-029): LCP 1.36 s, CLS 0, ~330 KB under Lighthouse-like mobile throttling; real Lighthouse/PageSpeed after deploy and with real photos.
 
 ## Phase 7 — Admin dashboard
 - [ ] Auth: password utils, JWT session, `requireAdmin()`, login page, rate limiting, logout / logout everywhere

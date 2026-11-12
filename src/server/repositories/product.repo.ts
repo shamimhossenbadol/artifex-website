@@ -94,6 +94,39 @@ export async function findPublishedBySlug(slug: string): Promise<ProductDetailRo
   });
 }
 
+export type HomeRail = "new" | "featured" | "popular";
+
+/**
+ * Homepage rails (F6): featured/popular by the admin's homeSortOrder; new arrivals by the flag,
+ * newest first, falling back to the newest products when none are flagged.
+ */
+export async function findHomeRail(rail: HomeRail, take: number): Promise<ProductCardRow[]> {
+  if (rail === "new") {
+    const flagged = await db.product.findMany({
+      where: { ...PUBLISHED_IN_ACTIVE_CATEGORY, isNewArrival: true },
+      orderBy: [{ publishedAt: "desc" }, { id: "desc" }],
+      take,
+      select: PRODUCT_CARD_SELECT,
+    });
+    if (flagged.length > 0) return flagged;
+    return db.product.findMany({
+      where: PUBLISHED_IN_ACTIVE_CATEGORY,
+      orderBy: [{ publishedAt: "desc" }, { id: "desc" }],
+      take,
+      select: PRODUCT_CARD_SELECT,
+    });
+  }
+  return db.product.findMany({
+    where: {
+      ...PUBLISHED_IN_ACTIVE_CATEGORY,
+      ...(rail === "featured" ? { isFeatured: true } : { isPopular: true }),
+    },
+    orderBy: [{ homeSortOrder: "asc" }, { publishedAt: "desc" }],
+    take,
+    select: PRODUCT_CARD_SELECT,
+  });
+}
+
 export const SEARCH_CANDIDATE_LIMIT = 200;
 
 /**

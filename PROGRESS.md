@@ -9,10 +9,10 @@
 
 | Item | Value |
 |---|---|
-| **Current phase** | Phase 6: Homepage (next) |
+| **Current phase** | Phase 7: Admin dashboard (next) |
 | **Overall state** | ✅ Phase 1 complete. Code is on GitHub (`shamimhossenbadol/artifex-website`, private); CI is green. ✅ **First deploy succeeded 2026-11-12**: https://artifex.codespherestudio.site serves the placeholder page with security headers (via Cloudflare). Migration applied; seed created 7 categories, settings, hero and the admin (`mustChangePassword = 1`); backup saved in `~/backups`. |
 | **Last updated** | 2026-11-12 |
-| **Next action** | Owner: Deploy; R2 setup; email address (optional). Agent: Phase 6 (homepage). |
+| **Next action** | Owner: Deploy (homepage + Phases 4–5); R2 buckets/tokens (needed for Phase 7 photo uploads). Agent: Phase 7 (admin: login, products, categories, blog, homepage, settings, uploads). |
 
 ## Phase overview
 
@@ -24,7 +24,7 @@
 | 3 | Product catalogue (listing, detail, WhatsApp) | ✅ Done 2026-11-12 (photos pending R2) |
 | 4 | Global search | ✅ Done 2026-11-12 |
 | 5 | Blog, About, Contact/Location | ✅ Done 2026-11-12 |
-| 6 | Homepage | ⚪ Not started |
+| 6 | Homepage | ✅ Done 2026-11-12 |
 | 7 | Admin dashboard | ⚪ Not started |
 | 8 | SEO, security & performance hardening | ⚪ Not started |
 | 9 | Production build, deployment & QA | ⚪ Not started |
@@ -82,6 +82,8 @@ Answer these by editing this list. Agents: use the **default** until an answer i
 ## Session log
 
 Add one line per session, newest first: `YYYY-MM-DD — summary — files touched`.
+
+- 2026-11-12 — Phase 6: homepage (hero, category tiles with icons, new/featured/popular rails, brand intro, promo banners, WhatsApp band, latest posts), home service with soft-failing cached blocks, Organization/WebSite/FurnitureStore JSON-LD. Fixed a build failure (Date read before connection()). Mobile probe (slow 4G, 4× CPU): home LCP 1.36 s, CLS 0. ADR-029. — `src/app/(site)/page.tsx`, `src/components/home/`, `src/server/services/home.service.ts`, repos, `src/lib/seo.ts`, `tests/e2e/home.spec.ts`, `DECISIONS.md`, `docs/12`, `CHANGELOG.md`
 
 - 2026-11-12 — Owner confirmed hours (every day 10 AM – 10 PM) and sent the showroom map embed. Times now display in 12-hour format (formatClock/formatHoursRange); seed + test DB updated with hours, map embed and coordinates (from the embed URL); contact e2e covers tap-to-load map. — `src/lib/opening-hours.ts`, `src/app/(site)/contact/page.tsx`, `src/components/site/Footer.tsx`, `prisma/seed.ts`, `tests/`, `PROGRESS.md`, `CHANGELOG.md`
 

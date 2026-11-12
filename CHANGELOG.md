@@ -18,6 +18,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 - 2026-11-10 — Image storage moved from local disk to **Cloudflare R2** served at `media.<domain>` (ADR-014). Docs updated: architecture, database, SEO, security, deployment, roadmap, and testing.
 
 ### Added
+- 2026-11-12 — Homepage (Phase 6): hero, shop-by-category tiles, New arrivals / Featured / Most loved rails, brand story, promo banners, WhatsApp help band and latest Journal posts; empty sections hide themselves. Organization, WebSite (search) and store structured data.
 - 2026-11-12 — Journal (blog) with featured post, reading time, share links and related posts; Contact page with opening hours, a live "Open now / Closed now" badge, directions and a tap-to-load map; About page (Phase 5).
 - 2026-11-12 — Global search (Phase 4): a search overlay from the header with instant suggestions (products with photo and price, plus categories), keyboard navigation, and a results page with pagination and a helpful no-results state.
 - 2026-11-12 — Product catalogue (Phase 3): All furniture and category pages with sorting, "On sale" filter and pagination; product pages with a swipeable gallery, colour swatches that go into the WhatsApp message, a sticky mobile WhatsApp bar, specifications, description, related products, and Product/Breadcrumb structured data.

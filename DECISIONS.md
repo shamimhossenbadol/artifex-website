@@ -242,3 +242,14 @@ Format: each ADR has a number, date, status (Accepted / Superseded by ADR-x / Pr
 - **Demo posts.** `SEED_DEMO=true` adds 4 practical guides (sofa sizing, wood care, dining table size, chandelier sizing) with `demo-` slugs. They can be edited into real launch posts.
 **Consequences:** No third-party scripts load unless asked for. A missing map embed URL still gives visitors directions.
 
+### ADR-029 — Homepage implementation (Phase 6)
+**Date:** 2026-11-12 · **Status:** Accepted
+**Context:** F6 / 05 §3 define the homepage sections. No product, category or hero photos exist yet (they arrive with R2 + the Phase 7 uploader), and the site must stay fast on mobile.
+**Decision:**
+- **Two streaming boundaries:** the hero (the LCP area) and everything below it. Below-the-fold blocks are fetched in parallel; each is cached under its own tags (`home`, `products`, `categories`, `blog`, `settings`) and **fails soft**: a failing block is logged and hidden instead of breaking the page.
+- **No-photo states look intentional:** a typographic hero on ivory with fine lines (the seed's `home/placeholder-hero` key counts as "no image"); category tiles with Lucide line icons per category; the brand intro uses the full logo on sand; product placeholders turn white inside sand-tinted rails (`.rail-tinted`) so cards keep an edge. With a real photo the hero becomes full-bleed with a solid `ink/35` scrim, and category tiles get the bottom gradient scrim (03 §6).
+- **Rails:** New arrivals (flagged, else newest), Featured and Popular (by `homeSortOrder`), 8 each: mobile scroll-snap rows with the next card peeking, desktop grids. Promo banners: active ones, filtered by date **at request time** (the clock is read after `connection()`; reading it earlier made `next build` fail), max 2. Latest 3 Journal posts.
+- **SEO:** home metadata from settings (`title.absolute`, description, canonical `/`, OG image `/logo-mark-512.png`); Organization, WebSite (SearchAction → `/search?q=`) and FurnitureStore JSON-LD.
+- **Performance check** (exit criterion): Lighthouse itself isn't installed (no new dependency), so a Playwright probe applies Lighthouse-like mobile throttling via CDP (1.6 Mbps, 150 ms RTT, 4× CPU) against a local production build with a warm cache. Result 2026-11-12: home LCP 1.36 s, CLS 0, ~330 KB transferred; category/product/journal LCP 1.19–1.24 s, CLS 0. Real Lighthouse/PageSpeed scores are recorded after deploy (Phase 9) and once real photos exist.
+**Consequences:** The homepage stays complete and fast before any photos exist, and photos slot in without code changes.
+

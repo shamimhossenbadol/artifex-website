@@ -87,7 +87,9 @@ describe("blog helpers", () => {
   });
 
   it("ignores Markdown syntax and image URLs", () => {
-    expect(readingTimeMinutes("## Title\n\n![alt](https://x.example/a.webp) [link](https://x)")).toBe(1);
+    expect(
+      readingTimeMinutes("## Title\n\n![alt](https://x.example/a.webp) [link](https://x)"),
+    ).toBe(1);
   });
 
   it("parses and de-duplicates tags", () => {

@@ -30,6 +30,8 @@ export function Logo({ variant = "wordmark", animated = false, className }: Logo
         alt=""
         // Width follows the CSS height; the intrinsic size keeps the aspect ratio (no layout shift).
         className={cn("h-full w-auto", animated && "animate-logo")}
+        // The header logo is always above the fold: don't lazy-load it. The footer one stays lazy.
+        loading={animated ? "eager" : "lazy"}
         draggable={false}
       />
     </Link>

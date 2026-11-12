@@ -25,6 +25,7 @@ export function SearchDialog() {
   const router = useRouter();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const listId = useId();
+  const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState("");
   // Each response remembers which query it belongs to, so loading/stale state is derived instead
   // of being reset inside the effect.
@@ -45,6 +46,14 @@ export function SearchDialog() {
   const active = activeFor.q === trimmed ? activeFor.index : -1;
   const setActive = (update: (i: number) => number) =>
     setActiveFor({ q: trimmed, index: update(active) });
+
+  // The overlay opens before JavaScript loads (ADR-024), so on a slow connection the visitor may
+  // already have typed when React takes over. Pick that text up once, or it would be ignored until
+  // the next keystroke.
+  useEffect(() => {
+    const typed = inputRef.current?.value ?? "";
+    if (typed) setQuery(typed);
+  }, []);
 
   useEffect(() => {
     if (!searchable) return;
@@ -127,6 +136,7 @@ export function SearchDialog() {
             Search products
           </label>
           <input
+            ref={inputRef}
             id={`${listId}-input`}
             type="search"
             name="q"

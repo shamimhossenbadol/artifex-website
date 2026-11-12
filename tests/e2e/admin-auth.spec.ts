@@ -13,6 +13,8 @@ test.skip(({ isMobile }) => isMobile, "runs once, on the desktop project");
 
 async function signIn(page: Page, email: string, password: string) {
   await page.goto("/admin/login");
+  // Fill the form only once the page's JavaScript has loaded; typing earlier can race hydration.
+  await page.waitForLoadState("networkidle");
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Sign in" }).click();
@@ -146,6 +148,7 @@ test("settings tabs reject bad input and save valid values", async ({ page }) =>
 
 test("homepage editor saves the hero and validates new banners", async ({ page }) => {
   await signIn(page, EMAIL!, NEW_PASSWORD);
+  await expect(page).toHaveURL(/\/admin$/); // the session cookie is set before navigating on
   await page.goto("/admin/homepage");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Homepage");
 

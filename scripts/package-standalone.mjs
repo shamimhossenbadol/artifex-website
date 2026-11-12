@@ -10,9 +10,11 @@ import {
   readFileSync,
   readdirSync,
   rmSync,
+  symlinkSync,
   writeFileSync,
 } from "node:fs";
-import { join } from "node:path";
+import { createRequire } from "node:module";
+import { dirname, join, relative } from "node:path";
 
 const root = process.cwd();
 const standalone = join(root, ".next", "standalone");
@@ -43,7 +45,54 @@ rmSync(deployDir, { recursive: true, force: true });
 mkdirSync(deployDir, { recursive: true });
 
 // 1. Traced server + node_modules. dereference: copy real files, never symlinks/junctions.
-cpSync(standalone, appDir, { recursive: true, dereference: true });
+//    Turbopack's hashed aliases in .next/node_modules are handled separately in step 1b.
+const aliasSrcRoot = join(standalone, ".next", "node_modules");
+cpSync(standalone, appDir, {
+  recursive: true,
+  dereference: true,
+  filter: (src) => !src.startsWith(aliasSrcRoot),
+});
+
+// 1b. Turbopack refers to server-external packages (e.g. Prisma) through hashed aliases such as
+//     .next/node_modules/@prisma/client-2c3a283f134fdcb6, created as symlinks with ABSOLUTE paths
+//     to the build machine. Those break on the server (white page, "Cannot find module"). Recreate
+//     each alias as a RELATIVE symlink to the real package in the bundle's node_modules, or as a
+//     copy where symlinks aren't allowed (Windows without Developer Mode).
+const aliases = [];
+if (existsSync(aliasSrcRoot)) {
+  for (const entry of readdirSync(aliasSrcRoot)) {
+    const names = entry.startsWith("@")
+      ? readdirSync(join(aliasSrcRoot, entry)).map((n) => `${entry}/${n}`)
+      : [entry];
+    for (const alias of names) {
+      const target = alias.replace(/-[0-9a-f]{8,}$/, "");
+      if (target === alias) fail(`Unexpected entry in .next/node_modules: ${alias}`);
+      const realPkg = join(appDir, "node_modules", target);
+      if (!existsSync(join(realPkg, "package.json"))) {
+        fail(`Alias ${alias} points to ${target}, which is missing from the bundle.`);
+      }
+      const linkPath = join(appDir, ".next", "node_modules", alias);
+      mkdirSync(dirname(linkPath), { recursive: true });
+      try {
+        symlinkSync(relative(dirname(linkPath), realPkg), linkPath, "dir");
+      } catch {
+        cpSync(realPkg, linkPath, { recursive: true, dereference: true });
+      }
+      aliases.push({ alias, target });
+    }
+  }
+}
+
+// 1c. Prove each alias resolves exactly like the server will (from the server chunks folder).
+const probe = createRequire(join(appDir, ".next", "server", "chunks", "ssr", "probe.js"));
+for (const { alias, target } of aliases) {
+  try {
+    probe.resolve(`${alias}/package.json`);
+  } catch (err) {
+    fail(`Alias ${alias} → ${target} does not resolve in the bundle: ${err.message}`);
+  }
+  console.log(`✔ Alias ${alias} → node_modules/${target}`);
+}
 // 2. Static assets and /public are not copied by Next; server.js serves them from here.
 cpSync(join(root, ".next", "static"), join(appDir, ".next", "static"), { recursive: true });
 if (existsSync(join(root, "public"))) {

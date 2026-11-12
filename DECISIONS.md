@@ -183,3 +183,12 @@ Format: each ADR has a number, date, status (Accepted / Superseded by ADR-x / Pr
 - Motion: one CSS `clip-path` wipe on the header logo at page load (`animate-logo`, 0.9 s, off for reduced motion). It costs no JavaScript and doesn't affect layout. It only replays on a full page load, not on in-app navigation.
 **Consequences:** If the owner later supplies an official vector or exact brand colour, replace the two SVGs and the token. Regenerating needs the one-off script described in PROGRESS's session log (Pillow for the raster icons).
 
+### ADR-023 — Recreate Turbopack's hashed package aliases in the bundle; smoke-test the real bundle in CI
+**Date:** 2026-11-12 · **Status:** Accepted
+**Context:** After the Phase 2 deploy, the test site showed a **white page**: HTTP 200 with an empty body. The server log showed `Cannot find module '@prisma/client-2c3a283f134fdcb6/runtime/client'`. Turbopack loads server-external packages (Prisma) through hashed aliases in `.next/node_modules/<pkg>-<hash>`, which it creates as symlinks with **absolute** paths on the build machine. `scripts/package-standalone.mjs` didn't carry them into the bundle in a working form, so every database-backed render (header and footer, i.e. every page) failed mid-stream. CI didn't catch it because its e2e tests run `next start` from the repo, not the packaged bundle. The deploy health check only checked for status 200.
+**Decision:**
+- The packaging script skips `.next/node_modules` in the main copy and recreates each alias as a **relative** symlink to the real package in the bundle's `node_modules` (falling back to a copy where symlinks aren't allowed). It then resolves every alias from `.next/server/chunks/ssr` and **fails the build** if any doesn't resolve.
+- New CI step `scripts/smoke-bundle.mjs`: boots `deploy/artifex-app/server.js` against the seeded CI database and requires HTTP 200, a complete document (`</html>`), DB content (`>Sofas<`), the footer, and no module/stream errors in the server log.
+- The deploy health check now requires `</html>` and `</footer>` in the body, not just status 200, so an empty 200 triggers the automatic rollback.
+**Consequences:** This class of bug fails in CI before it can be deployed. Any future server-external package (e.g. `sharp` in Phase 3) is covered by the same alias handling.
+

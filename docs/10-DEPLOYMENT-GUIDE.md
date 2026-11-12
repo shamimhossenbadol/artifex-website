@@ -124,7 +124,7 @@ Passenger hooks `server.listen`, so the standalone `server.js` works as-is (it r
 
 6. **Settings → Secrets and variables → Actions → Variables** (repository variables, not secret): `NEXT_PUBLIC_SITE_URL` (e.g. `https://artifexfurniture.com`), `NEXT_PUBLIC_MEDIA_URL` (e.g. `https://media.artifexfurniture.com`), and `HEALTHCHECK_URL` (normally the site URL; leave unset until the domain points at the server).
 
-**What a deploy run does:** CI (typecheck → lint → unit tests → migrations + seed twice on MariaDB 11.4 → build → e2e → package) → upload the bundle with `rsync` to `~/artifex-app-next` → open the tunnel → `mariadb-dump` backup to `~/backups/` (last 10 kept) → `prisma migrate deploy` → seed (optional checkbox) → swap `artifex-app-next` → `artifex-app` (previous kept as `artifex-app-prev`) → `touch tmp/restart.txt` → health check (12 tries over ~1 min). If the health check fails it moves the new release to `~/artifex-app-failed`, restores `artifex-app-prev`, and restarts again.
+**What a deploy run does:** CI (typecheck → lint → unit tests → migrations + seed twice on MariaDB 11.4 → build → e2e → package → **boot the packaged bundle and check the page**, ADR-023) → upload the bundle with `rsync` to `~/artifex-app-next` → open the tunnel → `mariadb-dump` backup to `~/backups/` (last 10 kept) → `prisma migrate deploy` → seed (optional checkbox) → swap `artifex-app-next` → `artifex-app` (previous kept as `artifex-app-prev`) → `touch tmp/restart.txt` → health check (12 tries over ~1 min; needs HTTP 200 **and** a complete page with `</html>` and `</footer>`). If the health check fails it moves the new release to `~/artifex-app-failed`, restores `artifex-app-prev`, and restarts again.
 
 ## 6. Images on Cloudflare R2 (ADR-014)
 

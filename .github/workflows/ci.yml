@@ -80,6 +80,10 @@ jobs:
       - name: Package deploy bundle
         run: npm run package
 
+      # Boots the real bundle (not `next start`) against the seeded CI database (ADR-023).
+      - name: Smoke-test the deploy bundle
+        run: node scripts/smoke-bundle.mjs ">Sofas<" "</footer>"
+
       - name: Upload bundle
         uses: actions/upload-artifact@v7
         with:

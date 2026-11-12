@@ -122,10 +122,14 @@ jobs:
       - name: Health check
         if: ${{ env.HEALTHCHECK_URL != '' }}
         run: |
+          # A 200 alone isn't enough: a broken stream can return 200 with an empty body (ADR-023).
           for i in $(seq 1 12); do
-            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$HEALTHCHECK_URL" || true)
-            echo "attempt $i: HTTP $code"
-            if [ "$code" = "200" ]; then exit 0; fi
+            code=$(curl -s -o /tmp/health.html -w '%{http_code}' --max-time 20 "$HEALTHCHECK_URL" || true)
+            bytes=$(wc -c < /tmp/health.html 2>/dev/null || echo 0)
+            echo "attempt $i: HTTP $code, $bytes bytes"
+            if [ "$code" = "200" ] && grep -q "</html>" /tmp/health.html && grep -q "</footer>" /tmp/health.html; then
+              exit 0
+            fi
             sleep 5
           done
           echo "::error::Health check failed for $HEALTHCHECK_URL"

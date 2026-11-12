@@ -1,6 +1,7 @@
 "use client";
 // Mobile menu drawer (05 §2). A native modal <dialog> gives focus trapping, Esc to close and an
 // inert page behind it for free; we only add the backdrop click and closing on navigation.
+// Open/close use Invoker Commands, so they work before hydration (ADR-024).
 import { Menu, Phone, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -18,6 +19,18 @@ export type MobileNavProps = {
 };
 
 const ROW = "flex min-h-11 items-center gap-3 py-2 text-ink";
+const DIALOG_ID = "mobile-menu";
+
+// Invoker Commands: the browser opens/closes the dialog itself, so the menu works the moment the
+// HTML arrives, before any JavaScript has loaded (slow mobile networks). Lowercase attribute names
+// are passed through to the DOM as-is; they aren't in React's types yet.
+const OPEN_COMMAND = { commandfor: DIALOG_ID, command: "show-modal" } as Record<string, string>;
+const CLOSE_COMMAND = { commandfor: DIALOG_ID, command: "close" } as Record<string, string>;
+
+/** True when the browser handles `command`/`commandfor` natively (Chrome/Edge 135+, Firefox 144+, Safari 26.2+). */
+function supportsInvokerCommands(): boolean {
+  return typeof HTMLButtonElement !== "undefined" && "command" in HTMLButtonElement.prototype;
+}
 
 export function MobileNav({
   categories,
@@ -34,9 +47,13 @@ export function MobileNav({
     <>
       <button
         type="button"
-        onClick={() => dialogRef.current?.showModal()}
+        {...OPEN_COMMAND}
+        onClick={() => {
+          // Fallback for older browsers; native command handling already opened it otherwise.
+          if (!supportsInvokerCommands()) dialogRef.current?.showModal();
+        }}
         aria-haspopup="dialog"
-        aria-controls="mobile-menu"
+        aria-controls={DIALOG_ID}
         className="text-ink -ml-2 inline-flex size-11 items-center justify-center"
       >
         <Menu aria-hidden strokeWidth={1.5} className="size-6" />
@@ -44,7 +61,7 @@ export function MobileNav({
       </button>
 
       <dialog
-        id="mobile-menu"
+        id={DIALOG_ID}
         ref={dialogRef}
         aria-label="Menu"
         onClick={(event) => {
@@ -58,7 +75,10 @@ export function MobileNav({
             <p className="text-eyebrow text-muted">Menu</p>
             <button
               type="button"
-              onClick={close}
+              {...CLOSE_COMMAND}
+              onClick={() => {
+                if (!supportsInvokerCommands()) close();
+              }}
               className="text-ink -mr-2 inline-flex size-11 items-center justify-center"
             >
               <X aria-hidden strokeWidth={1.5} className="size-6" />

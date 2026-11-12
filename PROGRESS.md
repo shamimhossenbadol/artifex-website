@@ -82,6 +82,8 @@ Answer these by editing this list. Agents: use the **default** until an answer i
 
 Add one line per session, newest first: `YYYY-MM-DD — summary — files touched`.
 
+- 2026-11-12 — CI was red for 4f2899a and 9669d8f (mobile-menu e2e tapped before hydration). The mobile menu now uses Invoker Commands so it works without JS (ADR-024); new no-JS e2e test; 30/30 runs pass locally with --repeat-each=3. Live test site still runs the broken 481f6f4 until the next Deploy. — `src/components/site/MobileNav.tsx`, `tests/e2e/layout.spec.ts`, `DECISIONS.md`, `CHANGELOG.md`
+
 - 2026-11-12 — Fixed the white page on the test site (ADR-023): the bundle was missing Turbopack's hashed Prisma alias (`.next/node_modules/@prisma/client-<hash>`). The packaging script now recreates and verifies aliases; CI smoke-tests the real bundle; the deploy health check requires a complete page. Verified locally: the packaged bundle renders the full page from the test DB. — `scripts/package-standalone.mjs`, `scripts/smoke-bundle.mjs`, `.github/workflows/ci.yml`, `deploy.yml`, `DECISIONS.md`, `docs/10`, `CHANGELOG.md`
 
 - 2026-11-12 — Brand logo in place (ADR-022): compact cached SVGs for header (animated clip-path wipe) and footer, favicons from the A mark, brand red token. Real contact details + social links in the seed and applied to the test DB by SQL over SSH. Logo SVGs were generated from `VideoEditing/.../brand/artifex-logo.svg` by rounding coordinates (one-off Python script, not in the repo). — `src/assets/brand/`, `src/components/site/Logo.tsx`, `src/app/icon.svg`, `favicon.ico`, `apple-icon.png`, `prisma/seed.ts`, `DECISIONS.md`, `docs/03`, `CHANGELOG.md`

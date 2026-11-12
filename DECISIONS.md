@@ -192,3 +192,9 @@ Format: each ADR has a number, date, status (Accepted / Superseded by ADR-x / Pr
 - The deploy health check now requires `</html>` and `</footer>` in the body, not just status 200, so an empty 200 triggers the automatic rollback.
 **Consequences:** This class of bug fails in CI before it can be deployed. Any future server-external package (e.g. `sharp` in Phase 3) is covered by the same alias handling.
 
+### ADR-024 — Mobile menu opens via Invoker Commands (works before JavaScript loads)
+**Date:** 2026-11-12 · **Status:** Accepted
+**Context:** CI failed on the mobile-menu e2e test: on a slower machine the test tapped the menu button before React had hydrated, so nothing happened. Real visitors on slow mobile networks would hit the same dead button.
+**Decision:** The menu and close buttons carry `command="show-modal"` / `command="close"` with `commandfor="mobile-menu"`, so the browser opens and closes the native `<dialog>` itself from plain HTML (Chrome/Edge 135+, Firefox 144+, Safari 26.2+). The React `onClick` only acts when the browser lacks Invoker Commands. Backdrop click and closing on link tap still use JS after hydration (links navigate anyway before that).
+**Consequences:** The menu works the moment the HTML arrives. An e2e test runs with JavaScript disabled to keep it that way. The focus test now checks that focus is inside the open dialog rather than on one specific button, which is the accessibility requirement (05 §5).
+

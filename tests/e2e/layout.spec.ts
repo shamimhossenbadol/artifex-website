@@ -29,20 +29,35 @@ test.describe("site layout", () => {
   });
 });
 
+async function expectDrawerWorks(page: import("@playwright/test").Page) {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Open menu" }).click();
+
+  const drawer = page.getByRole("dialog", { name: "Menu" });
+  await expect(drawer).toBeVisible();
+  await expect(drawer.getByRole("link", { name: "Journal" })).toBeVisible();
+  // Modal dialog: keyboard focus is inside the drawer, not on the page behind it.
+  await expect
+    .poll(() => page.evaluate(() => !!document.activeElement?.closest("#mobile-menu")))
+    .toBe(true);
+
+  await page.keyboard.press("Escape");
+  await expect(drawer).toBeHidden();
+}
+
 test.describe("mobile menu", () => {
   test.skip(({ isMobile }) => !isMobile, "mobile header only");
 
   test("opens as a modal drawer and closes with Escape", async ({ page }) => {
-    await page.goto("/");
-    const trigger = page.getByRole("button", { name: "Open menu" });
-    await trigger.click();
+    await expectDrawerWorks(page);
+  });
 
-    const drawer = page.getByRole("dialog", { name: "Menu" });
-    await expect(drawer).toBeVisible();
-    await expect(drawer.getByRole("link", { name: "Journal" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Close menu" })).toBeFocused();
+  test.describe("before JavaScript loads", () => {
+    // Slow networks: the menu must work from the HTML alone (Invoker Commands, ADR-024).
+    test.use({ javaScriptEnabled: false });
 
-    await page.keyboard.press("Escape");
-    await expect(drawer).toBeHidden();
+    test("opens and closes with JavaScript disabled", async ({ page }) => {
+      await expectDrawerWorks(page);
+    });
   });
 });

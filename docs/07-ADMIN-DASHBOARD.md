@@ -11,7 +11,7 @@ URL: `/admin` (login at `/admin/login`). The dashboard is `noindex`, uncached, a
   - On success: hash with bcrypt (cost 12), set `mustChangePassword=false`, **increment `sessionVersion`** (logs out other devices), and re-issue the current session.
 - The admin can also change their display name and email (email change requires the current password).
 - **Forgot password / lockout recovery:** no email flow (shared hosting mail is unreliable, and email-based reset adds attack surface). Instead there's a CLI over cPanel Terminal/SSH:
-  `node scripts/admin-reset-password.js --email admin@… ` (prompts for a new password, sets `mustChangePassword=true`, bumps `sessionVersion`). This is documented in 10 §8.
+  `npm run admin:reset-password -- --email admin@…`, run from a developer machine through the SSH DB tunnel (ADR-030; prompts for a new password, sets `mustChangePassword=true`, bumps `sessionVersion`, clears the lockout). This is documented in 10 §8.
 - The schema allows more admins later, but v1 has no UI to add them (out of scope; it can be enabled later with the same table).
 
 Session and security mechanics are in `09-SECURITY-GUIDELINES.md` §2.

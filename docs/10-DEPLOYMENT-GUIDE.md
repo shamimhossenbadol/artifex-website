@@ -172,7 +172,7 @@ RewriteRule ^ https://%1%{REQUEST_URI} [L,R=301]
 
 - **Logs:** `~/artifex-app/stderr.log` (Passenger), or the log path shown in Setup Node.js App.
 - **Restart:** the Restart button, or `touch tmp/restart.txt`.
-- **Reset admin password:** `cd ~/artifex-app && source <nodevenv activate> && node scripts/admin-reset-password.js --email <admin email>`.
+- **Reset admin password** (ADR-030): from a developer machine, open the DB tunnel (`ssh -p 21098 -N -L 3307:127.0.0.1:3306 <cpuser>@<server>`), then `DATABASE_URL="mysql://<dbuser>:<pw>@127.0.0.1:3307/<dbname>" npm run admin:reset-password -- --email <admin email>`. It prompts for a temporary password; the admin must choose a new one at next sign-in.
 - **Resource faults:** cPanel → Resource Usage. If you see memory faults, lower `NODE_OPTIONS` heap and check for very large uploads (they're processed one at a time).
 - **Image upload errors:** check `stderr.log` for R2 responses. A `403` means a wrong or expired token or the wrong bucket name; a network error means outbound HTTPS is blocked, so contact Namecheap support.
 - **Backups:** see 09 §11.

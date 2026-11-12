@@ -39,6 +39,9 @@ jobs:
       ADMIN_INITIAL_PASSWORD: ci-only-initial-password
       # Demo catalogue for the catalogue e2e tests (never set in production).
       SEED_DEMO: "true"
+      # Enables the admin auth e2e tests, which change this throwaway admin's password.
+      E2E_ADMIN_EMAIL: admin@example.com
+      E2E_ADMIN_PASSWORD: ci-only-initial-password
       # Inlined into the client bundle at build time (repository variables; safe defaults for PRs).
       NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL || 'http://localhost:3100' }}
       NEXT_PUBLIC_MEDIA_URL: ${{ vars.NEXT_PUBLIC_MEDIA_URL || 'https://media.example.com' }}

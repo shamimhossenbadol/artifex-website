@@ -21,7 +21,8 @@
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio",
     "package": "node scripts/package-standalone.mjs",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "admin:reset-password": "tsx scripts/admin-reset-password.ts"
   },
   "dependencies": {
     "@prisma/adapter-mariadb": "7.10.1",
@@ -29,6 +30,7 @@
     "aws4fetch": "1.0.20",
     "bcryptjs": "3.0.3",
     "clsx": "2.1.1",
+    "jose": "6.2.17",
     "lucide-react": "1.72.0",
     "next": "16.4.6",
     "react": "19.3.0",

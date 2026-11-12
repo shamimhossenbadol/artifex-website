@@ -76,11 +76,11 @@ Each phase ends with a short manual review of the phase's acceptance checks.
 **Exit check:** home Lighthouse mobile ≥ 90 locally (production build). ✅ 2026-11-12 (proxy measurement, ADR-029): LCP 1.36 s, CLS 0, ~330 KB under Lighthouse-like mobile throttling; real Lighthouse/PageSpeed after deploy and with real photos.
 
 ## Phase 7 — Admin dashboard
-- [ ] Auth: password utils, JWT session, `requireAdmin()`, login page, rate limiting, logout / logout everywhere
-- [ ] Forced password change on first login + Account page (change password, profile)
-- [ ] `scripts/admin-reset-password.ts` CLI
-- [ ] Admin shell (sidebar, mobile drawer, toasts, confirm dialog)
-- [ ] Dashboard overview + warnings
+- [x] Auth: password utils, JWT session, `requireAdmin()`, login page, rate limiting, logout / logout everywhere (ADR-030)
+- [x] Forced password change on first login + Account page (change password, profile)
+- [x] `scripts/admin-reset-password.ts` CLI (runs through the DB tunnel)
+- [x] Admin shell (sidebar, mobile drawer, toasts, confirm dialog)
+- [x] Dashboard overview + warnings
 - [ ] Products: list/filter, create/edit form (all sections), image uploader (sharp variants → R2, reorder, primary, alt, R2 delete on remove), duplicate, delete
 - [ ] Categories: CRUD, reorder, toggles
 - [ ] Blog: CRUD with Markdown editor + image insert

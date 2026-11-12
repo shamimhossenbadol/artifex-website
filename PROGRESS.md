@@ -9,10 +9,10 @@
 
 | Item | Value |
 |---|---|
-| **Current phase** | Phase 7: Admin dashboard (next) |
+| **Current phase** | Phase 7: Admin dashboard (7a done; 7b next) |
 | **Overall state** | ✅ Phase 1 complete. Code is on GitHub (`shamimhossenbadol/artifex-website`, private); CI is green. ✅ **First deploy succeeded 2026-11-12**: https://artifex.codespherestudio.site serves the placeholder page with security headers (via Cloudflare). Migration applied; seed created 7 categories, settings, hero and the admin (`mustChangePassword = 1`); backup saved in `~/backups`. |
 | **Last updated** | 2026-11-12 |
-| **Next action** | Owner: Deploy (homepage + Phases 4–5); R2 buckets/tokens (needed for Phase 7 photo uploads). Agent: Phase 7 (admin: login, products, categories, blog, homepage, settings, uploads). |
+| **Next action** | Owner: Deploy, then sign in at /admin with ADMIN_EMAIL + the temporary password from `~/artifex-secrets.txt` and set your own password. Agent: Phase 7 milestone 7b (settings + homepage hero/banners). |
 
 ## Phase overview
 
@@ -25,7 +25,7 @@
 | 4 | Global search | ✅ Done 2026-11-12 |
 | 5 | Blog, About, Contact/Location | ✅ Done 2026-11-12 |
 | 6 | Homepage | ✅ Done 2026-11-12 |
-| 7 | Admin dashboard | ⚪ Not started |
+| 7 | Admin dashboard | 🟡 7a done (auth, account, shell, dashboard); 7b–7f next |
 | 8 | SEO, security & performance hardening | ⚪ Not started |
 | 9 | Production build, deployment & QA | ⚪ Not started |
 
@@ -49,6 +49,7 @@ Legend: ⚪ not started · 🟡 in progress · ✅ done · ⛔ blocked
 | Test deployment (ADR-019) | ✅ Subdomain `artifex.codespherestudio.site` created (docroot `~/artifex.codespherestudio.site`), Node 24 app `~/artifex-app` (startup `server.js`, production, env vars set), DB + user `shamimhossen_artifex` (utf8mb4, privileges on this DB only), secrets in `~/artifex-secrets.txt` (chmod 600). App answers 200 on the server. **Needs a Cloudflare DNS record** `artifex` → `198.54.125.98` before it's public | 2026-11-12 |
 | AutoSSL | Can't be triggered from the account (feature disabled); Namecheap runs it automatically. Cloudflare proxy (orange cloud) gives HTTPS immediately | 2026-11-12 |
 | Artifex production domain | Not chosen yet; production hosting comes later (open question #2) | 2026-11-12 |
+| Cloudflare R2 | ✅ Buckets `artifex-media` (custom domain **media.codespherestudio.site**, r2.dev off) + `artifex-media-dev` (r2.dev on). cPanel app has `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET=artifex-media` (formats verified, values never printed). **Live test from the server:** PUT 200 → read via media domain 200, `image/webp`, `public, max-age=31536000, immutable`, Cloudflare MISS then **HIT** → DELETE 204. Dev keys not on the dev PC yet (optional) | 2026-11-13 |
 
 ## Blockers
 
@@ -82,6 +83,10 @@ Answer these by editing this list. Agents: use the **default** until an answer i
 ## Session log
 
 Add one line per session, newest first: `YYYY-MM-DD — summary — files touched`.
+
+- 2026-11-13 — Phase 7a: admin auth (bcrypt, jose JWT cookie, requireAdmin with sessionVersion, DB-backed lockout, decoy-hash timing), proxy.ts (redirect, sliding renewal, no-store/noindex), login, forced first-login password change, account (profile, password, log out everywhere), admin shell (sidebar, mobile drawer, toasts, confirm), dashboard (counts, recent, warnings), reset-password CLI, placeholders for 7b–7e sections. 160 unit tests; auth e2e runs in CI only. Verified locally that a forged cookie gets no admin content. ADR-030. — `src/lib/auth/`, `src/server/{services/auth,services/dashboard,actions/auth,repositories/admin,repositories/dashboard}*`, `src/proxy.ts`, `src/app/admin/`, `src/components/admin/`, `scripts/admin-reset-password.ts`, `tests/`, `.github/workflows/ci.yml`, `DECISIONS.md`, `docs/07`, `10`, `12`, `CHANGELOG.md`
+
+- 2026-11-13 — Owner set up Cloudflare R2 (buckets, custom media domain, scoped tokens, cPanel env vars). Verified without exposing secrets: media domain DNS/TLS, env var formats, and a live PUT → CDN read (cache HIT) → DELETE from the server. Phase 7 paused (no code changed) and resumes next. — `PROGRESS.md`
 
 - 2026-11-12 — Phase 6: homepage (hero, category tiles with icons, new/featured/popular rails, brand intro, promo banners, WhatsApp band, latest posts), home service with soft-failing cached blocks, Organization/WebSite/FurnitureStore JSON-LD. Fixed a build failure (Date read before connection()). Mobile probe (slow 4G, 4× CPU): home LCP 1.36 s, CLS 0. ADR-029. — `src/app/(site)/page.tsx`, `src/components/home/`, `src/server/services/home.service.ts`, repos, `src/lib/seo.ts`, `tests/e2e/home.spec.ts`, `DECISIONS.md`, `docs/12`, `CHANGELOG.md`
 

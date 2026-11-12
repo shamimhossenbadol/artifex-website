@@ -44,15 +44,15 @@ Each phase ends with a short manual review of the phase's acceptance checks.
 **Exit check:** the layout passes the 360/768/1024/1440 visual check, and keyboard navigation works. ✅ 2026-11-12: checked at 375/390/768/1024/1440 on a local production build with real data; no horizontal scroll; skip link, drawer focus + Esc covered by e2e.
 
 ## Phase 3 — Product catalogue
-- [ ] Repositories + catalog service (list, by slug, related, home rails) with cache tags
-- [ ] Media: image loader (`NEXT_PUBLIC_MEDIA_URL`), key util, `r2.storage.ts` (put/delete with aws4fetch), `image.processor.ts` (sharp variants)
-- [ ] ProductCard + ProductGrid + Pagination + SortBar
-- [ ] `/products` and `/categories/[slug]` listing pages (sort, on-sale, pagination, metadata)
-- [ ] `/products/[slug]` detail: Gallery, ColorSwatches, Price, specs, description (Markdown), related, sticky mobile CTA
-- [ ] `lib/whatsapp.ts` (✅ done in Phase 2, unit tested) + WhatsApp inquiry button with selected colour
-- [ ] Product + Breadcrumb JSON-LD
+- [x] Repositories + catalog service (list, by slug, related) with cache tags. Home rails move to Phase 6 with the homepage
+- [x] Media: image loader (`NEXT_PUBLIC_MEDIA_URL`), key util, `r2.storage.ts` (put/delete with aws4fetch), `image.processor.ts` (sharp variants). Unit tested with mocked R2; a live upload test waits for the R2 buckets
+- [x] ProductCard + ProductGrid + Pagination + SortBar (links, ADR-025)
+- [x] `/products` and `/categories/[slug]` listing pages (sort, on-sale, pagination, metadata)
+- [x] `/products/[slug]` detail: Gallery, ColorSwatches, Price, specs, description (Markdown), related, sticky mobile CTA. Gallery with real photos still to be checked once R2 has images
+- [x] `lib/whatsapp.ts` + WhatsApp inquiry button with selected colour (unit + e2e tested)
+- [x] Product + Breadcrumb JSON-LD
 
-**Exit check:** F1 and F3 acceptance criteria pass with seeded demo data.
+**Exit check:** F1 and F3 acceptance criteria pass with seeded demo data. ✅ 2026-11-12: 27 e2e tests pass against the demo catalogue (not-found status is 200 + noindex, ADR-025); real-photo gallery check pending R2.
 
 ## Phase 4 — Global search
 - [ ] Search service (normalisation, wildcard escaping, ranking) with unit tests

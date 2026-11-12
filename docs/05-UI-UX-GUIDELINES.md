@@ -40,7 +40,7 @@ Sections with no content are **hidden**, never left empty.
 
 ### Category / All products
 - Breadcrumbs, title, short description, and product count.
-- Toolbar: sort select (Newest, Price low→high, Price high→low) and an "On sale" toggle. Both are URL params so they're shareable and SSR-friendly.
+- Toolbar: sort chips (Newest, Price low→high, Price high→low) and an "On sale" toggle, rendered as plain links (ADR-025). Both are URL params so they're shareable, SSR-friendly and work without JavaScript.
 - Grid: 2 cols mobile, 3 cols md, 4 cols xl.
 - Pagination: numbered links (`?page=2`) with Prev/Next, 24 per page. No infinite scroll (bad for SEO and the back button).
 

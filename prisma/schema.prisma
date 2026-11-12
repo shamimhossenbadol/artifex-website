@@ -43,6 +43,7 @@ model Product {
   description       String         @db.Text            // Markdown
   regularPrice      Int?                                // null => "Price on request"
   discountPrice     Int?                                // must be < regularPrice (validated)
+  effectivePrice    Int?                                // denormalised: discountPrice ?? regularPrice (price sort)
   sku               String?        @unique @db.VarChar(50)
   material          String?        @db.VarChar(120)    // quick facet shown on cards/detail
   dimensions        String?        @db.VarChar(120)    // e.g. "W 220 × D 95 × H 85 cm"
@@ -67,7 +68,7 @@ model Product {
   @@index([status, isFeatured, homeSortOrder])
   @@index([status, isPopular, homeSortOrder])
   @@index([status, isNewArrival, createdAt])
-  @@index([status, regularPrice])
+  @@index([status, effectivePrice])
   @@index([searchText(length: 191)])
 }
 

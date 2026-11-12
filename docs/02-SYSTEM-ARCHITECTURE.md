@@ -88,7 +88,9 @@ E:\ArtifexFurniture\Website\      # repo root (git)
 │  │  ├─ validation/             # Zod schemas shared by forms and actions
 │  │  ├─ seo.ts                  # metadata builders + JSON-LD builders
 │  │  ├─ whatsapp.ts             # buildWhatsAppUrl()
-│  │  ├─ image-loader.ts         # custom next/image loader → pre-generated variants
+│  │  ├─ image-loader.ts         # custom next/image loader ("use client") → pre-generated variants
+│  │  ├─ image-variants.ts       # variant widths + buildImageUrl() shared by client and server
+│  │  ├─ search-text.ts          # buildSearchText(), effectivePrice() for product writes
 │  │  ├─ format.ts               # formatBDT(), dates
 │  │  └─ utils.ts                # cn(), slugify()
 │  ├─ config/site.ts             # static constants (nav links, page sizes)

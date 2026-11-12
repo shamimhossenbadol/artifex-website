@@ -9,10 +9,10 @@
 
 | Item | Value |
 |---|---|
-| **Current phase** | Phase 3: Product catalogue (next) |
+| **Current phase** | Phase 4: Global search (next) |
 | **Overall state** | ✅ Phase 1 complete. Code is on GitHub (`shamimhossenbadol/artifex-website`, private); CI is green. ✅ **First deploy succeeded 2026-11-12**: https://artifex.codespherestudio.site serves the placeholder page with security headers (via Cloudflare). Migration applied; seed created 7 categories, settings, hero and the admin (`mustChangePassword = 1`); backup saved in `~/backups`. |
 | **Last updated** | 2026-11-12 |
-| **Next action** | Owner: create the R2 buckets in Cloudflare (10 §6.2) so Phase 3 can upload real product photos; confirm WhatsApp/phone/address (open question #14). Agent: Phase 3 (catalogue: product cards, listing, detail, gallery, R2 image pipeline). |
+| **Next action** | Owner: create the R2 buckets + tokens (answer in chat 2026-11-12; 10 §6.2) and send the dev bucket's public r2.dev URL. Deploy to see the catalogue (test DB already has the migration + demo catalogue). Agent: Phase 4 (search). |
 
 ## Phase overview
 
@@ -21,7 +21,7 @@
 | 0 | Planning & hosting verification | 🟡 Hosting verified over SSH; R2 smoke test waits for the Cloudflare account |
 | 1 | Project foundation (scaffold, Prisma, env, design tokens) | ✅ Done 2026-11-12 (CI green) |
 | 2 | Design system & layout shell | ✅ Done 2026-11-12 |
-| 3 | Product catalogue (listing, detail, WhatsApp) | ⚪ Not started |
+| 3 | Product catalogue (listing, detail, WhatsApp) | ✅ Done 2026-11-12 (photos pending R2) |
 | 4 | Global search | ⚪ Not started |
 | 5 | Blog, About, Contact/Location | ⚪ Not started |
 | 6 | Homepage | ⚪ Not started |
@@ -76,11 +76,14 @@ Answer these by editing this list. Agents: use the **default** until an answer i
 | 13 | The dev PC runs Node **26**; the project pins Node **24** (ADR-015). npm only warns locally, and CI/production use 24. Install Node 24 locally (e.g. nvm-windows) to match exactly? | Keep 26 locally; CI enforces 24 |
 | 14 | ~~Official contact details?~~ Answered 2026-11-12 (see #4) | — |
 | 15 | Agent assumption (2026-11-12): the phone number shown is the WhatsApp number (no separate landline was given) | +880 1757-758388 for both |
-| 16 | Agent assumption (2026-11-12): category links, `/search`, `/blog`, `/about`, `/contact`, `/products` currently 404 (branded) until Phases 3–5 build them | Expected during development |
+| 16 | Agent assumption (2026-11-12): `/search`, `/blog`, `/about`, `/contact` still show the branded not-found page until Phases 4–5 | Expected during development |
+| 17 | The **test** database now contains 31 demo products (`demo-…` slugs, SEED_DEMO). Remove them before entering real products? (`DELETE FROM Product WHERE slug LIKE 'demo-%'`) | Keep until real products exist |
 
 ## Session log
 
 Add one line per session, newest first: `YYYY-MM-DD — summary — files touched`.
+
+- 2026-11-12 — Phase 3: catalogue repos/service (listing, detail, related; request-time cached), effectivePrice column + migration, media pipeline (keys, sharp processor, R2 storage with rollback), ProductCard/Grid/Pagination/SortBar, /products, /categories/[slug], /products/[slug] (gallery, swatches → WhatsApp message, sticky mobile bar, specs, Markdown, related, Product + Breadcrumb JSON-LD), demo catalogue seed. Applied the migration + demo seed to the test DB over the tunnel. 95 unit tests, 27 e2e tests; bundle smoke test covers a product page. ADR-025. — `prisma/`, `src/`, `tests/`, `scripts/smoke-bundle.mjs`, `.github/workflows/ci.yml`, `DECISIONS.md`, `docs/02`, `04`, `05`, `06`, `12`, `CHANGELOG.md`
 
 - 2026-11-12 — CI was red for 4f2899a and 9669d8f (mobile-menu e2e tapped before hydration). The mobile menu now uses Invoker Commands so it works without JS (ADR-024); new no-JS e2e test; 30/30 runs pass locally with --repeat-each=3. Live test site still runs the broken 481f6f4 until the next Deploy. — `src/components/site/MobileNav.tsx`, `tests/e2e/layout.spec.ts`, `DECISIONS.md`, `CHANGELOG.md`
 

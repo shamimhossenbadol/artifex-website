@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildImageUrl, pickVariantWidth } from "@/lib/image-loader";
+import { buildImageUrl, pickVariantWidth } from "@/lib/image-variants";
 
 const MEDIA = "https://media.example.com";
 

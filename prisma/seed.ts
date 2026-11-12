@@ -3,12 +3,14 @@
 import { hash } from "bcryptjs";
 import { z } from "zod";
 import { createPrismaClient } from "../src/lib/prisma";
+import { seedDemoCatalogue } from "./seed-demo";
 
 const env = z
   .object({
     DATABASE_URL: z.string().min(1),
     ADMIN_EMAIL: z.email().optional(),
     ADMIN_INITIAL_PASSWORD: z.string().min(12).optional(),
+    SEED_DEMO: z.enum(["true", "false"]).optional(),
   })
   .parse(process.env);
 
@@ -124,6 +126,7 @@ async function main(): Promise<void> {
   await seedHomeHero();
   console.log("  settings + home hero: ok");
   await seedAdmin();
+  if (env.SEED_DEMO === "true") await seedDemoCatalogue(db);
   console.log("Seed complete.");
 }
 

@@ -12,12 +12,13 @@ Each feature lists its **behaviour**, **data source**, and **acceptance criteria
 - Sort: `newest` (default, `publishedAt desc`), `price_asc`, `price_desc`. Price sort uses the effective price (`discountPrice ?? regularPrice`). Products with "Price on request" go last.
 - `onSale=1` means `discountPrice IS NOT NULL`.
 - Page size is 24. An invalid `page` returns 404, and `page=1` canonicalises to no param.
-- **AC:** an unknown category slug returns 404, pagination links are crawlable `<a href>`, and the result is correct with 0, 1, 24, and 25 items.
+- **AC:** an unknown category slug renders the not-found page with `noindex` (HTTP status 200 under Cache Components, ADR-025), pagination links are crawlable `<a href>`, and the result is correct with 0, 1, 24, and 25 items.
 
 ### F1.2 Product detail
 - Source: `catalog.service.getProductBySlug(slug)` (published only; drafts are visible to a logged-in admin via `?preview=1`).
 - Shows: gallery (primary image first, then by `sortOrder`), title, category link, price (see F1.3), colours, made-to-order note, WhatsApp CTA (F3), short description, quick facts, specs table, full description (Markdown), and related products.
-- **AC:** a missing or unpublished slug returns 404, the gallery works with 1–12 images, and the page has Product JSON-LD (see 08).
+- **AC:** a missing or unpublished slug renders the not-found page with `noindex` (ADR-025), the gallery works with 1–12 images, and the page has Product JSON-LD (see 08).
+- `?preview=1` for drafts is deferred to Phase 7 (needs admin auth).
 
 ### F1.3 Pricing display rules
 | Data | Display |

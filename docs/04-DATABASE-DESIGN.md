@@ -71,6 +71,7 @@ model Product {
   description       String         @db.Text            // Markdown
   regularPrice      Int?                                // null => "Price on request"
   discountPrice     Int?                                // must be < regularPrice (validated)
+  effectivePrice    Int?                                // denormalised: discountPrice ?? regularPrice (price sort, ADR-025)
   sku               String?        @unique @db.VarChar(50)
   material          String?        @db.VarChar(120)    // quick facet shown on cards/detail
   dimensions        String?        @db.VarChar(120)    // e.g. "W 220 × D 95 × H 85 cm"
@@ -95,7 +96,7 @@ model Product {
   @@index([status, isFeatured, homeSortOrder])
   @@index([status, isPopular, homeSortOrder])
   @@index([status, isNewArrival, createdAt])
-  @@index([status, regularPrice])
+  @@index([status, effectivePrice])
   @@index([searchText(length: 191)])
 }
 
@@ -253,6 +254,7 @@ model InquiryClick {                                  // optional (Phase 8)
 - `discountPrice` is only allowed when `regularPrice` is set, and it must be strictly less than it. The discount percentage shown is `round((1 - discount/regular) * 100)`.
 - Exactly one `isPrimary` image per product. If it's deleted, the next image by `sortOrder` becomes primary. A product can't be published without at least one image.
 - `searchText` is recomputed on every product create/update and on category rename (batch update).
+- `effectivePrice` (= valid `discountPrice` ?? `regularPrice`) is recomputed on every product create/update (`src/lib/search-text.ts`, ADR-025).
 - `publishedAt` is set the first time the status becomes `PUBLISHED`.
 - A category can't be deleted while it has products (`onDelete: Restrict`); the admin is told to move the products first.
 - `LoginAttempt` rows older than 30 days are pruned opportunistically during login (no cron).
@@ -264,7 +266,7 @@ model InquiryClick {                                  // optional (Phase 8)
 |---|---|
 | Category page: published products in category, newest first, paginated | `[status, categoryId, createdAt]` |
 | Home rails: featured / popular / new | `[status, isFeatured, homeSortOrder]` etc. |
-| Sort by price | `[status, regularPrice]` |
+| Sort by price | `[status, effectivePrice]` (nulls last, ADR-025) |
 | Search `searchText LIKE %term%` | Prefix index helps little for leading wildcards. This is acceptable below ~2,000 products (see ADR-007); upgrade to FULLTEXT if the catalogue grows. |
 | Product detail by slug | `slug` unique |
 

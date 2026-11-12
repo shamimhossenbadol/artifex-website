@@ -52,6 +52,11 @@ export function parseServerEnv(source: Record<string, string | undefined>): Serv
 
 let cached: ServerEnv | undefined;
 
+/** Test hook: re-read process.env on the next serverEnv() call. */
+export function resetServerEnvForTests(): void {
+  cached = undefined;
+}
+
 /** Parsed server env, validated once per process. Throws with a readable list of problems. */
 export function serverEnv(): ServerEnv {
   cached ??= parseServerEnv(process.env);

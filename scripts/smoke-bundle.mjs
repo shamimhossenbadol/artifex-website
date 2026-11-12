@@ -7,6 +7,7 @@ import { spawn } from "node:child_process";
 import { setTimeout as sleep } from "node:timers/promises";
 
 const port = Number(process.env.SMOKE_PORT ?? 3300);
+const path = process.env.SMOKE_PATH ?? "/";
 const expected = process.argv.slice(2);
 const child = spawn(process.execPath, ["server.js"], {
   cwd: "deploy/artifex-app",
@@ -21,7 +22,7 @@ try {
   let res;
   for (let i = 0; i < 60 && !res; i++) {
     try {
-      res = await fetch(`http://127.0.0.1:${port}/`);
+      res = await fetch(`http://127.0.0.1:${port}${path}`);
     } catch {
       await sleep(500);
     }
@@ -30,7 +31,7 @@ try {
     problems.push("server did not start");
   } else {
     const html = await res.text();
-    console.log(`GET / → HTTP ${res.status}, ${html.length} bytes`);
+    console.log(`GET ${path} → HTTP ${res.status}, ${html.length} bytes`);
     if (res.status !== 200) problems.push(`status ${res.status}`);
     if (!html.includes("</html>")) problems.push("incomplete HTML (no </html>)");
     for (const text of expected) {

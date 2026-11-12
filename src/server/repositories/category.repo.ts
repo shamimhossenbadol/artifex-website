@@ -11,3 +11,21 @@ export async function findActiveCategoriesForNav() {
 }
 
 export type NavCategoryRow = Awaited<ReturnType<typeof findActiveCategoriesForNav>>[number];
+
+/** An active category by slug, for its listing page (hidden categories 404). */
+export async function findActiveCategoryBySlug(slug: string) {
+  return db.category.findFirst({
+    where: { slug, isActive: true },
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      description: true,
+      imagePath: true,
+      seoTitle: true,
+      seoDescription: true,
+    },
+  });
+}
+
+export type CategoryRow = NonNullable<Awaited<ReturnType<typeof findActiveCategoryBySlug>>>;

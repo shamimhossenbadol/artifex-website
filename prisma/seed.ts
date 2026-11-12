@@ -16,7 +16,7 @@ const env = z
 
 const db = createPrismaClient(env.DATABASE_URL, 1);
 
-/** 01 §4. Seeded once; admins can rename, reorder and hide them afterwards. */
+/** 01 §4 (product range updated 2026-11-12, ADR-026). Seeded once; admins can rename, reorder and hide them. */
 const CATEGORIES = [
   { name: "Sofas", slug: "sofas", description: "Deep, comfortable seating for living rooms." },
   {
@@ -24,11 +24,14 @@ const CATEGORIES = [
     slug: "dining-tables",
     description: "Tables for family meals and guests.",
   },
-  { name: "Doors", slug: "doors", description: "Solid wood doors, made to your size." },
   { name: "Chairs", slug: "chairs", description: "Dining, lounge and study chairs." },
-  { name: "Curtains", slug: "curtains", description: "Curtains tailored to your windows." },
-  { name: "Tables", slug: "tables", description: "Coffee, side and study tables." },
   { name: "Beds", slug: "beds", description: "Beds in King, Queen, Semi-double and Single sizes." },
+  { name: "Curtains", slug: "curtains", description: "Curtains tailored to your windows." },
+  {
+    name: "Chandeliers",
+    slug: "chandeliers",
+    description: "Statement lighting in brass and crystal for living and dining rooms.",
+  },
 ] as const;
 
 async function seedCategories(): Promise<void> {
@@ -69,10 +72,10 @@ async function seedSettings(): Promise<void> {
         { days: "Fri", closed: true },
       ],
       aboutShort:
-        "Artifex Furniture makes sofas, tables, beds and doors for modern homes in Dhaka.",
+        "Artifex Furniture makes sofas, dining tables, beds and chandeliers for modern homes in Dhaka.",
       defaultSeoTitle: "Artifex Furniture | Crafted furniture in Dhaka",
       defaultSeoDescription:
-        "Sofas, dining tables, beds, doors and more, crafted for modern Bangladeshi homes. Visit our Dhaka showroom or message us on WhatsApp.",
+        "Sofas, dining tables, beds, chairs, curtains and chandeliers, crafted for modern Bangladeshi homes. Visit our Dhaka showroom or message us on WhatsApp.",
     },
   });
 }

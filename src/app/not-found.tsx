@@ -52,7 +52,7 @@ export default function NotFound() {
             id="not-found-search"
             type="search"
             name="q"
-            placeholder="Search sofas, beds, tables…"
+            placeholder="Search sofas, beds, chandeliers…"
             minLength={2}
             maxLength={60}
             required

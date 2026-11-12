@@ -66,9 +66,9 @@ Answer these by editing this list. Agents: use the **default** until an answer i
 | 3 | ~~Logo files?~~ **Answered 2026-11-12:** logo supplied and in use (ADR-022). Brand red refined to `#D2161E` for the web; confirm the owner is happy with that tone | — |
 | 4 | ~~WhatsApp, phone, address~~ **Answered 2026-11-12:** WhatsApp 01757-758388 (also used as the phone number), House 02, Road 05, Sector 01, Uttara, Dhaka 1230; Facebook/Instagram/YouTube links. **Still open:** email, real opening hours, showroom map pin | Hours default Sat–Thu 10:00–21:00, Fri closed; no email |
 | 5 | Product photos: do professional photos exist? | Seed with placeholder images; real photos uploaded via admin |
-| 6 | Show prices publicly for all products, or "Price on request" for some (e.g. custom doors/curtains)? | Both are supported per product |
+| 6 | Show prices publicly for all products, or "Price on request" for some (e.g. custom curtains/chandeliers)? | Both are supported per product |
 | 7 | Language: English only, or Bangla too? | English only (Bangla on the future list) |
-| 8 | Does custom-size / made-to-order work need mentioning (doors, curtains)? | Yes: a "Made to order" flag per product |
+| 8 | Does custom-size / made-to-order work need mentioning (curtains, chandeliers)? | Yes: a "Made to order" flag per product |
 | 9 | Exact admin email for the predefined admin account | Set via `ADMIN_EMAIL` env var |
 | 10 | Who manages the domain DNS? It has to move to Cloudflare nameservers for the R2 media domain (10 §6.1). Do you use cPanel email on this domain? (Its MX records must be copied over) | Assume cPanel email exists, so copy all MX/TXT records |
 | 11 | Do you have a Cloudflare account, or should one be created for the business? The developer's Cloudflare already hosts `codespherestudio.site` DNS; R2 for production should probably live in an account the business owns | A new free account owned by the business email |
@@ -77,11 +77,13 @@ Answer these by editing this list. Agents: use the **default** until an answer i
 | 14 | ~~Official contact details?~~ Answered 2026-11-12 (see #4) | — |
 | 15 | Agent assumption (2026-11-12): the phone number shown is the WhatsApp number (no separate landline was given) | +880 1757-758388 for both |
 | 16 | Agent assumption (2026-11-12): `/search`, `/blog`, `/about`, `/contact` still show the branded not-found page until Phases 4–5 | Expected during development |
-| 17 | The **test** database now contains 31 demo products (`demo-…` slugs, SEED_DEMO). Remove them before entering real products? (`DELETE FROM Product WHERE slug LIKE 'demo-%'`) | Keep until real products exist |
+| 17 | The **test** database contains 31 demo products (`demo-…` slugs, SEED_DEMO; doors/tables demos removed, 2 chandeliers added 2026-11-12). Remove them before entering real products? (`DELETE FROM Product WHERE slug LIKE 'demo-%'`) | Keep until real products exist |
 
 ## Session log
 
 Add one line per session, newest first: `YYYY-MM-DD — summary — files touched`.
+
+- 2026-11-12 — Owner changes (ADR-026): removed the desktop utility bar (logo row is the only header); product range now Sofas, Dining Tables, Chairs, Beds, Curtains, Chandeliers (Doors/Tables dropped). Seed + demo data + copy + docs updated; test DB cleaned by SQL and re-seeded (6 categories). Gave the owner step-by-step R2 setup instructions. — `src/components/site/HeaderView.tsx`, `prisma/seed.ts`, `seed-demo.ts`, `src/app/…`, `docs/01`, `05`, `06`, `DECISIONS.md`, `CHANGELOG.md`
 
 - 2026-11-12 — Phase 3: catalogue repos/service (listing, detail, related; request-time cached), effectivePrice column + migration, media pipeline (keys, sharp processor, R2 storage with rollback), ProductCard/Grid/Pagination/SortBar, /products, /categories/[slug], /products/[slug] (gallery, swatches → WhatsApp message, sticky mobile bar, specs, Markdown, related, Product + Breadcrumb JSON-LD), demo catalogue seed. Applied the migration + demo seed to the test DB over the tunnel. 95 unit tests, 27 e2e tests; bundle smoke test covers a product page. ADR-025. — `prisma/`, `src/`, `tests/`, `scripts/smoke-bundle.mjs`, `.github/workflows/ci.yml`, `DECISIONS.md`, `docs/02`, `04`, `05`, `06`, `12`, `CHANGELOG.md`
 

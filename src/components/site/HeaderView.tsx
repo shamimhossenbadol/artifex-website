@@ -32,30 +32,10 @@ export function HeaderView({
   const primary = categories.slice(0, MAX_HEADER_CATEGORIES);
   const more = categories.slice(MAX_HEADER_CATEGORIES);
 
+  // One clean header row (ADR-026): no utility bar. Journal/About/Contact live in the footer and
+  // the mobile menu; the phone stays as an icon next to the Inquire button.
   return (
     <>
-      {/* Utility bar (desktop only). It scrolls away; the main bar below is sticky. */}
-      <div className="border-line hidden border-b lg:block">
-        <Container className="text-small flex h-9 items-center justify-end gap-6">
-          <nav aria-label="Company">
-            <ul className="flex items-center gap-6">
-              {COMPANY_LINKS.map((link) => (
-                <li key={link.href}>
-                  <Link href={link.href} className="text-muted hover:text-ink transition-colors">
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
-          {phone && telHref && (
-            <a href={telHref} className="text-muted hover:text-ink tabular-nums transition-colors">
-              {phone}
-            </a>
-          )}
-        </Container>
-      </div>
-
       <StickyHeader>
         {/* Mobile: [Menu] [Logo] [Search] */}
         <Container className="grid h-16 grid-cols-[1fr_auto_1fr] items-center lg:hidden">

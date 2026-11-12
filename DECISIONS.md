@@ -210,3 +210,12 @@ Format: each ADR has a number, date, status (Accepted / Superseded by ADR-x / Pr
 - **Demo catalogue.** `SEED_DEMO=true` seeds 31 published demo products (slugs `demo-…`, no photos yet) for CI and test servers. Never set in production. The seeded categories leave Curtains empty to exercise the empty state.
 **Consequences:** Listing and product pages are fast and work with minimal JS. Real product photos depend on the R2 buckets and the Phase 7 admin uploader; until then products show the branded placeholder.
 
+### ADR-026 — Product range change (no Doors/Tables, add Chandeliers) and a single header row
+**Date:** 2026-11-12 · **Status:** Accepted (updates 01 §4 and 05 §2; ADR-010's "Curtains/doors can hide prices" now applies to curtains and chandeliers)
+**Context:** The owner decided to stop selling **Doors** and **Tables** (coffee/side/study) and to add **Chandeliers**. They also asked whether the desktop utility bar (Journal · About · Contact · phone) is needed for a premium look.
+**Decision:**
+- Seeded categories: Sofas, Dining Tables, Chairs, Beds, Curtains, Chandeliers (in that order). Dining Tables stays (it's a separate category from "Tables"). Chandeliers use the existing fields: material, dimensions, specs (lights, drop), made-to-order and "Price on request".
+- Existing databases aren't changed by the seed (it never deletes). On the test server the Doors/Tables categories and their two demo products were removed by SQL, Chandeliers was added by the seed, and the category order and the about/SEO texts were updated.
+- **No utility bar.** The logo row is the only header row. Journal/About/Contact stay in the footer and mobile menu; the phone is the header phone icon.
+**Consequences:** Six categories fit the desktop header without a "More" menu. If Dining Tables should also go, remove it the same way (only demo data uses it today).
+

@@ -11,9 +11,9 @@
 ## 2. Global navigation
 
 **Desktop header** (h-20, sticky; it shrinks to h-16 with a bottom border after scrolling):
-`[Wordmark]   Sofas · Dining · Beds · Chairs · Tables · Doors · Curtains   [Search icon] [Phone icon] [WhatsApp button "Inquire"]`
+`[Logo]   Sofas · Dining · Chairs · Beds · Curtains · Chandeliers   [Search icon] [Phone icon] [WhatsApp button "Inquire"]`
 - Category links come from active categories (max 7; extras go under "More").
-- Secondary links (Blog, About, Contact) live in a slim top utility bar on desktop (≥ lg) and inside the mobile menu.
+- **No top utility bar** (ADR-026): the logo row is the only header row, for a cleaner premium look. Secondary links (Journal, About, Contact) live in the footer and the mobile menu; the phone number is the phone icon in the header.
 
 **Mobile header** (h-16, sticky): `[Menu]  [Wordmark centred]  [Search]`
 - The menu opens a full-height left drawer with categories (each with a small thumbnail), then Blog, About, and Contact, then the phone number, WhatsApp, and Facebook. It traps focus and closes on Esc or backdrop click.

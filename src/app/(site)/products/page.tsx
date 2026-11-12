@@ -21,7 +21,7 @@ export async function generateMetadata({
   return {
     title: page > 1 ? `${TITLE} (page ${page})` : TITLE,
     description:
-      "Sofas, dining tables, beds, chairs, doors and curtains, crafted in Dhaka. Browse the full Artifex Furniture collection and message us on WhatsApp.",
+      "Sofas, dining tables, beds, chairs, curtains and chandeliers, crafted in Dhaka. Browse the full Artifex Furniture collection and message us on WhatsApp.",
     // Self-canonical per page, without sort/filter params (08 §1).
     alternates: { canonical: listingHref(BASE_PATH, { page }) },
   };

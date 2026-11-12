@@ -33,22 +33,23 @@ Cart, checkout, payments, customer accounts, orders, reviews, newsletter, multi-
 
 ## 4. Product categories (seeded, editable)
 
+Updated 2026-11-12 (ADR-026): the business no longer sells **Doors** or **Tables** (coffee/side/study); **Chandeliers** were added.
+
 | Category | Slug | Notes |
 |---|---|---|
 | Sofas | `sofas` | Seat count and fabric are key specs |
 | Dining Tables | `dining-tables` | Seating capacity, top material |
-| Doors | `doors` | Often made to order: size and wood type |
 | Chairs | `chairs` | |
-| Curtains | `curtains` | Often priced per unit or per measurement, so "Price on request" is common |
-| Tables | `tables` | Coffee, side, and study tables |
 | Beds | `beds` | Size (King/Queen/Semi-double/Single), storage |
+| Curtains | `curtains` | Often priced per unit or per measurement, so "Price on request" is common |
+| Chandeliers | `chandeliers` | Material (brass, crystal), diameter × height, number of lights; often made to order or "Price on request" |
 
 Admins can add, rename, reorder, and hide categories.
 
 ## 5. Audience
 
 - **Primary:** Urban Dhaka homeowners and newly-weds (ages 25–45) furnishing a flat. They're mobile-first (≈ 80 % of traffic expected on phones), they arrive from Facebook, and they're price-aware but quality-seeking.
-- **Secondary:** Interior designers and offices looking for doors, tables, and chairs in bulk or made to order.
+- **Secondary:** Interior designers and offices looking for dining sets, chairs, curtains and chandeliers in bulk or made to order.
 
 Implications: design for mobile first, keep pages light (3G/4G), show prices clearly in **৳ BDT**, and keep WhatsApp always within reach.
 

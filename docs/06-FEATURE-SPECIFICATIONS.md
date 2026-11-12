@@ -72,7 +72,7 @@ Format: `Intl.NumberFormat('en-IN')` grouping with the `৳` prefix (BD uses lak
 - Reading time = words / 200, rounded up.
 - Related: up to 3 posts sharing a tag, falling back to the latest.
 - Article JSON-LD and Open Graph `article` (see 08).
-- Suggested launch topics: "How to choose the right sofa size for a Dhaka flat", "Caring for solid wood furniture in humid weather", "Dining tables: 4, 6 or 8 seater?", "Choosing curtains that keep rooms cool", "Wooden doors: teak, mahogany or engineered?".
+- Suggested launch topics: "How to choose the right sofa size for a Dhaka flat", "Caring for solid wood furniture in humid weather", "Dining tables: 4, 6 or 8 seater?", "Choosing curtains that keep rooms cool", "How to size a chandelier for your living or dining room".
 
 ---
 

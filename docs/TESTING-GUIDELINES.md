@@ -11,7 +11,11 @@ Keep testing proportional: **unit-test the logic, end-to-end test the critical f
 | Accessibility | `@axe-core/playwright` (optional dev dep, via ADR) or Lighthouse | e2e |
 | Performance | Lighthouse / PageSpeed Insights | manual, results in PROGRESS |
 
-E2E tests run against `next build && next start` with a seeded test database (`DATABASE_URL` pointing to `artifex_test`).
+E2E tests run against `next build && next start` with a seeded test database (`DATABASE_URL` pointing to `artifex_test`) that includes the demo catalogue and posts (`SEED_DEMO=true`). CI uses a local MariaDB 11.4 service.
+
+> **Local runs against the remote test DB (SSH tunnel)** are slow on cold pages (2–6 s per page, because every query crosses the tunnel) and can hit the 6 s pool timeout under parallel load, showing "Something went wrong". Use `--workers=1`, re-run single failures, or use a local MariaDB. Warm pages are served from the in-memory cache in ~40 ms. CI is the authority.
+>
+> "Before JavaScript loads" tests block `/_next/static/chunks/**` (helpers.ts) rather than disabling JavaScript, so the inline scripts that reveal streamed HTML still run (ADR-027).
 
 ## 2. Unit tests (required)
 

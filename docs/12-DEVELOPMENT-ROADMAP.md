@@ -63,11 +63,11 @@ Each phase ends with a short manual review of the phase's acceptance checks.
 **Exit check:** F2 acceptance criteria pass. ✅ 2026-11-12: 20 search e2e tests ("sofa" finds all 26 sofas, AND matching, wildcards literal, < 2 chars → no request/400, keyboard navigation, no-bundle submit).
 
 ## Phase 5 — Blog, About, Contact
-- [ ] Blog service + `/blog` (paginated) + `/blog/[slug]` (markdown, reading time, related, share, Article JSON-LD)
-- [ ] `/about` from settings
-- [ ] `/contact` with hours, click-to-load map, directions, OpeningStatus, FurnitureStore JSON-LD
+- [x] Blog service + `/blog` (paginated) + `/blog/[slug]` (markdown, reading time, related, share, Article JSON-LD)
+- [x] `/about` from settings
+- [x] `/contact` with hours, click-to-load map, directions, OpeningStatus, FurnitureStore JSON-LD
 
-**Exit check:** F4, F5, and F7 acceptance criteria pass.
+**Exit check:** F4, F5, and F7 acceptance criteria pass. ✅ 2026-11-12: 12 e2e tests (Journal list/post/related/share/JSON-LD, contact details + hours + Dhaka-time open status with a frozen clock + no map iframe until asked, About).
 
 ## Phase 6 — Homepage
 - [ ] Hero, category tiles, new arrivals, brand intro, featured, promo banners, popular, WhatsApp band, latest posts

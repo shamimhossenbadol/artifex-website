@@ -26,6 +26,11 @@ export const FALLBACK_SETTINGS: SiteSettings = {
   instagramUrl: null,
   youtubeUrl: null,
   aboutShort: null,
+  aboutContent: null,
+  mapEmbedUrl: null,
+  latitude: null,
+  longitude: null,
+  ogImagePath: null,
   defaultSeoTitle: SITE_NAME,
   defaultSeoDescription: SITE_TAGLINE,
 };

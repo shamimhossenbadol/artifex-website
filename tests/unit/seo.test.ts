@@ -117,3 +117,78 @@ describe("pageWindow", () => {
     expect(pageWindow(10, 10)).toEqual([1, null, 9, 10]);
   });
 });
+
+describe("safeImageUrl (blog images)", () => {
+  it("maps an R2 key base to the 960px variant", async () => {
+    const { safeImageUrl } = await import("@/components/ui/Markdown");
+    expect(safeImageUrl("blog/2026/11/ab12cd34ef56", MEDIA)).toMatch(/ab12cd34ef56-960\.webp$/);
+  });
+
+  it("allows https URLs on the media domain only", async () => {
+    const { safeImageUrl } = await import("@/components/ui/Markdown");
+    expect(safeImageUrl(`${MEDIA}/blog/a.webp`, MEDIA)).toBe(`${MEDIA}/blog/a.webp`);
+    for (const url of [
+      "https://evil.example/x.png",
+      "http://media.artifex.example/a.webp",
+      "javascript:alert(1)",
+      "data:image/png;base64,AA",
+    ]) {
+      expect(safeImageUrl(url, MEDIA)).toBe("");
+    }
+  });
+});
+
+describe("localBusinessJsonLd", () => {
+  it("builds a FurnitureStore with postal code, hours and socials", async () => {
+    const { localBusinessJsonLd } = await import("@/lib/seo");
+    const ld = localBusinessJsonLd(
+      {
+        name: "Artifex Furniture",
+        phone: "+880 1757-758388",
+        email: null,
+        addressLine: "House 02, Road 05, Sector 01, Uttara",
+        city: "Dhaka 1230",
+        latitude: null,
+        longitude: null,
+        mapLinkUrl: null,
+        sameAs: ["https://www.facebook.com/artifexfurniturebd"],
+        openingHoursSpecification: [{ "@type": "OpeningHoursSpecification" }],
+      },
+      SITE,
+    );
+    expect(ld["@type"]).toBe("FurnitureStore");
+    expect(ld.telephone).toBe("+8801757758388");
+    expect(ld.address).toMatchObject({
+      addressLocality: "Dhaka",
+      postalCode: "1230",
+      addressCountry: "BD",
+    });
+    expect(ld.geo).toBeUndefined();
+    expect(ld.sameAs).toEqual(["https://www.facebook.com/artifexfurniturebd"]);
+  });
+});
+
+describe("articleJsonLd", () => {
+  it("builds a BlogPosting with ISO dates", async () => {
+    const { articleJsonLd } = await import("@/lib/seo");
+    const ld = articleJsonLd(
+      {
+        title: "T",
+        description: "D",
+        path: "/blog/t",
+        coverPath: null,
+        authorName: "Artifex Furniture",
+        publishedAt: new Date("2026-11-01T00:00:00Z"),
+        updatedAt: new Date("2026-11-02T00:00:00Z"),
+      },
+      SITE,
+    );
+    expect(ld).toMatchObject({
+      "@type": "BlogPosting",
+      headline: "T",
+      url: "https://artifex.example/blog/t",
+      datePublished: "2026-11-01T00:00:00.000Z",
+    });
+    expect(ld.image).toBeUndefined();
+  });
+});

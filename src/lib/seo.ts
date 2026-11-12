@@ -42,6 +42,87 @@ export function breadcrumbJsonLd(
   };
 }
 
+export type LocalBusinessInput = {
+  name: string;
+  phone: string | null;
+  email: string | null;
+  addressLine: string;
+  city: string;
+  latitude: number | null;
+  longitude: number | null;
+  mapLinkUrl: string | null;
+  sameAs: string[];
+  openingHoursSpecification: JsonLdObject[];
+};
+
+/** FurnitureStore (LocalBusiness) for the contact page and home (08 §2). */
+export function localBusinessJsonLd(
+  b: LocalBusinessInput,
+  siteUrl: string = SITE_URL,
+): JsonLdObject {
+  const postalCode = /\b(\d{4})\b/.exec(b.city)?.[1];
+  const locality = b.city.replace(/\b\d{4}\b/, "").trim() || "Dhaka";
+  return {
+    "@context": "https://schema.org",
+    "@type": "FurnitureStore",
+    name: b.name,
+    url: absoluteUrl("/", siteUrl),
+    image: absoluteUrl("/logo-mark-512.png", siteUrl),
+    ...(b.phone ? { telephone: b.phone.replace(/[^\d+]/g, "") } : {}),
+    ...(b.email ? { email: b.email } : {}),
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: b.addressLine,
+      addressLocality: locality,
+      ...(postalCode ? { postalCode } : {}),
+      addressCountry: "BD",
+    },
+    ...(b.latitude !== null && b.longitude !== null
+      ? { geo: { "@type": "GeoCoordinates", latitude: b.latitude, longitude: b.longitude } }
+      : {}),
+    ...(b.mapLinkUrl ? { hasMap: b.mapLinkUrl } : {}),
+    ...(b.sameAs.length > 0 ? { sameAs: b.sameAs } : {}),
+    ...(b.openingHoursSpecification.length > 0
+      ? { openingHoursSpecification: b.openingHoursSpecification }
+      : {}),
+  };
+}
+
+export type ArticleJsonLdInput = {
+  title: string;
+  description: string;
+  path: string;
+  coverPath: string | null;
+  authorName: string;
+  publishedAt: Date;
+  updatedAt: Date;
+};
+
+/** BlogPosting for Journal posts (08 §2). */
+export function articleJsonLd(
+  a: ArticleJsonLdInput,
+  siteUrl: string = SITE_URL,
+  mediaUrl?: string,
+): JsonLdObject {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: a.title,
+    description: a.description,
+    url: absoluteUrl(a.path, siteUrl),
+    mainEntityOfPage: absoluteUrl(a.path, siteUrl),
+    ...(a.coverPath ? { image: [absoluteImageUrl(a.coverPath, siteUrl, mediaUrl)] } : {}),
+    datePublished: a.publishedAt.toISOString(),
+    dateModified: a.updatedAt.toISOString(),
+    author: { "@type": "Organization", name: a.authorName },
+    publisher: {
+      "@type": "Organization",
+      name: SITE_NAME,
+      logo: { "@type": "ImageObject", url: absoluteUrl("/logo-mark-512.png", siteUrl) },
+    },
+  };
+}
+
 export type ProductJsonLdInput = {
   title: string;
   description: string;

@@ -17,6 +17,11 @@ export const SITE_SETTINGS_SELECT = {
   instagramUrl: true,
   youtubeUrl: true,
   aboutShort: true,
+  aboutContent: true,
+  mapEmbedUrl: true,
+  latitude: true,
+  longitude: true,
+  ogImagePath: true,
   defaultSeoTitle: true,
   defaultSeoDescription: true,
 } as const;

@@ -79,7 +79,7 @@ Format: `Intl.NumberFormat('en-IN')` grouping with the `৳` prefix (BD uses lak
 ## F5. Contact & Location
 
 - Data comes from `SiteSetting` (cached, tag `settings`).
-- Google Map: an `<iframe>` with `src = mapEmbedUrl` (admin-entered and validated to begin with `https://www.google.com/maps/embed`). It's lazy-loaded with `loading="lazy"`, and on mobile it shows a static "Tap to load map" placeholder that swaps in the iframe on click (saves ~500 KB).
+- Google Map: an `<iframe>` with `src = mapEmbedUrl` (admin-entered and validated to begin with `https://www.google.com/maps/embed`). It shows a "Tap to load the map" placeholder **on every device** and only loads the iframe on click (saves ~500 KB; ADR-028). Without an embed URL, an "Open in Google Maps" card is shown.
 - "Get directions" uses `mapLinkUrl`, or falls back to `https://www.google.com/maps/search/?api=1&query=<lat>,<lng>`.
 - Opening hours come from JSON and render as a table. The "Open now / Closed now" indicator is computed on the client in the `Asia/Dhaka` timezone (avoids caching issues).
 - LocalBusiness (`FurnitureStore`) JSON-LD.

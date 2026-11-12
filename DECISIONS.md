@@ -231,3 +231,14 @@ Format: each ADR has a number, date, status (Accepted / Superseded by ADR-x / Pr
 - **Testing "before JavaScript loads":** e2e tests block `/_next/static/chunks/**` (the app bundle) instead of disabling JavaScript. The small inline scripts that reveal streamed HTML still run, which is what a slow phone actually experiences.
 **Consequences:** At catalogue scale (< 2,000 products) LIKE + in-memory ranking is fast; switch to FULLTEXT if it grows (ADR-007).
 
+### ADR-028 — Journal, Contact and About implementation (Phase 5)
+**Date:** 2026-11-12 · **Status:** Accepted
+**Context:** F4 (Journal), F5 (Contact & Location) and F7 (About), built for mostly-mobile visitors on slow networks.
+**Decision:**
+- **Map is click-to-load on every device**, not only on mobile (refines F5): the Google Maps embed is ~500 KB of third-party code, so it loads only after "Tap to load the map". Without a valid `mapEmbedUrl` (must start with `https://www.google.com/maps/embed`) the page shows an "Open in Google Maps" card instead. "Get directions" uses `mapLinkUrl`, then lat/lng, then the address.
+- **Opening hours.** `src/lib/opening-hours.ts` parses admin labels ("Sat–Thu", "Fri", "Mon, Wed", "Daily") and computes the status in Asia/Dhaka. `OpeningStatus` renders only in the browser (`useSyncExternalStore`, refreshed each minute), so cached HTML never shows a stale status. Unparseable labels show no status. The same parser builds `openingHoursSpecification` for the FurnitureStore JSON-LD.
+- **Journal.** 9 posts per page, newest featured on page 1. Related posts: up to 3 sharing a tag, filled with the latest (filtered in memory from the 50 most recent, since the blog is small). Share: Facebook sharer, WhatsApp (`wa.me/?text=`), copy link (the only client JS). Blog Markdown may include images, but **only** R2 key bases or `https://` URLs on the media domain (`safeImageUrl`); product descriptions still drop images. BlogPosting + BreadcrumbList JSON-LD; Open Graph `article` with published/modified times.
+- **About.** Story from `SiteSetting.aboutContent` (Markdown, editable), three fixed values limited to confirmed facts, and CTAs. The seed's default About text (and an SQL fill on the test DB, only when empty) avoids unconfirmed claims such as "we manufacture".
+- **Demo posts.** `SEED_DEMO=true` adds 4 practical guides (sofa sizing, wood care, dining table size, chandelier sizing) with `demo-` slugs. They can be edited into real launch posts.
+**Consequences:** No third-party scripts load unless asked for. A missing map embed URL still gives visitors directions.
+

@@ -9,10 +9,10 @@
 
 | Item | Value |
 |---|---|
-| **Current phase** | Phase 5: Blog, About, Contact (next) |
+| **Current phase** | Phase 6: Homepage (next) |
 | **Overall state** | ✅ Phase 1 complete. Code is on GitHub (`shamimhossenbadol/artifex-website`, private); CI is green. ✅ **First deploy succeeded 2026-11-12**: https://artifex.codespherestudio.site serves the placeholder page with security headers (via Cloudflare). Migration applied; seed created 7 categories, settings, hero and the admin (`mustChangePassword = 1`); backup saved in `~/backups`. |
 | **Last updated** | 2026-11-12 |
-| **Next action** | Owner: Deploy (search + header/category changes); create R2 buckets/tokens. Agent: Phase 5 (Journal/blog, About, Contact & location). |
+| **Next action** | Owner: Deploy; send the showroom's Google Maps **embed** link + real opening hours + email (if any); R2 setup. Agent: Phase 6 (homepage). |
 
 ## Phase overview
 
@@ -23,7 +23,7 @@
 | 2 | Design system & layout shell | ✅ Done 2026-11-12 |
 | 3 | Product catalogue (listing, detail, WhatsApp) | ✅ Done 2026-11-12 (photos pending R2) |
 | 4 | Global search | ✅ Done 2026-11-12 |
-| 5 | Blog, About, Contact/Location | ⚪ Not started |
+| 5 | Blog, About, Contact/Location | ✅ Done 2026-11-12 |
 | 6 | Homepage | ⚪ Not started |
 | 7 | Admin dashboard | ⚪ Not started |
 | 8 | SEO, security & performance hardening | ⚪ Not started |
@@ -76,12 +76,14 @@ Answer these by editing this list. Agents: use the **default** until an answer i
 | 13 | The dev PC runs Node **26**; the project pins Node **24** (ADR-015). npm only warns locally, and CI/production use 24. Install Node 24 locally (e.g. nvm-windows) to match exactly? | Keep 26 locally; CI enforces 24 |
 | 14 | ~~Official contact details?~~ Answered 2026-11-12 (see #4) | — |
 | 15 | Agent assumption (2026-11-12): the phone number shown is the WhatsApp number (no separate landline was given) | +880 1757-758388 for both |
-| 16 | Agent assumption (2026-11-12): `/blog`, `/about`, `/contact` still show the branded not-found page until Phase 5 | Expected during development |
+| 16 | Google Maps **embed** link for the showroom (Google Maps → Share → Embed a map → copy the `src` URL) so the contact page can show the map | Contact page shows an "Open in Google Maps" card |
 | 17 | The **test** database contains 31 demo products (`demo-…` slugs, SEED_DEMO; doors/tables demos removed, 2 chandeliers added 2026-11-12). Remove them before entering real products? (`DELETE FROM Product WHERE slug LIKE 'demo-%'`) | Keep until real products exist |
 
 ## Session log
 
 Add one line per session, newest first: `YYYY-MM-DD — summary — files touched`.
+
+- 2026-11-12 — Phase 5: Journal (`/blog`, `/blog/[slug]`: featured post, reading time, Markdown with media-only images, share links, related by tag, BlogPosting JSON-LD), Contact (hours table, Dhaka-time open status, click-to-load map, directions, FurnitureStore JSON-LD), About (story from settings, values, CTAs). Libs: opening-hours, blog. Seed: default About text + 4 demo posts; test DB About filled (was empty) and demo posts seeded. 130 unit tests; 12 new e2e tests. ADR-028. — `src/app/(site)/{blog,contact,about}`, `src/components/{blog,contact}`, `src/lib/{opening-hours,blog,seo}.ts`, `src/components/ui/Markdown.tsx`, `prisma/seed*.ts`, `tests/`, `DECISIONS.md`, `docs/06`, `12`, `TESTING-GUIDELINES.md`, `CHANGELOG.md`
 
 - 2026-11-12 — Phase 4: search lib (normalise, terms, LIKE escaping, ranking) + service (cached per query), `/api/search`, header search overlay (dialog via Invoker Commands, debounce/abort, combobox keyboard), `/search` page. Verified Prisma doesn't escape LIKE wildcards. e2e "before JS" tests now block the app bundle instead of disabling JS. Local e2e over the long tunnel is flaky under parallel load (DB timeouts); single runs pass, CI uses a local DB. ADR-027. — `src/lib/search.ts`, `src/lib/validation/search.ts`, `src/server/services/search.service.ts`, repos, `src/app/api/search/route.ts`, `src/app/(site)/search/page.tsx`, `src/components/site/Search*.tsx`, `tests/`, `DECISIONS.md`, `docs/09`, `12`, `CHANGELOG.md`
 

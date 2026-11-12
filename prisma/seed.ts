@@ -4,6 +4,7 @@ import { hash } from "bcryptjs";
 import { z } from "zod";
 import { createPrismaClient } from "../src/lib/prisma";
 import { seedDemoCatalogue } from "./seed-demo";
+import { seedDemoPosts } from "./seed-demo-posts";
 
 const env = z
   .object({
@@ -44,6 +45,13 @@ async function seedCategories(): Promise<void> {
   }
 }
 
+/** Starter About text (F7): only facts the owner has confirmed. Edit in admin. */
+const DEFAULT_ABOUT = `Artifex Furniture brings crafted furniture to modern homes in Dhaka: sofas, dining tables, chairs, beds, curtains and chandeliers.
+
+We believe good furniture should be **comfortable, well made and built to last**, and that it should fit the way you actually live. That's why many of our pieces can be made to your size, fabric and finish.
+
+Visit our showroom in Uttara to see and feel the pieces in person, or message us on WhatsApp with a photo of your room. We're happy to help you choose.`;
+
 async function seedSettings(): Promise<void> {
   // Contact details confirmed by the owner on 2026-11-12. Email and opening hours are still
   // defaults (PROGRESS open question #4); everything is editable in admin later.
@@ -71,6 +79,7 @@ async function seedSettings(): Promise<void> {
         { days: "Sat–Thu", open: "10:00", close: "21:00" },
         { days: "Fri", closed: true },
       ],
+      aboutContent: DEFAULT_ABOUT,
       aboutShort:
         "Artifex Furniture makes sofas, dining tables, beds and chandeliers for modern homes in Dhaka.",
       defaultSeoTitle: "Artifex Furniture | Crafted furniture in Dhaka",
@@ -129,7 +138,10 @@ async function main(): Promise<void> {
   await seedHomeHero();
   console.log("  settings + home hero: ok");
   await seedAdmin();
-  if (env.SEED_DEMO === "true") await seedDemoCatalogue(db);
+  if (env.SEED_DEMO === "true") {
+    await seedDemoCatalogue(db);
+    await seedDemoPosts(db);
+  }
   console.log("Seed complete.");
 }
 

@@ -1,0 +1,11 @@
+node_modules
+.next
+deploy
+coverage
+playwright-report
+test-results
+src/generated
+prisma/migrations
+docs/history
+package-lock.json
+*.md

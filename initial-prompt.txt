@@ -1,0 +1,365 @@
+# Artifex Furniture – Website Development Brief
+
+Build a modern, premium, lightweight, and fully responsive website for **Artifex Furniture**. The website will primarily serve as a digital product catalogue and brand showcase, allowing visitors to explore furniture products and contact the business directly through WhatsApp.
+
+## 1. Core Objectives
+
+- Present furniture products in an elegant, premium catalogue.
+- Display detailed product information, pricing, available colors, discounts, and multiple images.
+- Allow customers to inquire about products through WhatsApp.
+- Publish furniture-related blogs and articles.
+- Showcase business location and contact information.
+- Deliver an excellent experience across mobile, tablet, and desktop devices.
+
+**Important:** This is a catalogue and inquiry-based website, NOT an e-commerce platform.
+
+## 2. Technology Stack
+
+Use the following technologies:
+
+- Framework: Next.js (latest stable version)
+- Language: TypeScript
+- Styling: Tailwind CSS
+- Database: MySQL / MariaDB
+- ORM: Prisma ORM
+- Architecture: Clean, maintainable, and modular
+- Icons: Lucide React
+- Image handling: Optimized Next.js Image component
+- Deployment: Namecheap Shared Hosting (cPanel)
+
+### Hosting Compatibility Requirements
+
+The project MUST be compatible with Namecheap Shared Hosting.
+
+- Use a Node.js version supported by the hosting environment.
+- Use Next.js deployment features compatible with Namecheap's Node.js application hosting.
+- Avoid dependencies requiring Docker, dedicated servers, or unsupported system-level services.
+- Avoid unnecessary background workers, external infrastructure, and resource-intensive processes.
+- Use production builds and optimize memory and CPU consumption.
+- Verify the hosting plan's Node.js, memory, process, and deployment limitations before finalizing the architecture.
+
+## 3. Product Catalogue
+
+Support the following product categories:
+
+- Sofas
+- Dining Tables
+- Doors
+- Chairs
+- Curtains
+- Tables
+- Beds
+
+Each product should support:
+
+- Product title
+- URL-friendly slug
+- Category
+- Short description
+- Full description
+- Regular price
+- Discounted price (optional)
+- Available colors
+- Multiple product images
+- Featured image
+- Product specifications and attributes
+- Featured / Popular product status
+- Publication status
+- Created and updated timestamps
+
+### Product Details Page
+
+Create a premium product details page featuring:
+
+- Large product image gallery with thumbnail navigation.
+- Product title and category.
+- Regular and discounted pricing.
+- Available color options.
+- Product description and specifications.
+- Related products.
+- Prominent **"Message on WhatsApp"** button.
+
+The WhatsApp button should open a conversation with the business using a pre-filled message containing the product name and URL.
+
+## 4. Website Features
+
+### Homepage
+- Premium hero section with compelling brand messaging.
+- Featured product categories.
+- New arrivals and featured products.
+- Popular products.
+- Brand introduction.
+- Promotional banners.
+- Latest blog posts.
+- WhatsApp inquiry call-to-action.
+
+### Global Search
+- Search products across all categories.
+- Search by product name, category, and relevant keywords.
+- Display relevant results with product images and pricing.
+- Provide a clean, responsive search experience.
+
+### Blog Section
+- Blog listing page.
+- Individual blog details pages.
+- Featured image, title, content, author, and publication date.
+- SEO-friendly URLs and metadata.
+- Related articles.
+
+### Location & Contact
+- Business address and location.
+- Google Maps integration.
+- Contact phone number.
+- WhatsApp contact button.
+- Business information and opening hours.
+
+## 5. UI/UX Design Requirements
+
+The website should feel **simple, elegant, modern, and premium**.
+
+Design principles:
+
+- Minimalist furniture-focused aesthetic.
+- Premium typography and carefully selected color palette.
+- Large, high-quality product photography.
+- Spacious layouts and balanced whitespace.
+- Elegant product cards.
+- Subtle hover effects and smooth transitions.
+- Consistent spacing, typography, and component styles.
+- Clean navigation and intuitive user experience.
+- Fully responsive layouts.
+
+Avoid:
+- Unnecessary animations.
+- Excessive gradients.
+- Cluttered layouts.
+- Overcomplicated navigation.
+- Unnecessary features and components.
+
+Prioritize product photography and product discovery.
+
+## 6. Admin Dashboard
+
+Provide a secure admin dashboard for managing website content.
+
+Required management features:
+
+- Product CRUD operations.
+- Product category management.
+- Multiple image uploads per product.
+- Product pricing, discounts, colors, and specifications.
+- Blog CRUD operations.
+- Homepage featured content management.
+- Website contact information and WhatsApp number configuration.
+- Business location and basic website settings.
+
+Use secure authentication for administrators only.
+
+There should be NO customer registration, login, shopping cart, checkout, order management, or payment gateway.
+
+## 7. SEO & Performance
+
+- Server-side rendering or static generation where appropriate.
+- SEO-friendly product and blog URLs.
+- Dynamic metadata and Open Graph tags.
+- XML sitemap and robots.txt.
+- Structured data for products and articles where appropriate.
+- Optimized images and lazy loading.
+- Efficient database queries and indexing.
+- Pagination for product and blog listings.
+- Responsive images and optimized font loading.
+- Appropriate caching and cache invalidation.
+- Excellent Core Web Vitals.
+
+## 8. Architecture & Code Quality
+
+- Use TypeScript strictly.
+- Follow modular architecture and separation of concerns.
+- Keep database operations separate from UI components.
+- Use reusable components and maintainable layouts.
+- Validate all API inputs.
+- Implement secure admin authentication and authorization.
+- Protect against SQL injection, XSS, and common web vulnerabilities.
+- Use environment variables for secrets and database credentials.
+- Provide proper error handling and loading states.
+- Avoid unnecessary dependencies.
+
+## 9. Development Priorities
+
+1. First, inspect the Namecheap hosting environment and confirm deployment compatibility.
+2. Plan the application architecture, database schema, and project structure.
+3. Establish the premium design system.
+4. Build the responsive public-facing website.
+5. Implement product catalogue and global search.
+6. Implement blog, location, and contact sections.
+7. Develop the admin dashboard.
+8. Optimize SEO, security, and performance.
+9. Test production builds and deployment on Namecheap Shared Hosting.
+
+## Final Direction
+
+The final product should look and feel like a premium furniture brand's official website, not a generic e-commerce template.
+
+Keep the experience focused on discovering products and initiating WhatsApp inquiries. Prioritize visual quality, mobile usability, fast loading, maintainability, and compatibility with Namecheap Shared Hosting.
+
+
+this is a demo, you should think, explore the competitor whebisite like hatil and others, our facebook page is: https://www.facebook.com/profile.php?id=61560352716152
+
+it must have predefined admin panel where password can be changed. make plan and necessary md files
+
+For your Artifex Furniture website, I recommend maintaining a small but well-structured collection of Markdown (`.md`) documentation files.
+
+Since you're using an AI coding agent, these files will act as project knowledge and development guidelines. They help maintain consistent architecture, UI quality, coding standards, and business requirements throughout development.
+
+# Recommended Markdown documentation structure
+
+artifex-furniture/
+
+docs/
+
+01-Project-Overview\.md
+
+Business goals, scope, features and requirements.
+
+02-System-Architecture.md
+
+Next.js architecture, modules, API and data flow.
+
+03-Design-System.md
+
+Colors, typography, spacing, components and design principles.
+
+04-Database-Design.md
+
+MySQL schema, relationships, indexes and Prisma models.
+
+05-UI-UX-Guidelines.md
+
+Responsive layouts, navigation, interactions and accessibility.
+
+06-Feature-Specifications.md
+
+Detailed product, blog, search and WhatsApp functionality.
+
+07-Admin-Dashboard.md
+
+Admin workflows, permissions and content management.
+
+08-SEO-Performance.md
+
+SEO, metadata, Core Web Vitals and caching.
+
+09-Security-Guidelines.md
+
+Authentication, validation, authorization and security.
+
+10-Deployment-Guide.md
+
+Namecheap cPanel deployment, environment and production build.
+
+11-Coding-Standards.md
+
+TypeScript, naming, reusable components and code quality.
+
+12-Development-Roadmap.md
+
+Implementation phases, milestones and testing.
+
+AGENTS.md
+
+Important
+
+Root-level instructions for AI coding agents. Defines how to read documentation, follow architecture and implement features.
+
+# What each important file should contain
+
+| Document               | Main responsibility                |
+| ---------------------- | ---------------------------------- |
+| Project Overview       | What to build and why              |
+| System Architecture    | How the application works          |
+| Design System          | How the website looks              |
+| Database Design        | How data is structured             |
+| UI/UX Guidelines       | How users interact                 |
+| Feature Specifications | What each feature does             |
+| Admin Dashboard        | How administrators manage content  |
+| SEO & Performance      | Search visibility and speed        |
+| Security Guidelines    | How the application stays secure   |
+| Deployment Guide       | How to deploy and maintain hosting |
+| Coding Standards       | How developers write code          |
+| Development Roadmap    | What to implement and when         |
+
+## 3 additional files I strongly recommend
+
+1\. `CHANGELOG.md`
+
+Maintain a history of significant changes, new features, and bug fixes.
+
+2\. `DECISIONS.md`
+
+Record important technical decisions and their reasoning.
+
+Example:
+
+- Why MySQL instead of MongoDB?
+- Why Prisma ORM?
+- Why use Cloudflare R2 for images?
+- Why avoid an e-commerce checkout system?
+
+3\. `TESTING-GUIDELINES.md`
+
+Document testing requirements for:
+
+- Product catalogue
+- Image galleries
+- Global search
+- WhatsApp integration
+- Admin authentication
+- Mobile responsiveness
+- Production deployment
+
+# My recommended documentation strategy
+
+Don't create 15 empty Markdown files and expect an AI agent to follow them.
+
+Use three documentation levels:
+
+Level 1
+
+Project-wide instructions
+
+`AGENTS.md`
+
+Rules every AI coding agent must follow.
+
+Level 2
+
+Project documentation
+
+`docs/*.md`
+
+Requirements, architecture, design, database and deployment specifications.
+
+Level 3
+
+Feature-level documentation
+
+`docs/features/*.md`
+
+Detailed specifications for individual modules as the project grows.
+
+## Final recommendation
+
+For Artifex Furniture, start with these 8 essential files:
+
+1. `AGENTS.md`
+2. `docs/PROJECT-OVERVIEW.md`
+3. `docs/SYSTEM-ARCHITECTURE.md`
+4. `docs/DESIGN-SYSTEM.md`
+5. `docs/DATABASE-DESIGN.md`
+6. `docs/FEATURE-SPECIFICATIONS.md`
+7. `docs/CODING-STANDARDS.md`
+8. `docs/DEPLOYMENT-GUIDE.md`
+
+Add the remaining documents when their respective development phases begin.
+
+One important suggestion: Have your AI agent read `AGENTS.md` first, then the relevant documentation before implementing each feature. This prevents inconsistent UI, duplicated logic, and architectural drift.

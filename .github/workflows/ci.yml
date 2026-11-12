@@ -1,0 +1,89 @@
+# CI: typecheck, lint, unit tests, migrations + seed on MariaDB 11.4 (same as production),
+# production build, e2e tests, and the deploy bundle. Reused by deploy.yml (ADR-016/017).
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build & test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    services:
+      mariadb:
+        image: mariadb:11.4
+        env:
+          MARIADB_ROOT_PASSWORD: root
+          MARIADB_DATABASE: artifex_test
+          MARIADB_USER: artifex
+          MARIADB_PASSWORD: artifex
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=5s --health-timeout=5s --health-retries=30
+
+    env:
+      # Test-only values. Production secrets never enter this job.
+      DATABASE_URL: mysql://artifex:artifex@127.0.0.1:3306/artifex_test
+      AUTH_SECRET: ci-only-auth-secret-not-used-anywhere-else-0123456789
+      ADMIN_EMAIL: admin@example.com
+      ADMIN_INITIAL_PASSWORD: ci-only-initial-password
+      # Inlined into the client bundle at build time (repository variables; safe defaults for PRs).
+      NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL || 'http://localhost:3100' }}
+      NEXT_PUBLIC_MEDIA_URL: ${{ vars.NEXT_PUBLIC_MEDIA_URL || 'https://media.example.com' }}
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc # Node 24, same major as cPanel (ADR-015)
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Apply migrations (MariaDB 11.4)
+        run: npx prisma migrate deploy
+
+      - name: Seed twice (must be idempotent)
+        run: |
+          npm run db:seed
+          npm run db:seed
+
+      - name: Build
+        run: npm run build
+
+      - name: E2E tests
+        run: |
+          npx playwright install --with-deps chromium
+          npm run test:e2e
+
+      - name: Package deploy bundle
+        run: npm run package
+
+      - name: Upload bundle
+        uses: actions/upload-artifact@v7
+        with:
+          name: artifex-bundle
+          path: deploy/*.tar.gz
+          retention-days: 14
+          if-no-files-found: error

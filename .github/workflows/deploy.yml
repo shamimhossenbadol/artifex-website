@@ -1,0 +1,146 @@
+# One-click production deploy to Namecheap (cPanel/Passenger) over SSH (ADR-016, ADR-017).
+# Runs the full CI first, then: upload → DB backup → migrate → seed → swap folders → restart →
+# health check, with automatic rollback if the new release doesn't answer.
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_seed:
+        description: "Run the idempotent seed (creates missing categories/settings/admin)"
+        type: boolean
+        default: true
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+
+  deploy:
+    name: Deploy to production
+    needs: ci
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 20
+
+    env:
+      SSH_HOST: ${{ secrets.SSH_HOST }}
+      SSH_PORT: ${{ secrets.SSH_PORT }}
+      SSH_USER: ${{ secrets.SSH_USER }}
+      # Points at the SSH tunnel opened below, e.g. mysql://cpuser_artifex:pw@127.0.0.1:3307/cpuser_artifex
+      DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }}
+      HEALTHCHECK_URL: ${{ vars.HEALTHCHECK_URL }}
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      # Prisma CLI + tsx run here on the runner, so the server needs no build tools (ADR-017).
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download bundle
+        uses: actions/download-artifact@v8
+        with:
+          name: artifex-bundle
+          path: deploy
+
+      - name: Configure SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          {
+            echo "Host artifex"
+            echo "  HostName ${SSH_HOST}"
+            echo "  Port ${SSH_PORT}"
+            echo "  User ${SSH_USER}"
+            echo "  IdentityFile ~/.ssh/deploy_key"
+            echo "  IdentitiesOnly yes"
+            echo "  StrictHostKeyChecking yes"
+            echo "  ServerAliveInterval 30"
+          } > ~/.ssh/config
+          ssh artifex 'echo "connected as $(whoami)"'
+
+      - name: Upload release to ~/artifex-app-next
+        run: |
+          tar -xzf deploy/*.tar.gz -C deploy
+          rsync -az --delete deploy/artifex-app/ artifex:artifex-app-next/
+
+      - name: Open database tunnel (runner:3307 → server:3306)
+        run: ssh -f -N -o ExitOnForwardFailure=yes -L 3307:127.0.0.1:3306 artifex
+
+      - name: Back up database to ~/backups (keeps the last 10)
+        run: node scripts/ci-db-backup.mjs | ssh artifex 'mkdir -p ~/backups && chmod 700 ~/backups && f=~/backups/artifex-$(date -u +%Y%m%d-%H%M%S).sql.gz && cat > "$f" && echo "saved $f" && ls -1t ~/backups/artifex-*.sql.gz | tail -n +11 | xargs -r rm --'
+
+      - name: Apply migrations
+        run: npx prisma migrate deploy
+
+      - name: Seed
+        if: ${{ inputs.run_seed }}
+        env:
+          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+          ADMIN_INITIAL_PASSWORD: ${{ secrets.ADMIN_INITIAL_PASSWORD }}
+        run: npm run db:seed
+
+      - name: Release (swap folders and restart Passenger)
+        id: release
+        run: |
+          ssh artifex 'bash -s' <<'REMOTE'
+          set -euo pipefail
+          cd ~
+          rm -rf artifex-app-prev
+          if [ -d artifex-app ]; then mv artifex-app artifex-app-prev; fi
+          mv artifex-app-next artifex-app
+          mkdir -p artifex-app/tmp
+          touch artifex-app/tmp/restart.txt
+          cat artifex-app/BUILD_INFO.json
+          REMOTE
+
+      - name: Health check
+        if: ${{ env.HEALTHCHECK_URL != '' }}
+        run: |
+          for i in $(seq 1 12); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$HEALTHCHECK_URL" || true)
+            echo "attempt $i: HTTP $code"
+            if [ "$code" = "200" ]; then exit 0; fi
+            sleep 5
+          done
+          echo "::error::Health check failed for $HEALTHCHECK_URL"
+          exit 1
+
+      - name: Roll back to previous release
+        if: ${{ failure() && steps.release.outcome == 'success' }}
+        run: |
+          ssh artifex 'bash -s' <<'REMOTE'
+          set -euo pipefail
+          cd ~
+          if [ -d artifex-app-prev ]; then
+            rm -rf artifex-app-failed
+            mv artifex-app artifex-app-failed
+            mv artifex-app-prev artifex-app
+            mkdir -p artifex-app/tmp
+            touch artifex-app/tmp/restart.txt
+            echo "Rolled back. The failed release is kept in ~/artifex-app-failed for inspection."
+          else
+            echo "No previous release to roll back to."
+          fi
+          REMOTE
+
+      - name: Close tunnel
+        if: ${{ always() }}
+        run: pkill -f "ExitOnForwardFailure=yes -L 3307" || true

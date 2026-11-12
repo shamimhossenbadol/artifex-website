@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { blockAppJavaScript } from "./helpers";
 
 test.describe("site layout", () => {
   test("has landmarks, one h1 and a working skip link", async ({ page }) => {
@@ -54,9 +55,8 @@ test.describe("mobile menu", () => {
 
   test.describe("before JavaScript loads", () => {
     // Slow networks: the menu must work from the HTML alone (Invoker Commands, ADR-024).
-    test.use({ javaScriptEnabled: false });
-
-    test("opens and closes with JavaScript disabled", async ({ page }) => {
+    test("opens and closes before the app's JavaScript has loaded", async ({ page }) => {
+      await blockAppJavaScript(page);
       await expectDrawerWorks(page);
     });
   });

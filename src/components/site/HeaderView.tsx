@@ -1,9 +1,11 @@
-import { ChevronDown, Phone, Search } from "lucide-react";
+import { ChevronDown, Phone } from "lucide-react";
 import Link from "next/link";
 import { COMPANY_LINKS, HEADER_CATEGORY_LABELS, MAX_HEADER_CATEGORIES } from "@/config/site";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Container } from "@/components/ui/Container";
 import { MobileNav } from "./MobileNav";
+import { SearchButton } from "./SearchButton";
+import { SearchDialog } from "./SearchDialog";
 import { StickyHeader } from "./StickyHeader";
 import { WhatsAppIcon } from "./WhatsAppIcon";
 import { Logo } from "./Logo";
@@ -50,10 +52,7 @@ export function HeaderView({
             />
           </div>
           <Logo animated className="h-10" />
-          <Link href="/search" className={`${ICON_LINK} -mr-2 justify-self-end`}>
-            <Search aria-hidden strokeWidth={1.5} className="size-6" />
-            <span className="sr-only">Search</span>
-          </Link>
+          <SearchButton className="-mr-2 justify-self-end" iconClassName="size-6" />
         </Container>
 
         {/* Desktop: [Logo] categories [Search] [Phone] [Inquire] */}
@@ -100,10 +99,7 @@ export function HeaderView({
             </ul>
           </nav>
           <div className="flex items-center gap-1">
-            <Link href="/search" className={ICON_LINK}>
-              <Search aria-hidden strokeWidth={1.5} className="size-5" />
-              <span className="sr-only">Search</span>
-            </Link>
+            <SearchButton />
             {telHref && (
               <a href={telHref} className={ICON_LINK}>
                 <Phone aria-hidden strokeWidth={1.5} className="size-5" />
@@ -119,6 +115,8 @@ export function HeaderView({
           </div>
         </Container>
       </StickyHeader>
+      {/* One shared search overlay for both header layouts (opens in the top layer). */}
+      <SearchDialog />
     </>
   );
 }

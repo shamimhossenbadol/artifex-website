@@ -217,5 +217,17 @@ Format: each ADR has a number, date, status (Accepted / Superseded by ADR-x / Pr
 - Seeded categories: Sofas, Dining Tables, Chairs, Beds, Curtains, Chandeliers (in that order). Dining Tables stays (it's a separate category from "Tables"). Chandeliers use the existing fields: material, dimensions, specs (lights, drop), made-to-order and "Price on request".
 - Existing databases aren't changed by the seed (it never deletes). On the test server the Doors/Tables categories and their two demo products were removed by SQL, Chandeliers was added by the seed, and the category order and the about/SEO texts were updated.
 - **No utility bar.** The logo row is the only header row. Journal/About/Contact stay in the footer and mobile menu; the phone is the header phone icon.
-**Consequences:** Six categories fit the desktop header without a "More" menu. If Dining Tables should also go, remove it the same way (only demo data uses it today).
+**Consequences:** Six categories fit the desktop header without a "More" menu. The owner confirmed on 2026-11-12 that **Dining Tables stays**.
+
+### ADR-027 — Global search implementation (Phase 4)
+**Date:** 2026-11-12 · **Status:** Accepted (implements ADR-007 and F2)
+**Context:** F2 asks for instant suggestions and a results page, matching every term against `searchText` with `%`/`_` escaped (09 §3).
+**Decision:**
+- **Prisma does not escape LIKE wildcards.** Verified on MariaDB 11.4: `contains: "%"` matched all 31 products, while `contains: "\\%"` matched none. So `src/lib/search.ts → escapeLike()` escapes `\`, `%` and `_` for every term before it reaches Prisma.
+- **Query pipeline:** normalise (trim, lowercase, collapse spaces, max 60) → up to 5 distinct terms → AND of `searchText LIKE %term%` on published products in active categories, ≤ 200 candidates → ranked in memory (title prefix > title contains > other; then popular, then newest). One `"use cache"` entry per normalised query (tags `products`, `categories`) serves both suggestions and every results page for that query.
+- **API:** `GET /api/search?q=` validates 2–60 chars (400 otherwise), returns ≤ 6 products (title, href, prices, image, category) + ≤ 3 categories, `Cache-Control: public, max-age=60`; 503 with `no-store` if the DB fails.
+- **Overlay:** one `<dialog id="search-dialog">` in the header, opened by `command="show-modal"` buttons (works before the app bundle loads, like ADR-024). The form submits to `/search` without JS. With JS: 250 ms debounce, AbortController for stale requests, ARIA combobox (↑/↓, Enter, Esc). Loading/stale state is derived from which query a response belongs to (no setState inside the effect).
+- **/search page:** `noindex, follow`, 24 per page, search form, "No results" state with category links and WhatsApp; an empty query shows the form.
+- **Testing "before JavaScript loads":** e2e tests block `/_next/static/chunks/**` (the app bundle) instead of disabling JavaScript. The small inline scripts that reveal streamed HTML still run, which is what a slow phone actually experiences.
+**Consequences:** At catalogue scale (< 2,000 products) LIKE + in-memory ranking is fast; switch to FULLTEXT if it grows (ADR-007).
 

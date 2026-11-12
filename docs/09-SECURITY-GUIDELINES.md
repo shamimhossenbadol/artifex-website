@@ -27,7 +27,7 @@ The public site is read-only. The attack surface is: **admin login** (brute forc
 - Zod schemas in `src/lib/validation/*` are shared by client forms (for UX) and Server Actions (authoritative).
 - Strings are trimmed with max lengths matching DB columns. Numbers are coerced with `int().min(0).max(100_000_000)`. Slugs follow `^[a-z0-9]+(?:-[a-z0-9]+)*$`. Hex colours follow `^#[0-9A-Fa-f]{6}$`.
 - URLs entered by the admin: `mapEmbedUrl` must start with `https://www.google.com/maps/embed`. Social URLs must be `https://` on an allow-listed host. Internal links (`ctaHref`) must start with `/` or `https://`, and `javascript:` is rejected.
-- Search query: 2–60 chars. Escape `%`, `_`, and `\` before `LIKE` (Prisma's `contains` handles parameterisation, but wildcards must be escaped explicitly).
+- Search query: 2–60 chars. Escape `%`, `_`, and `\` before `LIKE` (Prisma's `contains` handles parameterisation, but wildcards must be escaped explicitly; verified on MariaDB 11.4, ADR-027 → `src/lib/search.ts`).
 - Route params (`slug`, `page`) are validated, and invalid ones return `notFound()`.
 
 ## 4. Injection & XSS

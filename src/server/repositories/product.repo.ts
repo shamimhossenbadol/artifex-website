@@ -94,6 +94,24 @@ export async function findPublishedBySlug(slug: string): Promise<ProductDetailRo
   });
 }
 
+export const SEARCH_CANDIDATE_LIMIT = 200;
+
+/**
+ * Search candidates (F2): every term must appear in searchText (AND of LIKE %term%). Terms must
+ * already be LIKE-escaped (src/lib/search.ts → escapeLike). Ranking happens in the service.
+ */
+export async function findSearchCandidates(escapedTerms: string[]) {
+  return db.product.findMany({
+    where: {
+      ...PUBLISHED_IN_ACTIVE_CATEGORY,
+      AND: escapedTerms.map((term) => ({ searchText: { contains: term } })),
+    },
+    orderBy: [{ isPopular: "desc" }, { publishedAt: "desc" }],
+    take: SEARCH_CANDIDATE_LIMIT,
+    select: { ...PRODUCT_CARD_SELECT, isPopular: true, publishedAt: true },
+  });
+}
+
 /** Up to `take` related products: same category first, then popular ones elsewhere (F1.6). */
 export async function findRelatedCards(
   productId: number,

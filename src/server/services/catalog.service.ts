@@ -71,7 +71,7 @@ export function categoryHref(slug: string): string {
   return `/categories/${slug}`;
 }
 
-function toCardVM(row: ProductCardRow): ProductCardVM {
+export function toCardVM(row: ProductCardRow): ProductCardVM {
   const image = row.images[0];
   return {
     id: row.id,

@@ -262,6 +262,18 @@ dialog.drawer[open] {
 dialog.drawer::backdrop {
   animation: backdrop-in 200ms var(--ease-out);
 }
+/* Search overlay (F2): drops in from the top. */
+dialog.search-dialog[open] {
+  animation: search-in 200ms var(--ease-out);
+}
+dialog.search-dialog::backdrop {
+  animation: backdrop-in 200ms var(--ease-out);
+}
+@keyframes search-in {
+  from {
+    transform: translateY(-100%);
+  }
+}
 html:has(dialog[open]:modal) {
   overflow: hidden;
 }

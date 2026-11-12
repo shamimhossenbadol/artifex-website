@@ -17,6 +17,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 - 2026-11-10 — Image storage moved from local disk to **Cloudflare R2** served at `media.<domain>` (ADR-014). Docs updated: architecture, database, SEO, security, deployment, roadmap, and testing.
 
 ### Added
+- 2026-11-12 — Global search (Phase 4): a search overlay from the header with instant suggestions (products with photo and price, plus categories), keyboard navigation, and a results page with pagination and a helpful no-results state.
 - 2026-11-12 — Product catalogue (Phase 3): All furniture and category pages with sorting, "On sale" filter and pagination; product pages with a swipeable gallery, colour swatches that go into the WhatsApp message, a sticky mobile WhatsApp bar, specifications, description, related products, and Product/Breadcrumb structured data.
 - 2026-11-12 — Image pipeline for Cloudflare R2: validation, EXIF stripping and 480/960/1600 px WebP variants, with rollback on failed uploads.
 - 2026-11-12 — Optional demo catalogue (`SEED_DEMO=true`) for CI and test servers.

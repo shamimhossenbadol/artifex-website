@@ -55,12 +55,12 @@ Each phase ends with a short manual review of the phase's acceptance checks.
 **Exit check:** F1 and F3 acceptance criteria pass with seeded demo data. ✅ 2026-11-12: 27 e2e tests pass against the demo catalogue (not-found status is 200 + noindex, ADR-025); real-photo gallery check pending R2.
 
 ## Phase 4 — Global search
-- [ ] Search service (normalisation, wildcard escaping, ranking) with unit tests
-- [ ] `/api/search` route (Zod, cache header)
-- [ ] SearchOverlay client component (debounce, abort, keyboard)
-- [ ] `/search` results page (noindex, empty state)
+- [x] Search service (normalisation, wildcard escaping, ranking) with unit tests
+- [x] `/api/search` route (Zod, cache header)
+- [x] SearchOverlay client component (debounce, abort, keyboard; opens before the app bundle loads)
+- [x] `/search` results page (noindex, empty state)
 
-**Exit check:** F2 acceptance criteria pass.
+**Exit check:** F2 acceptance criteria pass. ✅ 2026-11-12: 20 search e2e tests ("sofa" finds all 26 sofas, AND matching, wildcards literal, < 2 chars → no request/400, keyboard navigation, no-bundle submit).
 
 ## Phase 5 — Blog, About, Contact
 - [ ] Blog service + `/blog` (paginated) + `/blog/[slug]` (markdown, reading time, related, share, Article JSON-LD)

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { Gallery } from "@/components/product/Gallery";
@@ -124,13 +123,7 @@ async function ProductDetail({ params, searchParams }: Props) {
                 { label: product.title },
               ]}
             />
-            <Link
-              href={product.category.href}
-              className="text-eyebrow text-walnut mt-6 inline-flex min-h-8 items-center"
-            >
-              {product.category.name}
-            </Link>
-            <h1 className="text-h1 mt-2">{product.title}</h1>
+            <h1 className="text-h1 mt-4">{product.title}</h1>
             <Price
               regularPrice={product.regularPrice}
               discountPrice={product.discountPrice}
@@ -138,10 +131,10 @@ async function ProductDetail({ params, searchParams }: Props) {
               className="mt-4"
             />
             {product.isMadeToOrder && (
-              <p className="text-small mt-3 flex items-center gap-2">
+              <div className="text-small mt-4 flex flex-col items-start gap-1.5">
                 <Badge>Made to order</Badge>
-                Sizes and finishes can be tailored to your space.
-              </p>
+                <p>Sizes and finishes can be tailored to your space.</p>
+              </div>
             )}
 
             <ProductInquiry
@@ -246,7 +239,7 @@ function ProductSkeleton() {
 
 export default function ProductPage({ params, searchParams }: Props) {
   return (
-    <Container className="py-6 md:py-10">
+    <Container className="pt-0 pb-6 md:py-10">
       <Suspense fallback={<ProductSkeleton />}>
         <ProductDetail params={params} searchParams={searchParams} />
       </Suspense>

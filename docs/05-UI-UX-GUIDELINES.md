@@ -47,7 +47,8 @@ Sections with no content are **hidden**, never left empty.
 ### Product detail
 - Mobile order: gallery → title/category → price → colours → WhatsApp CTA → short description → specs → full description → related.
 - Desktop: two columns (gallery 7/12, info 5/12, info column sticky).
-- Info block: breadcrumbs, category eyebrow, title (h1), price, "Made to order" note if flagged, colour swatches, **WhatsApp button (full width, lg)**, a secondary "Call us" link, short description, then quick facts (material, dimensions).
+- Info block: breadcrumbs (they name the category; no separate category eyebrow), title (h1), price, "Made to order" badge on its own line with its note below, colour swatches, **WhatsApp and Messenger buttons (full width, lg)**, a secondary "Call us" link, short description, then quick facts (material, dimensions).
+- Phones: the gallery starts directly under the header (no top padding) and runs edge to edge.
 - Below: tabs or stacked sections for *Description* and *Specifications* (stacked on mobile, no tabs; tabs are allowed on desktop).
 - Related products: 4 from the same category (excluding the current one), falling back to popular.
 - Mobile sticky bottom bar (appears after the main CTA scrolls out of view): price and a "WhatsApp" button.

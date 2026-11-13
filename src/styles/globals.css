@@ -96,6 +96,11 @@
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
+/* The enlarged first letter of "FURNITURE" (echoes the logo's big A); line height 0 keeps the baseline. */
+@utility text-logo-first {
+  font-size: 1.6em;
+  line-height: 0;
+}
 @utility text-eyebrow {
   font-family: var(--font-sans);
   font-weight: 500;

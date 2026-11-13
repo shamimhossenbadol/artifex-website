@@ -37,9 +37,12 @@ export function Logo({ variant = "wordmark", priority = false, className }: Logo
           loading={priority ? "eager" : "lazy"}
           draggable={false}
         />
-        {/* Same line and cap height as "RTIFEX", in the logo red (ADR-045). */}
+        {/*
+          Same line and cap height as "RTIFEX", in the logo red; the F is enlarged like the A of
+          ARTIFEX and shares the baseline (ADR-045).
+        */}
         <span aria-hidden className="text-logo-word text-brand mt-[var(--logo-word-top)] ml-1.5">
-          Furniture
+          <span className="text-logo-first">F</span>urniture
         </span>
       </Link>
     );

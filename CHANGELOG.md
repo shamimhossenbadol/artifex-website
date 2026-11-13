@@ -16,6 +16,8 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 - 2026-11-12 — Test site showed a blank white page after the Phase 2 deploy: the deploy bundle was missing Turbopack's Prisma alias. Packaging now recreates and verifies it, CI boots the real bundle, and the deploy health check requires a complete page (ADR-023).
 
 ### Changed
+- 2026-11-14 — Product page on phones: the photo starts right under the header (no gap); the separate category label above the title is gone (the breadcrumbs already show it); "Made to order" sits on its own line with its note below.
+- 2026-11-14 — Mobile header logo: the F of FURNITURE is enlarged like the A of ARTIFEX (ADR-045).
 - 2026-11-13 — Mobile header logo now reads "ARTIFEX FURNITURE" on one line, with "Furniture" matched to the logo's lettering (ADR-045).
 - 2026-11-13 — Mobile design pass (ADR-044): Messenger next to WhatsApp everywhere (product page and its sticky bar, homepage help band, contact, about); smaller floating buttons that stay clear of the phone's home bar; tighter spacing; full-width buttons; "View all" beside section titles; swipeable journal row on the homepage and compact rows on the Journal page; shorter sort labels; full-width product photo placeholder; a compact text-only hero.
 - 2026-11-13 — Header: always compact (64 px with a 40 px logo, bottom border) instead of shrinking and growing while scrolling; the small scroll script was removed.

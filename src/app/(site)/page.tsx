@@ -102,7 +102,7 @@ async function HomeSections() {
 
 function HeroSkeleton() {
   return (
-    <div aria-hidden className="flex min-h-[80svh] items-end md:min-h-[88vh] md:items-center">
+    <div aria-hidden className="flex min-h-[60svh] items-end md:min-h-[68vh] md:items-center">
       <Container className="py-16">
         <Skeleton className="h-4 w-40 md:mx-auto" />
         <Skeleton className="mt-6 h-14 w-full max-w-2xl md:mx-auto md:h-20" />

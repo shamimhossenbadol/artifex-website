@@ -1,4 +1,4 @@
-// Homepage content queries (F6): hero singleton and promo banners.
+// Homepage content queries (F6): hero singleton, hero slides (ADR-039) and promo banners.
 import { db } from "@/lib/db";
 
 export async function findHomeHero() {
@@ -8,8 +8,6 @@ export async function findHomeHero() {
       eyebrow: true,
       heading: true,
       subheading: true,
-      imagePath: true,
-      imageAlt: true,
       ctaLabel: true,
       ctaHref: true,
       secondaryLabel: true,
@@ -19,6 +17,17 @@ export async function findHomeHero() {
 }
 
 export type HomeHeroRow = NonNullable<Awaited<ReturnType<typeof findHomeHero>>>;
+
+/** Hero slides in admin order (public and admin). */
+export async function findHeroSlides() {
+  return db.homeHeroSlide.findMany({
+    orderBy: [{ sortOrder: "asc" }, { id: "asc" }],
+    take: 20,
+    select: { id: true, imagePath: true, imageAlt: true },
+  });
+}
+
+export type HeroSlideRow = Awaited<ReturnType<typeof findHeroSlides>>[number];
 
 /** Active banners in admin order; the date window is applied at request time by the service. */
 export async function findActiveBanners() {
@@ -48,8 +57,6 @@ export type HeroData = {
   eyebrow: string | null;
   heading: string;
   subheading: string | null;
-  imagePath: string;
-  imageAlt: string;
   ctaLabel: string;
   ctaHref: string;
   secondaryLabel: string | null;
@@ -58,6 +65,46 @@ export type HeroData = {
 
 export async function saveHomeHero(data: HeroData): Promise<void> {
   await db.homeHero.upsert({ where: { id: 1 }, update: data, create: { ...data, id: 1 } });
+}
+
+export async function countHeroSlides(): Promise<number> {
+  return db.homeHeroSlide.count();
+}
+
+export async function findHeroSlide(id: number): Promise<HeroSlideRow | null> {
+  return db.homeHeroSlide.findUnique({
+    where: { id },
+    select: { id: true, imagePath: true, imageAlt: true },
+  });
+}
+
+/** New slides go to the end. */
+export async function insertHeroSlide(data: {
+  imagePath: string;
+  imageAlt: string;
+}): Promise<HeroSlideRow> {
+  const last = await db.homeHeroSlide.aggregate({ _max: { sortOrder: true } });
+  return db.homeHeroSlide.create({
+    data: { ...data, sortOrder: (last._max.sortOrder ?? 0) + 10 },
+    select: { id: true, imagePath: true, imageAlt: true },
+  });
+}
+
+export async function updateHeroSlideAlt(id: number, imageAlt: string): Promise<void> {
+  await db.homeHeroSlide.update({ where: { id }, data: { imageAlt } });
+}
+
+export async function deleteHeroSlide(id: number): Promise<void> {
+  await db.homeHeroSlide.delete({ where: { id } });
+}
+
+/** Rewrites sortOrder as 10, 20, 30… in the given id order, in one transaction. */
+export async function reorderHeroSlides(ids: number[]): Promise<void> {
+  await db.$transaction(
+    ids.map((id, index) =>
+      db.homeHeroSlide.update({ where: { id }, data: { sortOrder: (index + 1) * 10 } }),
+    ),
+  );
 }
 
 const BANNER_ADMIN_SELECT = {

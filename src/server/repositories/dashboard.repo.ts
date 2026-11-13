@@ -28,9 +28,9 @@ export function findRecentlyUpdatedProducts(take = 5) {
 }
 
 export async function findDashboardSettings() {
-  const [settings, hero] = await Promise.all([
+  const [settings, heroSlides] = await Promise.all([
     db.siteSetting.findUnique({ where: { id: 1 }, select: { whatsappNumber: true } }),
-    db.homeHero.findUnique({ where: { id: 1 }, select: { imagePath: true } }),
+    db.homeHeroSlide.count(),
   ]);
-  return { whatsappNumber: settings?.whatsappNumber ?? "", heroImagePath: hero?.imagePath ?? "" };
+  return { whatsappNumber: settings?.whatsappNumber ?? "", heroSlides };
 }

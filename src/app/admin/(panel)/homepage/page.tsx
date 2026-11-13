@@ -4,16 +4,22 @@ import Link from "next/link";
 import { AdminPageHeader, AdminPanel } from "@/components/admin/AdminPageHeader";
 import { BannerList } from "@/components/admin/home/BannerList";
 import { HeroForm } from "@/components/admin/home/HeroForm";
+import { HeroSlides } from "@/components/admin/home/HeroSlides";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { requireAdmin } from "@/server/services/auth.service";
-import { getHeroForEdit, listBanners } from "@/server/services/home-admin.service";
+import { getHeroForEdit, listBanners, listHeroSlides } from "@/server/services/home-admin.service";
+import { MAX_HERO_SLIDES } from "@/server/services/home.service";
 
 export const metadata: Metadata = { title: "Homepage" };
 
-/** Homepage editor (07 §3.5): hero and promo banners. Featured lists arrive in milestone 7f. */
+/** Homepage editor (07 §3.5): hero text, hero photos (ADR-039) and promo banners. */
 export default async function HomepageAdminPage() {
   await requireAdmin();
-  const [hero, banners] = await Promise.all([getHeroForEdit(), listBanners()]);
+  const [hero, slides, banners] = await Promise.all([
+    getHeroForEdit(),
+    listHeroSlides(),
+    listBanners(),
+  ]);
 
   return (
     <>
@@ -26,7 +32,20 @@ export default async function HomepageAdminPage() {
           <h2 id="hero-title" className="text-h3 mb-4">
             Hero
           </h2>
-          <HeroForm hero={hero} />
+          <HeroForm hero={hero} imagePath={slides[0]?.path ?? null} />
+        </section>
+
+        <section aria-labelledby="slides-title">
+          <h2 id="slides-title" className="text-h3">
+            Hero photos
+          </h2>
+          <p className="text-ink-soft mt-1 mb-4">
+            Up to {MAX_HERO_SLIDES} wide, bright room photos (at least 1600 px wide). Visitors move
+            between them with the arrows; the text stays on top. Changes save immediately.
+          </p>
+          <AdminPanel>
+            <HeroSlides slides={slides} max={MAX_HERO_SLIDES} />
+          </AdminPanel>
         </section>
 
         <section aria-labelledby="banners-title">

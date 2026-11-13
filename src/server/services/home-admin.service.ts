@@ -1,74 +1,114 @@
-// Homepage editor (07 §3.5): hero and promo banners. Images go to R2 under "home/".
-// Order for image changes: upload the new one → save the row → delete the old one, so a failure
-// never leaves a row pointing at a missing image.
+// Homepage editor (07 §3.5): hero text, hero slides (ADR-039) and promo banners. Images go to R2
+// under "home/". Order for image changes: upload the new one → save the row → delete the old one,
+// so a failure never leaves a row pointing at a missing image.
 import { connection } from "next/server";
 import type { BannerInput, HeroInput } from "@/lib/validation/home";
 import {
+  countHeroSlides,
   createBanner as insertBanner,
   deleteBanner as removeBanner,
+  deleteHeroSlide,
   findAllBanners,
   findBannerById,
+  findHeroSlide,
+  findHeroSlides,
   findHomeHero,
+  insertHeroSlide,
   reorderBanners,
+  reorderHeroSlides,
   saveHomeHero,
   updateBanner as writeBanner,
+  updateHeroSlideAlt,
   type AdminBannerRow,
   type BannerData,
   type HeroData,
 } from "@/server/repositories/home.repo";
-import { PLACEHOLDER_HERO_IMAGE } from "./home.service";
+import { MAX_HERO_SLIDES } from "./home.service";
 import { discardImage, storeImage } from "./media.service";
 
 export type { AdminBannerRow };
 
-export type HeroForEdit = HeroData & { hasImage: boolean };
+export type HeroForEdit = HeroData;
+
+/** Same shape as product photos, so the admin can reuse the photo manager. */
+export type AdminHeroSlide = { id: number; path: string; alt: string };
 
 const DEFAULT_HERO_DATA: HeroData = {
   eyebrow: "Artifex Furniture",
   heading: "Crafted furniture for modern homes",
   subheading: "Solid materials, honest craft, and comfort that lasts.",
-  imagePath: PLACEHOLDER_HERO_IMAGE,
-  imageAlt: "Living room furnished by Artifex Furniture",
   ctaLabel: "Explore the collection",
   ctaHref: "/products",
   secondaryLabel: "Visit the showroom",
   secondaryHref: "/contact",
 };
 
+/** Used when a slide is uploaded; the admin can refine it, and alt text is never empty. */
+export const DEFAULT_SLIDE_ALT = "Furniture by Artifex Furniture";
+
 export async function getHeroForEdit(): Promise<HeroForEdit> {
   await connection();
-  const row = (await findHomeHero()) ?? DEFAULT_HERO_DATA;
-  return { ...row, hasImage: Boolean(row.imagePath) && row.imagePath !== PLACEHOLDER_HERO_IMAGE };
+  return (await findHomeHero()) ?? DEFAULT_HERO_DATA;
 }
 
 export type SaveResult<T = void> =
   { ok: true; data: T } | { ok: false; error: string; field?: string };
 
-export async function saveHero(input: HeroInput, file: File | null): Promise<SaveResult> {
-  const current = (await findHomeHero()) ?? DEFAULT_HERO_DATA;
-  const hasImage = Boolean(file) || current.imagePath !== PLACEHOLDER_HERO_IMAGE;
-  if (hasImage && !input.imageAlt) {
-    return { ok: false, error: "Describe the photo for screen readers.", field: "imageAlt" };
-  }
+export async function saveHero(input: HeroInput): Promise<SaveResult> {
+  await saveHomeHero(input);
+  return { ok: true, data: undefined };
+}
 
-  let imagePath = current.imagePath;
-  if (file) {
-    const upload = await storeImage(file, "home");
-    if (!upload.ok) return { ok: false, error: upload.error, field: "image" };
-    imagePath = upload.image.path;
-  }
+// --- Hero slides (ADR-039) ---------------------------------------------------------------------
 
+export async function listHeroSlides(): Promise<AdminHeroSlide[]> {
+  await connection();
+  return (await findHeroSlides()).map((s) => ({ id: s.id, path: s.imagePath, alt: s.imageAlt }));
+}
+
+export async function addHeroSlide(file: File): Promise<SaveResult<AdminHeroSlide>> {
+  if ((await countHeroSlides()) >= MAX_HERO_SLIDES) {
+    return { ok: false, error: `The hero can have up to ${MAX_HERO_SLIDES} photos.` };
+  }
+  const upload = await storeImage(file, "home");
+  if (!upload.ok) return { ok: false, error: upload.error };
   try {
-    await saveHomeHero({
-      ...input,
-      imagePath,
-      imageAlt: input.imageAlt ?? current.imageAlt,
+    const row = await insertHeroSlide({
+      imagePath: upload.image.path,
+      imageAlt: DEFAULT_SLIDE_ALT,
     });
+    return { ok: true, data: { id: row.id, path: row.imagePath, alt: row.imageAlt } };
   } catch (err) {
-    if (file) await discardImage(imagePath);
+    await discardImage(upload.image.path);
     throw err;
   }
-  if (file) await discardImage(current.imagePath);
+}
+
+const SLIDE_GONE: SaveResult = { ok: false, error: "This photo no longer exists." };
+
+export async function setHeroSlideAlt(id: number, alt: string): Promise<SaveResult> {
+  if (!(await findHeroSlide(id))) return SLIDE_GONE;
+  await updateHeroSlideAlt(id, alt);
+  return { ok: true, data: undefined };
+}
+
+export async function moveHeroSlide(id: number, direction: "up" | "down"): Promise<SaveResult> {
+  const ids = (await findHeroSlides()).map((s) => s.id);
+  const index = ids.indexOf(id);
+  if (index === -1) return SLIDE_GONE;
+  const target = direction === "up" ? index - 1 : index + 1;
+  if (target >= 0 && target < ids.length) {
+    [ids[index], ids[target]] = [ids[target]!, ids[index]!];
+    await reorderHeroSlides(ids);
+  }
+  return { ok: true, data: undefined };
+}
+
+export async function removeHeroSlide(id: number): Promise<SaveResult> {
+  const slide = await findHeroSlide(id);
+  if (!slide) return { ok: true, data: undefined };
+  await deleteHeroSlide(id);
+  await discardImage(slide.imagePath);
   return { ok: true, data: undefined };
 }
 

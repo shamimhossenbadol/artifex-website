@@ -84,7 +84,7 @@ Each phase ends with a short manual review of the phase's acceptance checks.
 - [x] Products: list/filter, create/edit form (all sections), image uploader (sharp variants → R2, reorder, primary, alt, R2 delete on remove), duplicate, delete (7d, ADR-034); draft preview `?preview=1` for products and posts (ADR-037)
 - [x] Categories: CRUD, reorder, toggles (7c, ADR-033)
 - [x] Blog: CRUD with Markdown editor + image insert (7e, ADR-036)
-- [x] Homepage: hero, promo banners (7b, ADR-031). Featured lists (7f) **skipped**: the owner removed the Featured/Most loved rails (ADR-035, ADR-037)
+- [x] Homepage: hero, promo banners (7b, ADR-031); hero photo slider (ADR-039). Featured lists (7f) **skipped**: the owner removed the Featured/Most loved rails (ADR-035, ADR-037)
 - [x] Settings: business, contact/WhatsApp (test link), location/map/hours, social, SEO (ADR-031)
 - [x] Revalidation wired per 07 §5 (verified per action 2026-11-13: products, images, categories, blog, hero/banners, settings)
 

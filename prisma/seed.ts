@@ -104,8 +104,6 @@ async function seedHomeHero(): Promise<void> {
       eyebrow: "Artifex Furniture",
       heading: "Crafted furniture for modern homes",
       subheading: "Solid materials, honest craft, and comfort that lasts.",
-      imagePath: "home/placeholder-hero", // replaced from admin once real photos are uploaded
-      imageAlt: "A living room furnished by Artifex Furniture",
       ctaLabel: "Browse products",
       ctaHref: "/products",
       secondaryLabel: "Visit the showroom",

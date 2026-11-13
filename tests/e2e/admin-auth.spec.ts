@@ -184,6 +184,9 @@ test("homepage editor saves the hero and validates new banners", async ({ page }
   await heading.fill(original);
   await page.getByRole("button", { name: "Save hero" }).click();
   await expect(page.getByText("Hero saved. The homepage is updated.").first()).toBeVisible();
+  // Hero photos are managed as a list of slides (ADR-039); uploads need R2, so not exercised here.
+  await expect(page.getByRole("heading", { name: "Hero photos" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Choose photos" })).toBeVisible();
 
   await page.getByRole("link", { name: "New banner" }).click();
   await expect(page).toHaveURL(/\/admin\/homepage\/banners\/new$/);

@@ -1,5 +1,6 @@
 "use client";
-// Hero editor (07 §3.5): text fields with a small live preview, plus the photo.
+// Hero editor (07 §3.5): text fields with a small live preview over the first slide. The photos
+// themselves are managed separately in <HeroSlides> (ADR-039).
 import Image from "next/image";
 import { useState } from "react";
 import { Input } from "@/components/ui/Input";
@@ -8,7 +9,6 @@ import { cn } from "@/lib/utils";
 import { saveHeroAction } from "@/server/actions/home.actions";
 import type { HeroForEdit } from "@/server/services/home-admin.service";
 import { AdminField, AdminForm, FormSection } from "../AdminForm";
-import { ImageField } from "../ImageField";
 
 type Text = {
   eyebrow: string;
@@ -20,7 +20,7 @@ type Text = {
   secondaryHref: string;
 };
 
-export function HeroForm({ hero }: { hero: HeroForEdit }) {
+export function HeroForm({ hero, imagePath }: { hero: HeroForEdit; imagePath: string | null }) {
   const [text, setText] = useState<Text>({
     eyebrow: hero.eyebrow ?? "",
     heading: hero.heading,
@@ -36,11 +36,13 @@ export function HeroForm({ hero }: { hero: HeroForEdit }) {
     onChange: (e: { target: { value: string } }) =>
       setText((t) => ({ ...t, [key]: e.target.value })),
   });
-  const imagePath = hero.hasImage ? hero.imagePath : null;
 
   return (
     <AdminForm action={saveHeroAction} submitLabel="Save hero">
-      <FormSection title="Preview" description="A small version of the top of the homepage.">
+      <FormSection
+        title="Preview"
+        description="A small version of the top of the homepage, over the first photo."
+      >
         <div
           className={cn(
             "relative isolate flex aspect-[4/3] items-end overflow-hidden rounded-md p-5 sm:aspect-[21/9] sm:items-center sm:p-8",
@@ -108,31 +110,6 @@ export function HeroForm({ hero }: { hero: HeroForEdit }) {
             <Input {...bind("secondaryHref")} maxLength={255} />
           </AdminField>
         </div>
-      </FormSection>
-
-      <FormSection
-        title="Photo"
-        description="A wide, bright room photo works best (at least 1600 px wide). Text sits on top of it."
-      >
-        <ImageField
-          key={hero.imagePath}
-          name="image"
-          label="Hero photo"
-          currentPath={imagePath}
-          currentAlt={hero.imageAlt}
-          aspect="aspect-[16/9]"
-        />
-        <AdminField
-          name="imageAlt"
-          label="Photo description"
-          hint="What the photo shows, for screen readers and Google, e.g. “Walnut sofa in a bright living room”."
-        >
-          <Input
-            name="imageAlt"
-            defaultValue={hero.hasImage ? hero.imageAlt : ""}
-            maxLength={160}
-          />
-        </AdminField>
       </FormSection>
     </AdminForm>
   );

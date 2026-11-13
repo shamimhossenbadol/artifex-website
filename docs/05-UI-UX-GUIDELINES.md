@@ -27,7 +27,7 @@
 ## 3. Page layouts
 
 ### Home
-1. Hero: full-bleed image (min-h 80svh mobile / 88vh desktop), heading, subheading, and two CTAs ("Explore collection", "Visit showroom").
+1. Hero: full-bleed image (min-h 60svh mobile / 68vh desktop), heading, subheading, and two CTAs ("Explore collection", "Visit showroom"). With several photos the background is a slider the visitor controls (arrows, dots, swipe; never autoplay); the text stays put (ADR-039).
 2. Collections (heading "Collections", no eyebrow): category tiles (mobile: horizontal scroll-snap row with partial next-tile peek; desktop: grid of 4 + 3 or 7-across).
 3. New arrivals (heading only, no eyebrow): rail of 8 cards (mobile horizontal scroll; desktop 4-col grid).
 4. Brand introduction: split image/text, with "Our story →".

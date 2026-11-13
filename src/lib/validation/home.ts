@@ -1,4 +1,4 @@
-// Zod schemas for the homepage editor (07 §3.5): hero and promo banners.
+// Zod schemas for the homepage editor (07 §3.5): hero, hero slides and promo banners.
 import { z } from "zod";
 import { optionalText, requiredText } from "./settings";
 
@@ -22,7 +22,6 @@ export const heroSchema = z
     eyebrow: optionalText(60),
     heading: requiredText(120, "Heading"),
     subheading: optionalText(240),
-    imageAlt: optionalText(160),
     ctaLabel: requiredText(40, "Button text"),
     ctaHref: requiredLink("Button link"),
     secondaryLabel: optionalText(40),
@@ -34,6 +33,8 @@ export const heroSchema = z
   });
 
 export type HeroInput = z.infer<typeof heroSchema>;
+
+export const slideAltSchema = requiredText(160, "Photo description");
 
 /** Dhaka is UTC+6 all year (no DST). Dates from <input type="date"> are Dhaka calendar days. */
 const DHAKA_OFFSET_MS = 6 * 60 * 60 * 1000;

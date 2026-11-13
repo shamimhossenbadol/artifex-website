@@ -9,7 +9,7 @@ Category 1───* Product 1───* ProductImage
                      │ 1───* ProductColor
                      │ 1───* ProductSpec
 BlogPost
-HomeHero (singleton)   PromoBanner *
+HomeHero (singleton)   HomeHeroSlide *   PromoBanner *
 SiteSetting (singleton)
 AdminUser   LoginAttempt
 InquiryClick (optional, Phase 8)
@@ -162,13 +162,21 @@ model HomeHero {                      // singleton, id = 1
   eyebrow       String? @db.VarChar(60)
   heading       String  @db.VarChar(120)
   subheading    String? @db.VarChar(240)
-  imagePath     String  @db.VarChar(255)
-  imageAlt      String  @db.VarChar(160)
   ctaLabel      String  @db.VarChar(40)
   ctaHref       String  @db.VarChar(255)
   secondaryLabel String? @db.VarChar(40)
   secondaryHref  String? @db.VarChar(255)
   updatedAt     DateTime @updatedAt
+}
+
+model HomeHeroSlide {                 // hero background photos, max 5, manual slider (ADR-039)
+  id          Int      @id @default(autoincrement())
+  imagePath   String   @db.VarChar(255)
+  imageAlt    String   @db.VarChar(160)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  @@index([sortOrder])
 }
 
 model PromoBanner {

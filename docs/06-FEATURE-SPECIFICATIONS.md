@@ -89,7 +89,7 @@ Format: `Intl.NumberFormat('en-IN')` grouping with the `৳` prefix (BD uses lak
 
 ## F6. Homepage content
 
-- Hero (singleton), promo banners (active and within `startsAt`–`endsAt`, max 2 shown), categories with `showOnHome`, and rails for new arrivals (flagged, or newest if none are flagged), featured, and popular (each max 8, ordered by `homeSortOrder`), plus the latest 3 posts.
+- Hero (singleton text over up to 5 slide photos in a manual slider, ADR-039), promo banners (active and within `startsAt`–`endsAt`, max 2 shown), categories with `showOnHome`, and rails for new arrivals (flagged, or newest if none are flagged), featured, and popular (each max 8, ordered by `homeSortOrder`), plus the latest 3 posts.
 - All of it is managed in admin (07). The whole home page is cached under tags `home`, `products`, `categories`, `blog`, and `settings`.
 
 ---

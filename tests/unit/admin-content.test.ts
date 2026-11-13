@@ -17,6 +17,13 @@ import {
 const repo = vi.hoisted(() => ({
   findHomeHero: vi.fn(),
   saveHomeHero: vi.fn(),
+  findHeroSlides: vi.fn(),
+  findHeroSlide: vi.fn(),
+  countHeroSlides: vi.fn(),
+  insertHeroSlide: vi.fn(),
+  updateHeroSlideAlt: vi.fn(),
+  deleteHeroSlide: vi.fn(),
+  reorderHeroSlides: vi.fn(),
   findAllBanners: vi.fn(),
   findBannerById: vi.fn(),
   createBanner: vi.fn(),
@@ -31,8 +38,17 @@ vi.mock("next/cache", () => ({ cacheTag: () => undefined, cacheLife: () => undef
 vi.mock("@/server/repositories/home.repo", () => repo);
 vi.mock("@/server/services/media.service", () => media);
 
-const { bannerState, deleteBanner, moveBanner, saveHero, updateBanner } =
-  await import("@/server/services/home-admin.service");
+const {
+  addHeroSlide,
+  bannerState,
+  deleteBanner,
+  moveBanner,
+  moveHeroSlide,
+  removeHeroSlide,
+  saveHero,
+  updateBanner,
+} = await import("@/server/services/home-admin.service");
+const { MAX_HERO_SLIDES } = await import("@/server/services/home.service");
 
 const settings = (data: Record<string, string>) => settingsFormSchema.safeParse(data);
 
@@ -229,7 +245,6 @@ describe("homepage image changes", () => {
     eyebrow: null,
     heading: "Heading",
     subheading: null,
-    imageAlt: "A sofa",
     ctaLabel: "Explore",
     ctaHref: "/products",
     secondaryLabel: null,
@@ -238,52 +253,67 @@ describe("homepage image changes", () => {
 
   beforeEach(() => {
     vi.resetAllMocks();
-    repo.findHomeHero.mockResolvedValue({ ...heroInput, imagePath: OLD, imageAlt: "Old" });
     media.storeImage.mockResolvedValue({
       ok: true,
       image: { path: NEW, width: 1600, height: 900 },
     });
+    repo.countHeroSlides.mockResolvedValue(1);
+    repo.insertHeroSlide.mockImplementation(async (d: { imagePath: string; imageAlt: string }) => ({
+      id: 9,
+      ...d,
+    }));
   });
 
-  it("uploads, saves, then deletes the old image", async () => {
+  it("saves the hero text without touching images", async () => {
+    expect(await saveHero(heroInput)).toEqual({ ok: true, data: undefined });
+    expect(repo.saveHomeHero).toHaveBeenCalledWith(heroInput);
+    expect(media.storeImage).not.toHaveBeenCalled();
+  });
+
+  it("uploads a hero slide, then saves it with a default description", async () => {
     const order: string[] = [];
     media.storeImage.mockImplementation(async () => {
       order.push("upload");
       return { ok: true, image: { path: NEW, width: 1600, height: 900 } };
     });
-    repo.saveHomeHero.mockImplementation(async () => void order.push("save"));
-    media.discardImage.mockImplementation(async (p: string) => void order.push(`discard ${p}`));
-
-    expect(await saveHero(heroInput, file)).toEqual({ ok: true, data: undefined });
-    expect(order).toEqual(["upload", "save", `discard ${OLD}`]);
-    expect(repo.saveHomeHero.mock.calls[0]?.[0]).toMatchObject({ imagePath: NEW });
+    repo.insertHeroSlide.mockImplementation(async (d: { imagePath: string; imageAlt: string }) => {
+      order.push("save");
+      return { id: 9, ...d };
+    });
+    const result = await addHeroSlide(file);
+    expect(order).toEqual(["upload", "save"]);
+    expect(result).toMatchObject({ ok: true, data: { id: 9, path: NEW } });
+    expect(result.ok && result.data.alt.length).toBeGreaterThan(0);
   });
 
-  it("removes the new upload again if saving fails", async () => {
-    repo.saveHomeHero.mockRejectedValue(new Error("db down"));
-    await expect(saveHero(heroInput, file)).rejects.toThrow("db down");
+  it("removes the uploaded slide again if saving fails", async () => {
+    repo.insertHeroSlide.mockRejectedValue(new Error("db down"));
+    await expect(addHeroSlide(file)).rejects.toThrow("db down");
     expect(media.discardImage).toHaveBeenCalledWith(NEW);
-    expect(media.discardImage).not.toHaveBeenCalledWith(OLD);
   });
 
-  it("keeps the current image when no file is chosen", async () => {
-    await saveHero(heroInput, null);
+  it("refuses more than the maximum number of slides without uploading", async () => {
+    repo.countHeroSlides.mockResolvedValue(MAX_HERO_SLIDES);
+    expect(await addHeroSlide(file)).toMatchObject({ ok: false });
     expect(media.storeImage).not.toHaveBeenCalled();
-    expect(repo.saveHomeHero.mock.calls[0]?.[0]).toMatchObject({ imagePath: OLD });
-    expect(media.discardImage).not.toHaveBeenCalled();
   });
 
-  it("asks for a description when the hero has a photo", async () => {
-    const result = await saveHero({ ...heroInput, imageAlt: null }, null);
-    expect(result).toMatchObject({ ok: false, field: "imageAlt" });
-    expect(repo.saveHomeHero).not.toHaveBeenCalled();
+  it("deletes the slide row before its image", async () => {
+    const order: string[] = [];
+    repo.findHeroSlide.mockResolvedValue({ id: 4, imagePath: OLD, imageAlt: "Sofa" });
+    repo.deleteHeroSlide.mockImplementation(async () => void order.push("delete"));
+    media.discardImage.mockImplementation(async (p: string) => void order.push(`discard ${p}`));
+    await removeHeroSlide(4);
+    expect(order).toEqual(["delete", `discard ${OLD}`]);
   });
 
-  it("reports upload errors on the image field without saving", async () => {
-    media.storeImage.mockResolvedValue({ ok: false, error: "Use a JPEG, PNG or WebP image." });
-    const result = await saveHero(heroInput, file);
-    expect(result).toMatchObject({ ok: false, field: "image" });
-    expect(repo.saveHomeHero).not.toHaveBeenCalled();
+  it("moves a slide one place and ignores moves past the ends", async () => {
+    repo.findHeroSlides.mockResolvedValue([{ id: 1 }, { id: 2 }, { id: 3 }]);
+    await moveHeroSlide(3, "up");
+    expect(repo.reorderHeroSlides).toHaveBeenCalledWith([1, 3, 2]);
+    repo.reorderHeroSlides.mockClear();
+    await moveHeroSlide(1, "up");
+    expect(repo.reorderHeroSlides).not.toHaveBeenCalled();
   });
 
   it("replaces a banner image and deletes the banner's image on delete", async () => {

@@ -30,7 +30,7 @@ Session and security mechanics are in `09-SECURITY-GUIDELINES.md` §2.
 - Quick links: Add product, Write post, Edit homepage.
 - "Recently updated products" (5).
 - Optional (Phase 8): top 5 products by WhatsApp clicks (last 30 days).
-- Warnings: products without images, the WhatsApp number not set, the hero image missing.
+- Warnings: products without images, the WhatsApp number not set, no hero photos.
 
 ### 3.2 Products
 - **List:** search by title, filter by category/status/flags, and sort by updated/price. Columns: thumb, title, category, price, status, flags (★ featured, 🔥 popular, New), updated. Row actions: Edit, View, Duplicate, Delete (with confirmation). Paginated at 20.
@@ -60,7 +60,8 @@ Session and security mechanics are in `09-SECURITY-GUIDELINES.md` §2.
 - **As built (ADR-036):** the publish date can be today or earlier, never in the future (no scheduling). "Insert image" uploads one photo to R2 (`blog/` folder) and inserts `![Describe the image](blog/…)`; images removed from the Markdown are deleted from R2 when the post is saved, and all of a post's images when it is deleted. Blank cover description uses the title.
 
 ### 3.5 Homepage
-- **Hero:** heading, eyebrow, subheading, image, two CTA label/link pairs, with a live preview card.
+- **Hero:** heading, eyebrow, subheading, two CTA label/link pairs, with a live preview card over the first photo.
+- **Hero photos (ADR-039):** up to 5 slides managed like product photos (multi-upload queue, alt text, move up/down, delete; changes save immediately).
 - **Promo banners:** list + form (title, subtitle, image, link, active, date range, order).
 - **Featured content:** three reorderable lists (New arrivals, Featured, Popular) showing flagged products; add via product picker search and remove (unflags). This is a convenience view over the product flags + `homeSortOrder`.
 - **Home categories:** shortcut to the category ordering and visibility.

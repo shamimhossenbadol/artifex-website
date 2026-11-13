@@ -14,6 +14,8 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 - 2026-11-12 — Test site showed a blank white page after the Phase 2 deploy: the deploy bundle was missing Turbopack's Prisma alias. Packaging now recreates and verifies it, CI boots the real bundle, and the deploy health check requires a complete page (ADR-023).
 
 ### Changed
+- 2026-11-13 — Homepage "Our story" section is more compact: a smaller logo panel (narrower column, shorter shape) and less padding.
+- 2026-11-13 — Homepage hero: up to 5 background photos that visitors move through with arrows, dots or a swipe (no autoplay); the hero is about a quarter shorter. Admin → Homepage has a new "Hero photos" section that works like product photos, so hero photos can now be deleted (their files are removed from R2 too); an already-uploaded hero photo becomes the first slide (ADR-039).
 - 2026-11-13 — Layout (ADR-035): Journal, About and Contact moved into the header (Chairs removed from it); compact footer (logo, description, social icons, address, phone, WhatsApp); Messenger floating button above WhatsApp; homepage shows "Collections" and "New arrivals" headings only, without the Featured and Most loved rails; the help band heading fits on one line; product photos are square on cards and less tall on product pages.
 - 2026-11-13 — Contact page: "Get directions" opens Google Maps directions to the Artifex Furniture place; new "Message us on Facebook" link (Messenger); removed the "Times are Dhaka time." note.
 - 2026-11-12 — Opening hours set to every day, 10:00 AM – 10:00 PM, shown in 12-hour format; the contact page map now shows the showroom (tap to load).

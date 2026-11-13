@@ -8,11 +8,11 @@ import fullLogo from "@/assets/brand/artifex-logo.svg";
 export function BrandIntro({ text }: { text: string | null }) {
   if (!text) return null;
   return (
-    <section aria-labelledby="brand-heading" className="reveal py-16 md:py-24">
-      <Container className="grid items-center gap-10 md:grid-cols-2 md:gap-16">
-        {/* Until a showroom photo is uploaded, the full logo on sand is the visual. */}
-        <div className="bg-sand flex aspect-[4/3] items-center justify-center md:aspect-[5/4]">
-          <Image src={fullLogo} alt="" className="h-auto w-1/2" />
+    <section aria-labelledby="brand-heading" className="reveal py-12 md:py-20">
+      <Container className="grid items-center gap-8 md:grid-cols-[2fr_3fr] md:gap-16">
+        {/* The full logo on sand is the visual: a compact panel, so the text sets the height. */}
+        <div className="bg-sand flex aspect-[2/1] items-center justify-center md:aspect-[3/2]">
+          <Image src={fullLogo} alt="" className="h-auto w-2/5" />
         </div>
         <div>
           <p className="text-eyebrow text-walnut">Our story</p>

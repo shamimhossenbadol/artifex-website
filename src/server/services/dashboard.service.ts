@@ -5,7 +5,6 @@ import {
   findDashboardSettings,
   findRecentlyUpdatedProducts,
 } from "@/server/repositories/dashboard.repo";
-import { PLACEHOLDER_HERO_IMAGE } from "./home.service";
 
 export type DashboardWarning = { text: string; href: string; action: string };
 
@@ -32,7 +31,7 @@ export async function getDashboard() {
       action: "Set it",
     });
   }
-  if (!setup.heroImagePath || setup.heroImagePath === PLACEHOLDER_HERO_IMAGE) {
+  if (setup.heroSlides === 0) {
     warnings.push({
       text: "The homepage hero has no photo yet.",
       href: "/admin/homepage",

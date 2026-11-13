@@ -5,6 +5,7 @@ import { connection } from "next/server";
 import { findHomeCategories } from "@/server/repositories/category.repo";
 import {
   findActiveBanners,
+  findHeroSlides,
   findHomeHero,
   type PromoBannerRow,
 } from "@/server/repositories/home.repo";
@@ -13,14 +14,15 @@ import { categoryHref, toCardVM, type ProductCardVM } from "./catalog.service";
 
 export const RAIL_SIZE = 8;
 export const MAX_BANNERS = 2;
-/** The seed's hero image key until the owner uploads a real photo (treated as "no image"). */
-export const PLACEHOLDER_HERO_IMAGE = "home/placeholder-hero";
+/** Most hero slides the admin can add (ADR-039): each is a full-width photo. */
+export const MAX_HERO_SLIDES = 5;
 
 export type HomeHeroVM = {
   eyebrow: string | null;
   heading: string;
   subheading: string | null;
-  image: { path: string; alt: string } | null;
+  /** Background photos in order; empty means the typographic hero (05 §3). */
+  slides: { path: string; alt: string }[];
   cta: { label: string; href: string };
   secondary: { label: string; href: string } | null;
 };
@@ -38,7 +40,7 @@ const DEFAULT_HERO: HomeHeroVM = {
   eyebrow: "Artifex Furniture",
   heading: "Crafted furniture for modern homes",
   subheading: "Solid materials, honest craft, and comfort that lasts.",
-  image: null,
+  slides: [],
   cta: { label: "Explore the collection", href: "/products" },
   secondary: { label: "Visit the showroom", href: "/contact" },
 };
@@ -47,14 +49,16 @@ async function loadHero(): Promise<HomeHeroVM> {
   "use cache";
   cacheTag("home");
   cacheLife("hours");
-  const row = await findHomeHero();
-  if (!row) return DEFAULT_HERO;
-  const hasImage = row.imagePath && row.imagePath !== PLACEHOLDER_HERO_IMAGE;
+  const [row, slideRows] = await Promise.all([findHomeHero(), findHeroSlides()]);
+  const slides = slideRows
+    .slice(0, MAX_HERO_SLIDES)
+    .map((s) => ({ path: s.imagePath, alt: s.imageAlt }));
+  if (!row) return { ...DEFAULT_HERO, slides };
   return {
     eyebrow: row.eyebrow,
     heading: row.heading,
     subheading: row.subheading,
-    image: hasImage ? { path: row.imagePath, alt: row.imageAlt } : null,
+    slides,
     cta: { label: row.ctaLabel, href: safeHref(row.ctaHref) ?? "/products" },
     secondary:
       row.secondaryLabel && safeHref(row.secondaryHref)

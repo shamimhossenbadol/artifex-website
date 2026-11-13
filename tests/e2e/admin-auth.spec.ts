@@ -1,4 +1,10 @@
-import { expect as baseExpect, test, type Browser, type Page } from "@playwright/test";
+import {
+  expect as baseExpect,
+  test,
+  type Browser,
+  type Locator,
+  type Page,
+} from "@playwright/test";
 
 // Admin authentication (07 §1, 09 §2, TESTING §4). These tests CHANGE the admin password, so they
 // only run when E2E_ADMIN_EMAIL / E2E_ADMIN_PASSWORD are set: in CI, against the throwaway CI DB.
@@ -10,6 +16,12 @@ const NEW_PASSWORD = "Walnut-Sofa-Testing-2026";
 // Every sign-in runs bcrypt (pure JS, cost 12). On a busy 2-core CI runner a few in a row can pass
 // the default 5 s assertion timeout, so this file waits longer.
 const expect = baseExpect.configure({ timeout: 15_000 });
+
+/**
+ * After client-side navigation Next keeps the previous page mounted but hidden (back/forward
+ * state), so a label can match a hidden copy too. Only look at what's on screen.
+ */
+const shown = (locator: Locator) => locator.filter({ visible: true });
 
 /** The sign-in form's own message (Next's route announcer is also role="alert"). */
 const loginMessage = (page: Page) => page.locator("form").getByRole("alert");
@@ -244,7 +256,7 @@ test("products: create a draft, publish it, duplicate and delete", async ({ page
   await page.getByRole("button", { name: "Save and add photos" }).click();
   await expect(page).toHaveURL(/\/admin\/products\/\d+$/);
   await expect(page.getByRole("heading", { name: "Photos" })).toBeVisible();
-  await expect(page.getByLabel("Name of colour “Walnut”")).toHaveValue("Walnut");
+  await expect(shown(page.getByLabel("Name of colour “Walnut”"))).toHaveValue("Walnut");
 
   // A draft isn't public.
   const editUrl = page.url();
@@ -274,8 +286,10 @@ test("products: create a draft, publish it, duplicate and delete", async ({ page
   await page.goto("/admin/products?q=E2E+Walnut");
   await page.getByRole("button", { name: "Duplicate “E2E Walnut Bench”" }).click();
   await expect(page).toHaveURL(/\/admin\/products\/\d+$/);
-  await expect(page.getByLabel("Title", { exact: true })).toHaveValue("E2E Walnut Bench (copy)");
-  await expect(page.getByLabel("Status")).toHaveValue("DRAFT");
+  await expect(shown(page.getByLabel("Title", { exact: true }))).toHaveValue(
+    "E2E Walnut Bench (copy)",
+  );
+  await expect(shown(page.getByLabel("Status"))).toHaveValue("DRAFT");
 
   await page.goto("/admin/products?q=E2E+Walnut");
   for (const title of ["E2E Walnut Bench (copy)", "E2E Walnut Bench"]) {
@@ -311,7 +325,7 @@ test("journal: write a draft, publish it, then delete it", async ({ page }) => {
   await expect(page).toHaveURL(/\/admin\/blog\/\d+$/);
 
   await page.waitForLoadState("networkidle");
-  await page.getByLabel("Status").selectOption("PUBLISHED");
+  await shown(page.getByLabel("Status")).selectOption("PUBLISHED");
   await page.getByRole("button", { name: "Save post" }).click();
   await expect(page.getByText("Post saved.").first()).toBeVisible();
 

@@ -6,6 +6,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 ## [Unreleased]
 
 ### Fixed
+- 2026-11-13 — Phones: the homepage was wider than the screen (it could slide sideways); "not found" pages for missing products or posts showed the header and footer twice; the header logo appeared late on every page (ADR-044).
 - 2026-11-13 — Mobile menu and search overlay could vanish if opened in the first moment after a page started loading (when the full header streamed in, it replaced them). They now stay open (ADR-043); this also fixes the flaky mobile tests in CI.
 - 2026-11-13 — Admin: opening a product edit page right after creating it (and other in-admin navigation to forms) could show "Something went wrong"; form labels now always reach their fields, including the Category and Status dropdowns (ADR-038). CI is green again.
 - 2026-11-13 — Homepage hero/banner photos didn't show after upload: the build pointed image URLs at the site instead of the media domain (a GitHub variable). Builds now stop with a clear error when `NEXT_PUBLIC_MEDIA_URL` equals the site URL.
@@ -15,6 +16,8 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 - 2026-11-12 — Test site showed a blank white page after the Phase 2 deploy: the deploy bundle was missing Turbopack's Prisma alias. Packaging now recreates and verifies it, CI boots the real bundle, and the deploy health check requires a complete page (ADR-023).
 
 ### Changed
+- 2026-11-13 — Mobile header logo now reads "ARTIFEX FURNITURE" on one line, with "Furniture" matched to the logo's lettering (ADR-045).
+- 2026-11-13 — Mobile design pass (ADR-044): Messenger next to WhatsApp everywhere (product page and its sticky bar, homepage help band, contact, about); smaller floating buttons that stay clear of the phone's home bar; tighter spacing; full-width buttons; "View all" beside section titles; swipeable journal row on the homepage and compact rows on the Journal page; shorter sort labels; full-width product photo placeholder; a compact text-only hero.
 - 2026-11-13 — Header: always compact (64 px with a 40 px logo, bottom border) instead of shrinking and growing while scrolling; the small scroll script was removed.
 - 2026-11-13 — Cleanup (ADR-042): the unused "Featured" product tick and "Homepage order" field were removed from the admin and the database (they no longer affected the website); "Popular" now explains that it ranks search results and related products. Dead code and stale comments removed. Footer shows "Developed by Shamim Hossen Badol", linked to WhatsApp.
 - 2026-11-13 — Product photos: up to 5 per product, 1 main photo (cards, listings, sharing) and up to 4 gallery photos shown only on the product page; the admin now says "main photo" instead of "featured" (ADR-041).

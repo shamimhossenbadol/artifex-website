@@ -98,7 +98,7 @@ Rules: headings are serif, while everything functional (nav, buttons, prices, fo
 
 ## 8. Logo (ADR-022)
 
-The real logo is in use: `src/components/site/Logo.tsx` renders `src/assets/brand/artifex-wordmark.svg` (header: always compact, 64 px bar with a 40 px logo on all sizes) and `artifex-logo.svg` with the "DECOR YOUR DREAMS" tagline (footer, 56 px). Brand red `--color-brand: #D2161E` is for the logo only. Favicons are generated from the "A" mark. Keep clear space of at least half the logo height around it, and never recolour or stretch it.
+The real logo is in use: `src/components/site/Logo.tsx` renders `src/assets/brand/artifex-wordmark.svg` (desktop header: 40 px wordmark in a 64 px bar; mobile header: the **lockup**, the 32 px wordmark followed on the same line by "FURNITURE" in the logo red, bold caps matched to the RTIFEX cap height and baseline, ADR-045) and `artifex-logo.svg` with the "DECOR YOUR DREAMS" tagline (footer, 56 px). Brand red `--color-brand: #D2161E` is for the logo only. Favicons are generated from the "A" mark. Keep clear space of at least half the logo height around it, and never recolour or stretch it.
 
 ### Previous text wordmark (retired)
 

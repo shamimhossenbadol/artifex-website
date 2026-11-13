@@ -30,7 +30,7 @@ const CATEGORY_ICONS: Record<string, LucideIcon> = {
 export function CategoryTiles({ categories }: { categories: HomeCategoryVM[] }) {
   if (categories.length === 0) return null;
   return (
-    <section aria-labelledby="categories-heading" className="reveal py-16 md:py-24">
+    <section aria-labelledby="categories-heading" className="reveal py-12 md:py-24">
       <Container>
         <SectionHeading
           id="categories-heading"
@@ -39,11 +39,11 @@ export function CategoryTiles({ categories }: { categories: HomeCategoryVM[] }) 
         />
       </Container>
       <Container className="max-md:px-0">
-        <ul className="flex snap-x snap-mandatory scroll-px-4 [scrollbar-width:none] gap-3 overflow-x-auto px-4 pb-2 sm:scroll-px-6 sm:px-6 md:grid md:grid-cols-3 md:gap-6 md:overflow-visible md:px-0 lg:grid-cols-6 [&::-webkit-scrollbar]:hidden">
+        <ul className="relative flex snap-x snap-mandatory scroll-px-4 [scrollbar-width:none] gap-3 overflow-x-auto px-4 pb-2 sm:scroll-px-6 sm:px-6 md:grid md:grid-cols-3 md:gap-6 md:overflow-visible md:px-0 lg:grid-cols-6 [&::-webkit-scrollbar]:hidden">
           {categories.map((category) => {
             const Icon = CATEGORY_ICONS[category.slug] ?? Sofa;
             return (
-              <li key={category.slug} className="w-[42%] shrink-0 snap-start sm:w-[30%] md:w-auto">
+              <li key={category.slug} className="w-[44%] shrink-0 snap-start sm:w-[30%] md:w-auto">
                 <Link
                   href={category.href}
                   className="group bg-sand relative block aspect-[4/5] overflow-hidden"

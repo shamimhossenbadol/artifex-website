@@ -6,10 +6,13 @@ import fullLogo from "@/assets/brand/artifex-logo.svg";
 import wordmark from "@/assets/brand/artifex-wordmark.svg";
 
 type LogoProps = {
-  /** "wordmark": A + RTIFEX only (header). "full": with the "Decor your dreams" tagline (footer). */
-  variant?: "wordmark" | "full";
-  /** Play the one-time entrance wipe (header only; CSS, disabled for reduced motion). */
-  animated?: boolean;
+  /**
+   * "wordmark": A + RTIFEX only (desktop header). "lockup": the wordmark followed by FURNITURE on the
+   * same line, matching RTIFEX (mobile header, ADR-045). "full": with "Decor your dreams" (footer).
+   */
+  variant?: "wordmark" | "lockup" | "full";
+  /** Header logo: preloaded so it shows with the first paint (the footer one stays lazy). */
+  priority?: boolean;
   className?: string;
 };
 
@@ -17,8 +20,30 @@ type LogoProps = {
  * Brand logo (03 §8). The SVGs are imported as static files, so they get a content-hashed URL
  * with an immutable cache: phones download them once, not on every page (ADR-022).
  */
-export function Logo({ variant = "wordmark", animated = false, className }: LogoProps) {
+export function Logo({ variant = "wordmark", priority = false, className }: LogoProps) {
   const src = variant === "full" ? fullLogo : wordmark;
+  if (variant === "lockup") {
+    return (
+      <Link
+        href="/"
+        className={cn("inline-flex shrink-0 items-start py-1", className)}
+        aria-label={`${SITE_NAME}, home`}
+      >
+        <Image
+          src={wordmark}
+          alt=""
+          className="h-8 w-auto"
+          preload={priority}
+          loading={priority ? "eager" : "lazy"}
+          draggable={false}
+        />
+        {/* Same line and cap height as "RTIFEX", in the logo red (ADR-045). */}
+        <span aria-hidden className="text-logo-word text-brand mt-[var(--logo-word-top)] ml-1.5">
+          Furniture
+        </span>
+      </Link>
+    );
+  }
   return (
     <Link
       href="/"
@@ -29,9 +54,9 @@ export function Logo({ variant = "wordmark", animated = false, className }: Logo
         src={src}
         alt=""
         // Width follows the CSS height; the intrinsic size keeps the aspect ratio (no layout shift).
-        className={cn("h-full w-auto", animated && "animate-logo")}
-        // The header logo is always above the fold: don't lazy-load it. The footer one stays lazy.
-        loading={animated ? "eager" : "lazy"}
+        className="h-full w-auto"
+        preload={priority}
+        loading={priority ? "eager" : "lazy"}
         draggable={false}
       />
     </Link>

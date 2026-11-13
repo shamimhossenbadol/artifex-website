@@ -12,11 +12,12 @@ import { HeroSlider } from "./HeroSlider";
 export function Hero({ hero }: { hero: HomeHeroVM }) {
   const withImage = hero.slides.length > 0;
   const frame = cn(
-    "relative isolate flex min-h-[60svh] items-end overflow-hidden md:min-h-[68vh] md:items-center",
-    withImage ? "bg-ink" : "bg-bg",
+    "relative isolate flex overflow-hidden md:min-h-[68vh] md:items-center",
+    // With photos the image needs room; the text-only hero doesn't need empty space on phones.
+    withImage ? "bg-ink min-h-[60svh] items-end" : "bg-bg items-center",
   );
   const content = (
-    <Container className="py-16 md:py-24">
+    <Container className={cn("md:py-24", withImage ? "py-16" : "py-12")}>
       <div
         className={cn(
           "max-w-3xl",
@@ -46,14 +47,14 @@ export function Hero({ hero }: { hero: HomeHeroVM }) {
         )}
         <div
           className={cn(
-            "animate-rise stagger-2 mt-8 flex flex-wrap gap-3",
+            "animate-rise stagger-2 mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap",
             !withImage && "md:justify-center",
           )}
         >
           <ButtonLink
             href={hero.cta.href}
             size="lg"
-            className={withImage ? "bg-bg text-ink hover:bg-sand" : undefined}
+            className={cn("w-full sm:w-auto", withImage && "bg-bg text-ink hover:bg-sand")}
           >
             {hero.cta.label}
           </ButtonLink>
@@ -62,7 +63,10 @@ export function Hero({ hero }: { hero: HomeHeroVM }) {
               href={hero.secondary.href}
               variant="secondary"
               size="lg"
-              className={withImage ? "border-bg text-bg hover:bg-bg hover:text-ink" : undefined}
+              className={cn(
+                "w-full sm:w-auto",
+                withImage && "border-bg text-bg hover:bg-bg hover:text-ink",
+              )}
             >
               {hero.secondary.label}
             </ButtonLink>
@@ -82,7 +86,7 @@ export function Hero({ hero }: { hero: HomeHeroVM }) {
   return (
     <section aria-labelledby="hero-heading" className={frame}>
       {/* Decorative fine lines that echo the logo's underline: CSS only, no image weight. */}
-      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 hidden md:block">
         <div className="border-line absolute inset-x-0 top-1/2 border-t" />
         <div className="border-line absolute inset-y-0 left-1/2 hidden border-l md:block" />
       </div>

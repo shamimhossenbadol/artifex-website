@@ -9,9 +9,10 @@ const FAB =
   "inline-flex items-center justify-center rounded-full text-white transition-colors duration-200 hover:bg-ink";
 
 /**
- * Floating contact buttons (05 §2, ADR-035): Messenger above WhatsApp. Hidden on mobile when the
- * page contains an element with `data-hide-whatsapp-fab` (the product page's own sticky bar), with
- * CSS only, no client JS.
+ * Floating contact buttons (05 §2, ADR-035): Messenger above WhatsApp, the sales team's two
+ * channels (ADR-044). 44 px on phones (smaller, still a full tap target) and clear of the home
+ * indicator. Hidden on mobile when the page contains an element with `data-hide-whatsapp-fab`
+ * (the product page's own sticky bar, which carries both), with CSS only, no client JS.
  */
 export async function WhatsAppFab() {
   const settings = await getSiteSettings();
@@ -20,16 +21,16 @@ export async function WhatsAppFab() {
   if (!whatsappHref && !messengerHref) return null;
 
   return (
-    <div className="fixed right-4 bottom-4 z-30 flex flex-col items-center gap-3 md:right-6 md:bottom-6 max-md:[body:has([data-hide-whatsapp-fab])_&]:hidden">
+    <div className="fixed right-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-30 flex flex-col items-center gap-2 md:right-6 md:bottom-6 md:gap-3 max-md:[body:has([data-hide-whatsapp-fab])_&]:hidden">
       {messengerHref && (
         <a
           href={messengerHref}
           target="_blank"
           rel="noopener noreferrer"
           aria-label={MESSENGER_FAB_LABEL}
-          className={`${FAB} bg-messenger size-12`}
+          className={`${FAB} bg-messenger size-11 md:size-12`}
         >
-          <MessengerIcon className="size-6" />
+          <MessengerIcon className="size-5 md:size-6" />
         </a>
       )}
       {whatsappHref && (
@@ -38,9 +39,9 @@ export async function WhatsAppFab() {
           target="_blank"
           rel="noopener noreferrer"
           aria-label={WHATSAPP_FAB_LABEL}
-          className={`${FAB} bg-whatsapp-dark size-14`}
+          className={`${FAB} bg-whatsapp-dark size-11 md:size-14`}
         >
-          <WhatsAppIcon className="size-7" />
+          <WhatsAppIcon className="size-6 md:size-7" />
         </a>
       )}
     </div>

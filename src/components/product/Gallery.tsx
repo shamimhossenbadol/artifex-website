@@ -48,7 +48,7 @@ export function Gallery({ images, title }: { images: GalleryImage[]; title: stri
 
   if (count === 0) {
     return (
-      <div className="aspect-square w-full lg:aspect-[4/3]">
+      <div className="-mx-4 aspect-square sm:-mx-6 lg:mx-0 lg:aspect-[4/3]">
         <ImagePlaceholder />
       </div>
     );
@@ -62,7 +62,7 @@ export function Gallery({ images, title }: { images: GalleryImage[]; title: stri
       <div className="relative -mx-4 sm:-mx-6 lg:order-2 lg:mx-0">
         <div
           ref={scrollerRef}
-          className="flex snap-x snap-mandatory [scrollbar-width:none] overflow-x-auto lg:overflow-hidden [&::-webkit-scrollbar]:hidden"
+          className="relative flex snap-x snap-mandatory [scrollbar-width:none] overflow-x-auto lg:overflow-hidden [&::-webkit-scrollbar]:hidden"
           aria-roledescription="carousel"
           aria-label={`${title} photos`}
         >
@@ -101,7 +101,7 @@ export function Gallery({ images, title }: { images: GalleryImage[]; title: stri
 
       {/* Thumbnails: row below on mobile, vertical strip on desktop */}
       {count > 1 && (
-        <ul className="mt-3 flex gap-2 overflow-x-auto lg:order-1 lg:mt-0 lg:flex-col lg:overflow-visible">
+        <ul className="relative mt-3 flex gap-2 overflow-x-auto lg:order-1 lg:mt-0 lg:flex-col lg:overflow-visible">
           {images.map((image, index) => (
             <li key={image.id} className="shrink-0">
               <button

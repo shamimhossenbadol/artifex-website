@@ -40,15 +40,20 @@ test("category tiles link to all six categories", async ({ page }) => {
   await expect(tiles.last()).toHaveAttribute("href", "/categories/chandeliers");
 });
 
-test("rails link to products and the CTA band opens WhatsApp", async ({ page }) => {
+test("rails link to products and the help band offers WhatsApp and Messenger", async ({ page }) => {
   await page.goto("/");
   // Featured / Most loved rails were removed from the homepage (ADR-035).
   await expect(page.locator("section[aria-labelledby=featured]")).toHaveCount(0);
   const arrivals = page.locator("section[aria-labelledby=new-arrivals] article a");
   await expect(arrivals.first()).toHaveAttribute("href", /^\/products\/demo-/);
-  await expect(page.getByRole("link", { name: "Message on WhatsApp" })).toHaveAttribute(
+  const band = page.locator("section[aria-labelledby=help-heading]");
+  await expect(band.getByRole("link", { name: "WhatsApp", exact: true })).toHaveAttribute(
     "href",
     /^https:\/\/wa\.me\/8801757758388\?text=/,
+  );
+  await expect(band.getByRole("link", { name: "Messenger", exact: true })).toHaveAttribute(
+    "href",
+    "https://m.me/artifexfurniturebd",
   );
 });
 

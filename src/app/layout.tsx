@@ -29,6 +29,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: "#F8F6F2",
+  // Lets fixed bottom UI (floating buttons, product bar) use env(safe-area-inset-bottom).
+  viewportFit: "cover",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 type SectionHeadingProps = {
   eyebrow?: string;
   title: string;
-  /** Optional "View all" link, aligned right on desktop. */
+  /** Optional "View all" link, on the heading's row at the right. */
   link?: { href: string; label: string };
   id?: string;
   className?: string;
@@ -14,13 +14,8 @@ type SectionHeadingProps = {
 /** Eyebrow, then h2, then an optional "View all →" link (03 §5). */
 export function SectionHeading({ eyebrow, title, link, id, className }: SectionHeadingProps) {
   return (
-    <div
-      className={cn(
-        "mb-8 flex flex-col gap-3 md:mb-12 md:flex-row md:items-end md:justify-between",
-        className,
-      )}
-    >
-      <div className="flex flex-col gap-3">
+    <div className={cn("mb-6 flex items-end justify-between gap-4 md:mb-12", className)}>
+      <div className="flex min-w-0 flex-col gap-2 md:gap-3">
         {eyebrow && <p className="text-eyebrow text-walnut">{eyebrow}</p>}
         <h2 id={id} className="text-h2">
           {title}
@@ -29,7 +24,7 @@ export function SectionHeading({ eyebrow, title, link, id, className }: SectionH
       {link && (
         <Link
           href={link.href}
-          className="group text-ink inline-flex min-h-11 items-center gap-2 text-sm font-medium underline-offset-4 hover:underline"
+          className="group text-ink -mb-2.5 inline-flex min-h-11 shrink-0 items-center gap-2 text-sm font-medium whitespace-nowrap underline-offset-4 hover:underline md:mb-0"
         >
           {link.label}
           <ArrowRight

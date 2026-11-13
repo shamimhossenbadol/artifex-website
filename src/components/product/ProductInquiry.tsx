@@ -1,8 +1,10 @@
 "use client";
-// Colour swatches + WhatsApp inquiry + mobile sticky bar (F1.4, F3, 05 §3). The selected colour goes
-// into the WhatsApp message. Without JavaScript the WhatsApp link still works (no colour).
+// Colour swatches + WhatsApp/Messenger inquiry + mobile sticky bar (F1.4, F3, 05 §3). The selected
+// colour goes into the WhatsApp message. Without JavaScript the links still work (no colour).
+// Messenger sits beside WhatsApp everywhere: the sales team answers on both (ADR-044).
 import { Phone } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { MessengerIcon } from "@/components/site/SocialIcons";
 import { WhatsAppIcon } from "@/components/site/WhatsAppIcon";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { cn } from "@/lib/utils";
@@ -20,6 +22,7 @@ type ProductInquiryProps = {
   priceLabel: string;
   phone: string | null;
   telHref: string | null;
+  messengerHref: string | null;
 };
 
 export function ProductInquiry({
@@ -32,6 +35,7 @@ export function ProductInquiry({
   priceLabel,
   phone,
   telHref,
+  messengerHref,
 }: ProductInquiryProps) {
   const [selected, setSelected] = useState<InquiryColor | null>(null);
   const [showBar, setShowBar] = useState(false);
@@ -114,6 +118,12 @@ export function ProductInquiry({
             Message on WhatsApp
           </ButtonLink>
         )}
+        {messengerHref && (
+          <ButtonLink href={messengerHref} external variant="messenger" size="lg" fullWidth>
+            <MessengerIcon className="size-5" />
+            Message on Messenger
+          </ButtonLink>
+        )}
         {telHref && (
           <a
             href={telHref}
@@ -125,27 +135,42 @@ export function ProductInquiry({
         )}
       </div>
 
-      {/* Mobile sticky bar. Its presence also hides the floating WhatsApp button on mobile. */}
-      {whatsappHref && (
+      {/* Mobile sticky bar: price, Messenger and WhatsApp. It replaces the floating buttons here. */}
+      {(whatsappHref || messengerHref) && (
         <div
           data-hide-whatsapp-fab
           aria-hidden={!showBar}
           className={cn(
-            "border-line bg-bg fixed inset-x-0 bottom-0 z-30 border-t px-4 py-3 transition-transform duration-200 ease-out lg:hidden",
+            "border-line bg-bg fixed inset-x-0 bottom-0 z-30 border-t px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] transition-transform duration-200 ease-out lg:hidden",
             showBar ? "translate-y-0" : "translate-y-full",
           )}
         >
-          <div className="flex items-center justify-between gap-4">
-            <p className="text-price text-ink min-w-0 truncate">{priceLabel}</p>
-            <ButtonLink
-              href={whatsappHref}
-              external
-              variant="whatsapp"
-              tabIndex={showBar ? undefined : -1}
-            >
-              <WhatsAppIcon className="size-4" />
-              WhatsApp
-            </ButtonLink>
+          <div className="flex items-center gap-2">
+            <p className="text-price text-ink min-w-0 flex-1 truncate">{priceLabel}</p>
+            {messengerHref && (
+              <a
+                href={messengerHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                tabIndex={showBar ? undefined : -1}
+                className="bg-messenger hover:bg-ink inline-flex size-11 shrink-0 items-center justify-center rounded-md text-white transition-colors"
+              >
+                <MessengerIcon className="size-5" />
+                <span className="sr-only">Message on Messenger</span>
+              </a>
+            )}
+            {whatsappHref && (
+              <ButtonLink
+                href={whatsappHref}
+                external
+                variant="whatsapp"
+                tabIndex={showBar ? undefined : -1}
+                className="shrink-0"
+              >
+                <WhatsAppIcon className="size-4" />
+                WhatsApp
+              </ButtonLink>
+            )}
           </div>
         </div>
       )}

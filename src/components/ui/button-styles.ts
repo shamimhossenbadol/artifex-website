@@ -6,6 +6,7 @@ export const BUTTON_VARIANTS = {
   secondary: "border border-ink text-ink hover:bg-ink hover:text-bg",
   ghost: "px-0 text-ink underline-offset-4 hover:underline",
   whatsapp: "bg-whatsapp-dark text-white hover:bg-ink",
+  messenger: "bg-messenger text-white hover:bg-ink",
 } as const;
 
 export const BUTTON_SIZES = {

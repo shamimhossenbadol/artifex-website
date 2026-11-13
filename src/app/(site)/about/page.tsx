@@ -1,6 +1,7 @@
 import { Gem, MessageCircle, Ruler } from "lucide-react";
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { MessengerIcon } from "@/components/site/SocialIcons";
 import { WhatsAppIcon } from "@/components/site/WhatsAppIcon";
 import { getContactLinks } from "@/components/site/contact-links";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
@@ -9,6 +10,7 @@ import { Container } from "@/components/ui/Container";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { Markdown } from "@/components/ui/Markdown";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { toMessengerUrl } from "@/lib/messenger";
 import { breadcrumbJsonLd } from "@/lib/seo";
 import { getSiteSettings } from "@/server/services/settings.service";
 
@@ -41,19 +43,38 @@ const VALUES = [
 async function AboutStory() {
   const settings = await getSiteSettings();
   const { whatsappHref } = getContactLinks(settings);
+  const messengerHref = toMessengerUrl(settings.facebookUrl);
   const story = settings.aboutContent ?? settings.aboutShort ?? settings.tagline ?? "";
 
   return (
     <>
       {story && <Markdown className="mx-auto">{story}</Markdown>}
-      <div className="mt-12 flex flex-wrap justify-center gap-3">
-        <ButtonLink href="/contact" size="lg">
+      <div className="mt-10 flex flex-col gap-3 sm:mt-12 sm:flex-row sm:flex-wrap sm:justify-center">
+        <ButtonLink href="/contact" size="lg" className="w-full sm:w-auto">
           Visit the showroom
         </ButtonLink>
         {whatsappHref && (
-          <ButtonLink href={whatsappHref} external variant="whatsapp" size="lg">
+          <ButtonLink
+            href={whatsappHref}
+            external
+            variant="whatsapp"
+            size="lg"
+            className="w-full sm:w-auto"
+          >
             <WhatsAppIcon className="size-4" />
-            Message us
+            WhatsApp
+          </ButtonLink>
+        )}
+        {messengerHref && (
+          <ButtonLink
+            href={messengerHref}
+            external
+            variant="messenger"
+            size="lg"
+            className="w-full sm:w-auto"
+          >
+            <MessengerIcon className="size-4" />
+            Messenger
           </ButtonLink>
         )}
       </div>

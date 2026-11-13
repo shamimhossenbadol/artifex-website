@@ -10,7 +10,14 @@ const SORT_LABELS: Record<ProductSort, string> = {
 };
 
 const CHIP =
-  "inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-md border px-4 text-sm whitespace-nowrap transition-colors";
+  "inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-md border px-3.5 text-sm whitespace-nowrap transition-colors sm:px-4";
+
+/** Short labels for phones (the full ones from sm up). */
+const SHORT_LABELS: Record<ProductSort, string> = {
+  newest: "Newest",
+  price_asc: "Lowest price",
+  price_desc: "Highest price",
+};
 
 /**
  * Sort + "On sale" toggle as plain links (05 §3): shareable URLs, works before JavaScript loads,
@@ -27,11 +34,11 @@ export function SortBar({
   total: number;
 }) {
   return (
-    <div className="mb-8 flex flex-col gap-4 md:mb-10 md:flex-row md:items-center md:justify-between">
+    <div className="mb-6 flex flex-col gap-3 md:mb-10 md:flex-row md:items-center md:justify-between">
       <p className="text-small text-muted" aria-live="polite">
         {total} {total === 1 ? "product" : "products"}
       </p>
-      <div className="-mx-4 flex [scrollbar-width:none] gap-2 overflow-x-auto px-4 pb-1 md:mx-0 md:px-0 [&::-webkit-scrollbar]:hidden">
+      <div className="relative -mx-4 flex [scrollbar-width:none] gap-2 overflow-x-auto px-4 pb-1 md:mx-0 md:px-0 [&::-webkit-scrollbar]:hidden">
         <nav aria-label="Sort products" className="contents">
           {(Object.keys(SORT_LABELS) as ProductSort[]).map((sort) => {
             const active = query.sort === sort;
@@ -48,7 +55,8 @@ export function SortBar({
                     : "border-line bg-surface text-ink-soft hover:border-ink hover:text-ink",
                 )}
               >
-                {SORT_LABELS[sort]}
+                <span className="sm:hidden">{SHORT_LABELS[sort]}</span>
+                <span className="hidden sm:inline">{SORT_LABELS[sort]}</span>
               </Link>
             );
           })}

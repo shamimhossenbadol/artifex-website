@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { MapLoader } from "@/components/contact/MapLoader";
 import { OpeningStatus } from "@/components/contact/OpeningStatus";
-import { FacebookIcon } from "@/components/site/SocialIcons";
+import { FacebookIcon, MessengerIcon } from "@/components/site/SocialIcons";
 import { WhatsAppIcon } from "@/components/site/WhatsAppIcon";
 import { getContactLinks } from "@/components/site/contact-links";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
@@ -138,15 +138,33 @@ async function ContactDetails() {
             </section>
           )}
 
-          <div className="mt-10 flex flex-wrap gap-3">
-            <ButtonLink href={directions} external size="lg">
+          <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            <ButtonLink href={directions} external size="lg" className="w-full sm:w-auto">
               <Navigation aria-hidden strokeWidth={1.5} className="size-4" />
               Get directions
             </ButtonLink>
             {whatsappHref && (
-              <ButtonLink href={whatsappHref} external variant="whatsapp" size="lg">
+              <ButtonLink
+                href={whatsappHref}
+                external
+                variant="whatsapp"
+                size="lg"
+                className="w-full sm:w-auto"
+              >
                 <WhatsAppIcon className="size-4" />
                 WhatsApp
+              </ButtonLink>
+            )}
+            {messengerHref && (
+              <ButtonLink
+                href={messengerHref}
+                external
+                variant="messenger"
+                size="lg"
+                className="w-full sm:w-auto"
+              >
+                <MessengerIcon className="size-4" />
+                Messenger
               </ButtonLink>
             )}
           </div>

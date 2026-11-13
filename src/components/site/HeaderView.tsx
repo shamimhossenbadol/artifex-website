@@ -50,13 +50,13 @@ export function HeaderView({
           <div className="justify-self-start">
             <MobileMenuButton />
           </div>
-          <Logo animated className="h-10" />
+          <Logo variant="lockup" priority />
           <SearchButton className="-mr-2 justify-self-end" iconClassName="size-6" />
         </Container>
 
         {/* Desktop: [Logo] categories [Search] [Phone] [Inquire] */}
         <Container className="hidden h-16 items-center gap-8 lg:flex">
-          <Logo animated className="h-10" />
+          <Logo priority className="h-10" />
           <nav aria-label="Main" className="flex-1">
             <ul className="flex items-center justify-center gap-x-5 xl:gap-x-7">
               {primary.map((category) => (

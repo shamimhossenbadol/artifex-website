@@ -12,6 +12,7 @@ import { Container } from "@/components/ui/Container";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { toOpeningHoursSpecification } from "@/lib/opening-hours";
+import { toMessengerUrl } from "@/lib/messenger";
 import {
   absoluteImageUrl,
   localBusinessJsonLd,
@@ -94,7 +95,12 @@ async function HomeSections() {
       />
       <BrandIntro text={settings.aboutShort} />
       <PromoBanners banners={banners} />
-      <WhatsAppBand whatsappHref={whatsappHref} phone={phone} telHref={telHref} />
+      <WhatsAppBand
+        whatsappHref={whatsappHref}
+        messengerHref={toMessengerUrl(settings.facebookUrl)}
+        phone={phone}
+        telHref={telHref}
+      />
       <LatestPosts posts={posts} />
     </>
   );

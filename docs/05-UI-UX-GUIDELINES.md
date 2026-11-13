@@ -20,14 +20,14 @@
 
 **Footer (compact, ADR-035):** two columns: logo, short description (aboutShort) and social icons; then address, phone, WhatsApp (and email when set). A quiet © line below. No category or company links (navigation lives in the header). Stacks on mobile.
 
-**Floating contact buttons** (bottom-right): Messenger (48 px circle, `messenger` blue, links to `m.me/<page>` from the Facebook URL) above WhatsApp (56 px circle, whatsapp-dark). Both:
-- Shown on all public pages **except** product detail on mobile, which has its own sticky bottom bar.
+**Floating contact buttons** (bottom-right): Messenger (`messenger` blue, links to `m.me/<page>` from the Facebook URL) above WhatsApp (whatsapp-dark). 44 px circles on phones, 48/56 px from md; on phones they sit above the home indicator (`env(safe-area-inset-bottom)`, `viewportFit: cover`). Messenger and WhatsApp always appear together: the sales team answers on both (ADR-044). Both:
+- Shown on all public pages **except** product detail on mobile, whose sticky bottom bar has price, a Messenger button and a WhatsApp button.
 - It has an `aria-label` of "Chat with Artifex Furniture on WhatsApp".
 
 ## 3. Page layouts
 
 ### Home
-1. Hero: full-bleed image (min-h 60svh mobile / 68vh desktop), heading, subheading, and two CTAs ("Explore collection", "Visit showroom"). With several photos the background is a slider the visitor controls (arrows, dots, swipe; never autoplay); the text stays put (ADR-039).
+1. Hero: full-bleed image (min-h 60svh mobile / 68vh desktop; without photos a compact text hero on phones, buttons full width), heading, subheading, and two CTAs ("Explore collection", "Visit showroom"). With several photos the background is a slider the visitor controls (arrows, dots, swipe; never autoplay); the text stays put (ADR-039).
 2. Collections (heading "Collections", no eyebrow): category tiles (mobile: horizontal scroll-snap row with partial next-tile peek; desktop: grid of 4 + 3 or 7-across).
 3. New arrivals (heading only, no eyebrow): rail of 8 cards (mobile horizontal scroll; desktop 4-col grid).
 4. Brand introduction: split image/text, with "Our story →".
@@ -90,3 +90,10 @@ Sections with no content are **hidden**, never left empty.
 ## 6. Responsive checkpoints
 
 Test at 360, 390, 768, 1024, 1280, and 1440 px. No horizontal scroll at any width (intentional scroll rails excepted). Images use `sizes` that match the grid (see 08 §3).
+
+**Mobile rules (ADR-044):**
+- Every horizontal scroll row is `relative`, so absolutely positioned children (sr-only text, badges) stay inside it. The e2e check compares `scrollWidth` with `clientWidth` (not `innerWidth`, which grows with overflow on phones).
+- Section padding `py-12` on phones, `md:py-24` from md; section headings keep "View all" on the title's row.
+- Button groups stack full width on phones (`flex-col` + `w-full sm:w-auto`); WhatsApp and Messenger sit side by side in meaning, stacked in layout.
+- Swipe rows on phones: category tiles, product rails, the homepage journal (80% cards with the next one peeking). Lists of posts on /blog become compact rows (photo left, text right).
+- The header logo is preloaded and shown immediately (no entrance animation).

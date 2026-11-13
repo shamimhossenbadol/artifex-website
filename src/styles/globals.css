@@ -86,6 +86,16 @@
     line-height: 2rem;
   }
 }
+/* "FURNITURE" after the header wordmark, matching the RTIFEX letters (ADR-045). Logo only. */
+@utility text-logo-word {
+  --logo-word-top: 1.075rem;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 0.875rem;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
 @utility text-eyebrow {
   font-family: var(--font-sans);
   font-weight: 500;
@@ -175,22 +185,6 @@
     animation: none;
   }
 }
-/* Logo entrance: a one-time left-to-right wipe (clip-path only, no layout or paint of others). */
-@keyframes logo-wipe {
-  from {
-    clip-path: inset(0 100% 0 0);
-  }
-  to {
-    clip-path: inset(0 0 0 0);
-  }
-}
-@utility animate-logo {
-  animation: logo-wipe 900ms var(--ease-out) 80ms both;
-  @media (prefers-reduced-motion: reduce) {
-    animation: none;
-  }
-}
-
 /* Stagger steps for entrance animations (Tailwind's delay-* only affects transitions). */
 @utility stagger-1 {
   animation-delay: 100ms;

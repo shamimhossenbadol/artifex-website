@@ -47,7 +47,8 @@ async function PostList({ searchParams }: Pick<Props, "searchParams">) {
     );
   }
 
-  // Page 1: the newest post is featured large, the rest in a 3-column grid (05 §3).
+  // Page 1: the newest post is featured large, the rest in a 3-column grid (05 §3); on phones the
+  // rest are compact rows.
   const [first, ...rest] = items;
   const featured = page === 1 ? first : undefined;
   const grid = page === 1 ? rest : items;
@@ -55,15 +56,15 @@ async function PostList({ searchParams }: Pick<Props, "searchParams">) {
   return (
     <>
       {featured && (
-        <div className="mb-14 md:mb-20">
+        <div className="mb-10 md:mb-20">
           <PostCard post={featured} featured preload />
         </div>
       )}
       {grid.length > 0 && (
-        <ul className="grid gap-x-8 gap-y-12 md:grid-cols-2 lg:grid-cols-3">
+        <ul className="grid gap-x-8 gap-y-6 md:grid-cols-2 md:gap-y-12 lg:grid-cols-3">
           {grid.map((post, i) => (
             <li key={post.id} className={i < 3 ? undefined : "reveal"}>
-              <PostCard post={post} preload={!featured && i === 0} />
+              <PostCard post={post} row preload={!featured && i === 0} />
             </li>
           ))}
         </ul>

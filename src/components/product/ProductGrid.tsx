@@ -10,7 +10,7 @@ export function ProductGrid({
   preloadFirst?: number;
 }) {
   return (
-    <ul className="grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-3 md:gap-x-6 md:gap-y-14 xl:grid-cols-4">
+    <ul className="grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-4 md:grid-cols-3 md:gap-x-6 md:gap-y-14 xl:grid-cols-4">
       {products.map((product, index) => (
         <li key={product.id}>
           <ProductCard product={product} preload={index < preloadFirst} />

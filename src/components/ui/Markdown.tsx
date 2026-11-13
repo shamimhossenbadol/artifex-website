@@ -62,7 +62,7 @@ function buildComponents(allowImages: boolean): Components {
       </blockquote>
     ),
     table: ({ children }) => (
-      <div className="mb-6 overflow-x-auto">
+      <div className="relative mb-6 overflow-x-auto">
         <table className="w-full border-collapse text-left">{children}</table>
       </div>
     ),

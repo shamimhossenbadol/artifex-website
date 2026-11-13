@@ -28,13 +28,13 @@ export function ProductRail({
   return (
     <section
       aria-labelledby={id}
-      className={cn("reveal py-16 md:py-24", tinted && "rail-tinted bg-sand")}
+      className={cn("reveal py-12 md:py-24", tinted && "rail-tinted bg-sand")}
     >
       <Container>
         <SectionHeading id={id} eyebrow={eyebrow} title={title} link={link} />
       </Container>
       <Container className="max-md:px-0">
-        <ul className="flex snap-x snap-mandatory scroll-px-4 [scrollbar-width:none] gap-4 overflow-x-auto px-4 pb-2 sm:scroll-px-6 sm:px-6 md:grid md:grid-cols-3 md:gap-x-6 md:gap-y-14 md:overflow-visible md:px-0 xl:grid-cols-4 [&::-webkit-scrollbar]:hidden">
+        <ul className="relative flex snap-x snap-mandatory scroll-px-4 [scrollbar-width:none] gap-4 overflow-x-auto px-4 pb-2 sm:scroll-px-6 sm:px-6 md:grid md:grid-cols-3 md:gap-x-6 md:gap-y-14 md:overflow-visible md:px-0 xl:grid-cols-4 [&::-webkit-scrollbar]:hidden">
           {products.map((product) => (
             <li key={product.id} className="w-[66%] shrink-0 snap-start sm:w-[40%] md:w-auto">
               <ProductCard product={product} />

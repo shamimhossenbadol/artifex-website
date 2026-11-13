@@ -103,12 +103,19 @@ test.describe("product detail (F1.2–F1.4, F3)", () => {
     await expect(bar).toHaveAttribute("aria-hidden", "true");
     await page.getByRole("heading", { name: "Specifications" }).scrollIntoViewIfNeeded();
     await expect(bar).toHaveAttribute("aria-hidden", "false");
-    // The floating button gives way to the product's own bar on mobile.
+    // The floating buttons give way to the product's own bar, which has Messenger too (ADR-044).
     await expect(page.getByRole("link", { name: /Chat with .* on WhatsApp/ })).toBeHidden();
+    await expect(bar.getByRole("link", { name: "Message on Messenger" })).toHaveAttribute(
+      "href",
+      "https://m.me/artifexfurniturebd",
+    );
   });
 
   test("an unknown product renders not-found", async ({ page }) => {
     await page.goto("/products/demo-does-not-exist");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("We couldn't find that page");
+    // One page frame: the site layout's header/footer, not a second set from the 404 page.
+    await expect(page.locator("header")).toHaveCount(1);
+    await expect(page.getByRole("contentinfo")).toHaveCount(1);
   });
 });

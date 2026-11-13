@@ -31,11 +31,22 @@ test.describe("site layout", () => {
   });
 
   test("no horizontal scroll", async ({ page }) => {
-    await page.goto("/");
-    const overflow = await page.evaluate(
-      () => document.documentElement.scrollWidth > window.innerWidth,
-    );
-    expect(overflow).toBe(false);
+    // Compare with clientWidth: on phones innerWidth grows with overflowing content, so the old
+    // check passed while the homepage was 608 px wide on a 390 px screen.
+    for (const path of [
+      "/",
+      "/products",
+      "/products/demo-signature-l-shape-sofa",
+      "/blog",
+      "/contact",
+    ]) {
+      await page.goto(path);
+      const widths = await page.evaluate(() => ({
+        scroll: document.documentElement.scrollWidth,
+        client: document.documentElement.clientWidth,
+      }));
+      expect(widths.scroll, path).toBeLessThanOrEqual(widths.client);
+    }
   });
 });
 

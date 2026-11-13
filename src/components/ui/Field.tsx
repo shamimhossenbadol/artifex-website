@@ -40,7 +40,7 @@ type FieldProps = {
   /** Use a fixed id for the control (e.g. to link to it); otherwise one is generated. */
   id?: string;
   /** One control (Input, Textarea, Select, MarkdownEditor) that reads its ids via useFieldControl. */
-  children: ReactNode;
+  children?: ReactNode;
 };
 
 /** Label above the control, optional hint, and an error linked via aria-describedby (05 §5). */

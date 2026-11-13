@@ -30,12 +30,11 @@ function attr(html: string, tag: string, name: string): string | undefined {
 describe("Field", () => {
   it("links label, control, hint and error", async () => {
     const html = await render(
-      createElement(Field, {
-        label: "Title",
-        hint: "Shown on cards.",
-        error: "Title is required",
-        children: createElement(Input, { name: "title" }),
-      }),
+      createElement(
+        Field,
+        { label: "Title", hint: "Shown on cards.", error: "Title is required" },
+        createElement(Input, { name: "title" }),
+      ),
     );
     const id = attr(html, "label", "for");
     expect(id).toBeTruthy();
@@ -46,7 +45,7 @@ describe("Field", () => {
 
   it("reaches a <select> inside Select's wrapper", async () => {
     const html = await render(
-      createElement(Field, { label: "Category", children: createElement(Select, { name: "c" }) }),
+      createElement(Field, { label: "Category" }, createElement(Select, { name: "c" })),
     );
     const id = attr(html, "label", "for");
     expect(id).toBeTruthy();
@@ -58,7 +57,7 @@ describe("Field", () => {
     const element = createElement(Input, { name: "title" });
     const lazyNode = lazy(async () => ({ default: element as unknown as ComponentType }));
     const html = await render(
-      createElement(Field, { label: "Title", children: lazyNode as unknown as ReactNode }),
+      createElement(Field, { label: "Title" }, lazyNode as unknown as ReactNode),
     );
     const id = attr(html, "label", "for");
     expect(id).toBeTruthy();

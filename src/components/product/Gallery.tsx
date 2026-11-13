@@ -48,7 +48,7 @@ export function Gallery({ images, title }: { images: GalleryImage[]; title: stri
 
   if (count === 0) {
     return (
-      <div className="aspect-[4/5] w-full">
+      <div className="aspect-square w-full lg:aspect-[4/3]">
         <ImagePlaceholder />
       </div>
     );
@@ -69,7 +69,7 @@ export function Gallery({ images, title }: { images: GalleryImage[]; title: stri
           {images.map((image, index) => (
             <div
               key={image.id}
-              className="bg-sand relative aspect-[4/5] w-full shrink-0 snap-center"
+              className="bg-sand relative aspect-square w-full shrink-0 snap-center lg:aspect-[4/3]"
               aria-roledescription="slide"
               aria-label={`${index + 1} of ${count}`}
             >
@@ -110,7 +110,7 @@ export function Gallery({ images, title }: { images: GalleryImage[]; title: stri
                 aria-label={`View image ${index + 1} of ${count}`}
                 aria-current={index === active ? "true" : undefined}
                 className={cn(
-                  "bg-sand relative block aspect-[4/5] w-16 overflow-hidden border transition-colors lg:w-full",
+                  "bg-sand relative block aspect-square w-16 overflow-hidden border transition-colors lg:w-full",
                   index === active ? "border-ink" : "hover:border-line border-transparent",
                 )}
               >

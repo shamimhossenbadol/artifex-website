@@ -25,6 +25,8 @@
   --color-danger: #b3261e;
   --color-whatsapp: #25d366;
   --color-whatsapp-dark: #128c4b;
+  /* Messenger brand blue; white text on it is 4.6:1 (ADR-035). Floating button only. */
+  --color-messenger: #0866ff;
   /* Brand red from the Artifex logo, refined from the source #FF0707. Logo only (ADR-022). */
   --color-brand: #d2161e;
 

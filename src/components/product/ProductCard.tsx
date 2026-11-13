@@ -15,14 +15,14 @@ type ProductCardProps = {
   preload?: boolean;
 };
 
-/** 4:5 image, title, category and price; the whole card is one link (03 §5). */
+/** Square image, title, category and price; the whole card is one link (03 §5). */
 export function ProductCard({ product, preload = false }: ProductCardProps) {
   const price = getPriceInfo(product.regularPrice, product.discountPrice);
 
   return (
     <article className="group">
       <Link href={product.href} className="block">
-        <div className="bg-sand relative aspect-[4/5] overflow-hidden">
+        <div className="bg-sand relative aspect-square overflow-hidden">
           {product.image ? (
             <Image
               src={product.image.path}

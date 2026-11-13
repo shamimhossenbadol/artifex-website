@@ -23,6 +23,7 @@ Defined as CSS variables in `src/styles/globals.css` and exposed to Tailwind (`@
 | `--color-danger` | `#B3261E` | Errors, destructive admin actions |
 | `--color-whatsapp` | `#25D366` | **Only** the WhatsApp icon/button accent |
 | `--color-whatsapp-dark` | `#128C4B` | WhatsApp button background, which passes AA with white text |
+| `--color-messenger` | `#0866FF` | Floating Messenger button only (white icon, 4.6:1) |
 | `--color-brand` | `#D2161E` | **Only** the logo (refined from the source `#FF0707`; ADR-022) |
 
 Contrast: ink on bg is ≈ 16:1, muted on bg ≈ 4.6:1 (AA for body text), and white on walnut ≈ 6.9:1.
@@ -74,11 +75,11 @@ Rules: headings are serif, while everything functional (nav, buttons, prices, fo
 | Component | Spec |
 |---|---|
 | **Button** | Variants: `primary` (ink bg, ivory text), `secondary` (transparent, ink 1px border), `ghost` (text only, underline on hover), `whatsapp` (whatsapp-dark bg, white text, WhatsApp icon). Sizes: `md` h-11 px-6, `lg` h-13 px-8. Inter 500, 14–15 px, tracking 0.02em. Focus: 2 px walnut ring with offset. |
-| **ProductCard** (`product/`) | 4:5 image on a sand background, title (Inter 500, 15–16 px, 2-line clamp), category (small, muted), price row. Discount: sale-coloured price, struck-through regular price in muted, and a "-15%" badge top-left. "New" badge optional. The whole card is a link. Hover: image scale 1.03 and title underline. |
+| **ProductCard** (`product/`) | Square (1:1) image (ADR-035) on a sand background, title (Inter 500, 15–16 px, 2-line clamp), category (small, muted), price row. Discount: sale-coloured price, struck-through regular price in muted, and a "-15%" badge top-left. "New" badge optional. The whole card is a link. Hover: image scale 1.03 and title underline. |
 | **Price** | Formats `৳ 45,500`. Handles regular-only, discounted, and "Price on request". |
 | **Badge** | 11–12 px uppercase Inter 500, tracking 0.08em, 2 px radius. Variants: `sale`, `new`, `neutral`. |
 | **ColorSwatches** (`product/`) | 28 px circles with a 1 px line border; the selected one gets a 2 px ink ring with offset. The colour name shows next to the label. They're buttons with `aria-pressed`. |
-| **Gallery** (`product/`) | Main image 4:5 (mobile is full-bleed swipeable via CSS scroll-snap, no library). Thumbnail strip below (desktop: vertical strip left). Click opens a lightweight fullscreen viewer (native `<dialog>`). |
+| **Gallery** (`product/`) | Main image 1:1 on mobile, 4:3 on desktop (ADR-035; mobile is full-bleed swipeable via CSS scroll-snap, no library). Thumbnail strip below (desktop: vertical strip left). Click opens a lightweight fullscreen viewer (native `<dialog>`). |
 | **SectionHeading** (`site/`) | Eyebrow, then h2, then optional "View all →" link aligned right on desktop. |
 | **Input / Textarea / Select** | h-11, 1 px line border, 2 px radius, white surface, walnut focus ring. Labels above (small, ink-soft). |
 | **Breadcrumbs** | small, muted, `/` separators, last item ink. |
@@ -86,7 +87,7 @@ Rules: headings are serif, while everything functional (nav, buttons, prices, fo
 
 ## 6. Imagery guidelines
 
-- Product photos: **4:5 portrait** for cards and gallery, at least 1600 px on the long edge, on neutral/lifestyle backgrounds. Consistent lighting matters more than quantity.
+- Product photos: shown **square** on cards and mobile gallery, **4:3** in the desktop gallery (centre-cropped), so keep the product centred; at least 1600 px on the long edge, on neutral/lifestyle backgrounds. Consistent lighting matters more than quantity.
 - Hero: 16:9 desktop / 4:5 mobile crop (art-directed via two image fields if needed later; v1 uses `object-cover` with a focal point centred).
 - Blog covers: 3:2.
 - Category tiles: 4:5 with the category name overlaid bottom-left on a subtle dark scrim (`linear-gradient` allowed **only** here, for text legibility).
@@ -97,7 +98,7 @@ Rules: headings are serif, while everything functional (nav, buttons, prices, fo
 
 ## 8. Logo (ADR-022)
 
-The real logo is in use: `src/components/site/Logo.tsx` renders `src/assets/brand/artifex-wordmark.svg` (header: 40 px mobile, 48 px desktop, 40 px when scrolled) and `artifex-logo.svg` with the "DECOR YOUR DREAMS" tagline (footer, 80 px). Brand red `--color-brand: #D2161E` is for the logo only. Favicons are generated from the "A" mark. Keep clear space of at least half the logo height around it, and never recolour or stretch it.
+The real logo is in use: `src/components/site/Logo.tsx` renders `src/assets/brand/artifex-wordmark.svg` (header: 40 px mobile, 48 px desktop, 40 px when scrolled) and `artifex-logo.svg` with the "DECOR YOUR DREAMS" tagline (footer, 56 px). Brand red `--color-brand: #D2161E` is for the logo only. Favicons are generated from the "A" mark. Keep clear space of at least half the logo height around it, and never recolour or stretch it.
 
 ### Previous text wordmark (retired)
 

@@ -81,7 +81,7 @@ Each phase ends with a short manual review of the phase's acceptance checks.
 - [x] `scripts/admin-reset-password.ts` CLI (runs through the DB tunnel)
 - [x] Admin shell (sidebar, mobile drawer, toasts, confirm dialog)
 - [x] Dashboard overview + warnings
-- [ ] Products: list/filter, create/edit form (all sections), image uploader (sharp variants → R2, reorder, primary, alt, R2 delete on remove), duplicate, delete
+- [x] Products: list/filter, create/edit form (all sections), image uploader (sharp variants → R2, reorder, primary, alt, R2 delete on remove), duplicate, delete (7d, ADR-034; draft preview `?preview=1` still open)
 - [x] Categories: CRUD, reorder, toggles (7c, ADR-033)
 - [ ] Blog: CRUD with Markdown editor + image insert
 - [ ] Homepage: hero, promo banners, featured lists — hero + banners done (7b, ADR-031); featured lists in 7f

@@ -212,3 +212,63 @@ test("categories: create, show on the site, guard delete, then delete", async ({
   await expect(page.getByText("Category deleted.").first()).toBeVisible();
   await expect(page.getByText("/categories/e2e-lounge-chairs")).toHaveCount(0);
 });
+
+// --- Milestone 7d: products. Creates throwaway products on the CI database and removes them. ---
+
+test("products: create a draft, publish it, duplicate and delete", async ({ page }) => {
+  await signIn(page, EMAIL!, NEW_PASSWORD);
+  await expect(page).toHaveURL(/\/admin$/);
+
+  await page.goto("/admin/products/new");
+  await page.waitForLoadState("networkidle");
+  await page.getByLabel("Title", { exact: true }).fill("E2E Walnut Bench");
+  await page.getByLabel("Category").selectOption({ label: "Sofas" });
+  await page.getByLabel("Short description").fill("A bench made for e2e tests.");
+  await page.getByLabel("Regular price (৳)").fill("20000");
+  await page.getByLabel("Discount price (৳, optional)").fill("25000");
+  await expect(page.getByText("Shown on the website as")).toBeVisible();
+  await page.getByRole("button", { name: "Save and add photos" }).click();
+  // Server validation: the discount must be lower; the form keeps what was typed.
+  await expect(page.getByText(/must be lower than the regular price/).first()).toBeVisible();
+  await expect(page.getByLabel("Title", { exact: true })).toHaveValue("E2E Walnut Bench");
+
+  await page.getByLabel("Discount price (৳, optional)").fill("18000");
+  await page.getByRole("button", { name: "Add colour" }).click();
+  await page.getByLabel("Name of colour 1").fill("Walnut");
+  await page.getByRole("button", { name: "Frame" }).click(); // Sofa preset
+  await page.getByLabel("Value of “Frame”").fill("Solid walnut");
+  await page.getByRole("button", { name: "Save and add photos" }).click();
+  await expect(page).toHaveURL(/\/admin\/products\/\d+$/);
+  await expect(page.getByRole("heading", { name: "Photos" })).toBeVisible();
+  await expect(page.getByLabel("Name of colour “Walnut”")).toHaveValue("Walnut");
+
+  // A draft isn't public.
+  const editUrl = page.url();
+  await page.goto("/products/e2e-walnut-bench");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("We couldn't find that page");
+
+  await page.goto(editUrl);
+  await page.waitForLoadState("networkidle");
+  await page.getByLabel("Status").selectOption("PUBLISHED");
+  await page.getByRole("button", { name: "Save product" }).click();
+  await expect(page.getByText("Product saved.").first()).toBeVisible();
+  await page.goto("/products/e2e-walnut-bench");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("E2E Walnut Bench");
+  await expect(page.getByText("Solid walnut")).toBeVisible();
+
+  // Filter the list, duplicate, then delete both.
+  await page.goto("/admin/products?q=E2E+Walnut");
+  await page.getByRole("button", { name: "Duplicate “E2E Walnut Bench”" }).click();
+  await expect(page).toHaveURL(/\/admin\/products\/\d+$/);
+  await expect(page.getByLabel("Title", { exact: true })).toHaveValue("E2E Walnut Bench (copy)");
+  await expect(page.getByLabel("Status")).toHaveValue("DRAFT");
+
+  await page.goto("/admin/products?q=E2E+Walnut");
+  for (const title of ["E2E Walnut Bench (copy)", "E2E Walnut Bench"]) {
+    const row = page.getByRole("listitem").filter({ hasText: title }).first();
+    await row.getByRole("button", { name: "Delete" }).click();
+    await page.getByRole("dialog").getByRole("button", { name: "Delete" }).click();
+    await expect(page.getByText("Product deleted.").first()).toBeVisible();
+  }
+  await expect(page.getByText("No products match these filters.")).toBeVisible();
+});

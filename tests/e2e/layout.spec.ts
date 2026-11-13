@@ -61,3 +61,25 @@ test.describe("mobile menu", () => {
     });
   });
 });
+
+test.describe("desktop header and floating buttons (ADR-035)", () => {
+  test.skip(({ isMobile }) => isMobile, "desktop header only");
+
+  test("header has company links and no Chairs; Messenger sits above WhatsApp", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    const nav = page.getByRole("navigation", { name: "Main" });
+    for (const name of ["Sofas", "Journal", "About", "Contact"]) {
+      await expect(nav.getByRole("link", { name, exact: true })).toBeVisible();
+    }
+    await expect(nav.getByRole("link", { name: "Chairs" })).toHaveCount(0);
+
+    const messenger = page.getByRole("link", { name: /on Facebook Messenger/ });
+    await expect(messenger).toHaveAttribute("href", "https://m.me/artifexfurniturebd");
+    await expect(page.getByRole("link", { name: /Chat with .* on WhatsApp/ })).toBeVisible();
+
+    // The footer is compact: no category list.
+    await expect(page.getByRole("contentinfo").getByRole("link", { name: "Sofas" })).toHaveCount(0);
+  });
+});

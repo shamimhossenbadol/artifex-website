@@ -17,7 +17,7 @@ export function WhatsAppBand({
   return (
     <section aria-labelledby="help-heading" className="reveal bg-sand py-16 md:py-20">
       <Container className="flex flex-col items-center gap-6 text-center">
-        <h2 id="help-heading" className="text-h2 max-w-2xl">
+        <h2 id="help-heading" className="text-h2 max-w-4xl text-balance">
           Not sure what fits your space? Talk to us.
         </h2>
         <p className="text-body-lg max-w-xl">

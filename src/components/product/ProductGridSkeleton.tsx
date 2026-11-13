@@ -9,7 +9,7 @@ export function ProductGridSkeleton({ count = 8 }: { count?: number }) {
     >
       {Array.from({ length: count }, (_, i) => (
         <li key={i} className="flex flex-col gap-3">
-          <Skeleton className="aspect-[4/5] w-full" />
+          <Skeleton className="aspect-square w-full" />
           <Skeleton className="h-4 w-3/4" />
           <Skeleton className="h-3 w-1/3" />
           <Skeleton className="h-5 w-1/2" />

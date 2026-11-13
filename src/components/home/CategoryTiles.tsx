@@ -34,8 +34,7 @@ export function CategoryTiles({ categories }: { categories: HomeCategoryVM[] }) 
       <Container>
         <SectionHeading
           id="categories-heading"
-          eyebrow="Collections"
-          title="Shop by category"
+          title="Collections"
           link={{ href: "/products", label: "All furniture" }}
         />
       </Container>

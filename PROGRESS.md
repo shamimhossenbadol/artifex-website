@@ -9,10 +9,10 @@
 
 | Item | Value |
 |---|---|
-| **Current phase** | Phase 7: Admin dashboard (7a–7c done; 7d products next) |
+| **Current phase** | Phase 7: Admin dashboard (7a–7d done; 7e journal next) |
 | **Overall state** | ✅ Phase 1 complete. Code is on GitHub (`shamimhossenbadol/artifex-website`, private); CI is green. ✅ **First deploy succeeded 2026-11-12**: https://artifex.codespherestudio.site serves the placeholder page with security headers (via Cloudflare). Migration applied; seed created 7 categories, settings, hero and the admin (`mustChangePassword = 1`); backup saved in `~/backups`. |
 | **Last updated** | 2026-11-13 |
-| **Next action** | Owner: (1) GitHub → Settings → Secrets and variables → Actions → Variables: set `NEXT_PUBLIC_MEDIA_URL` = `https://media.codespherestudio.site` (it currently holds the site URL, so uploaded photos 404; builds now refuse that). (2) Admin → Settings → Location: paste the new directions link (below) into "Directions link" and save. (3) Deploy, then try Categories on your phone. Agent: Phase 7 milestone 7d (products). |
+| **Next action** | Owner: Deploy, then on your phone add a product in Admin → Products (details → Save and add photos → upload photos → set Published). Agent: Phase 7 milestone 7e (Journal admin), then 7f (homepage featured lists) and draft preview (`?preview=1`). |
 
 ## Phase overview
 
@@ -25,7 +25,7 @@
 | 4 | Global search | ✅ Done 2026-11-12 |
 | 5 | Blog, About, Contact/Location | ✅ Done 2026-11-12 |
 | 6 | Homepage | ✅ Done 2026-11-12 |
-| 7 | Admin dashboard | 🟡 7a–7c done (auth, account, shell, dashboard, settings, hero/banners, categories); 7d–7f next |
+| 7 | Admin dashboard | 🟡 7a–7d done (auth, account, shell, dashboard, settings, hero/banners, categories, products); 7e–7f next |
 | 8 | SEO, security & performance hardening | ⚪ Not started |
 | 9 | Production build, deployment & QA | ⚪ Not started |
 
@@ -53,9 +53,7 @@ Legend: ⚪ not started · 🟡 in progress · ✅ done · ⛔ blocked
 
 ## Blockers
 
-- **Homepage photos don't show on the test site** until the GitHub variable `NEXT_PUBLIC_MEDIA_URL` is set to `https://media.codespherestudio.site` and the site is redeployed. Found 2026-11-13: the live page requests `https://artifex.codespherestudio.site/home/…webp` (404) while the file is on the media domain (200).
-- **Directions link:** the test DB still has the old address-search link in `mapLinkUrl`. Paste `https://www.google.com/maps/dir//Artifex+Furniture,+House+02+Road-05,+Dhaka+1230` into Admin → Settings → Location → Directions link (the seed only sets it on fresh databases).
-
+- **Directions link (unconfirmed):** if not done yet, paste `https://www.google.com/maps/dir//Artifex+Furniture,+House+02+Road-05,+Dhaka+1230` into Admin → Settings → Location → Directions link (the seed only sets it on fresh databases).
 - **Before the first test deploy:** Cloudflare DNS record for `artifex` + GitHub `production` secrets/variables. cPanel side is done (ADR-019). Doesn't block Phase 2.
 - No local MySQL/MariaDB or WSL on the dev PC, so DB-backed checks run in CI. Optional: install MariaDB 11.4 locally for `npm run db:migrate` during development.
 
@@ -86,6 +84,10 @@ Answer these by editing this list. Agents: use the **default** until an answer i
 ## Session log
 
 Add one line per session, newest first: `YYYY-MM-DD — summary — files touched`.
+
+- 2026-11-13 — Owner layout changes (ADR-035): header gets Journal/About/Contact, Chairs hidden from it; compact footer; Messenger FAB; homepage headings simplified, Featured/Most loved rails removed, CTA heading on one line; square product cards, 1:1/4:3 gallery. e2e updated (home sections, header/FAB/footer). Not checked in a browser locally (no DB in this session). — `src/components/site/{HeaderView,Footer,WhatsAppFab,SocialIcons}.tsx`, `src/config/site.ts`, `src/styles/globals.css`, `src/components/home/`, `src/components/product/`, `src/app/(site)/page.tsx`, `tests/e2e/`, `DECISIONS.md`, `docs/03`, `05`, `CHANGELOG.md`
+
+- 2026-11-13 — Owner fixed the GitHub media URL variable (hero photo now shows). Phase 7d products: list (search, category/status/flag filters, sort, 20/page, duplicate, delete), create/edit form (Markdown toolbar + preview, live price preview, colour and spec rows with category presets, details, visibility, SEO preview, unsaved-changes guard), Photos panel (drag & drop, 2 parallel one-file uploads with per-file status, featured, order, alt, delete). 241 unit tests; products e2e added (CI only). Not checked in a browser locally (no DB tunnel in this session). Draft preview (`?preview=1`) not built yet. ADR-034. — `src/lib/{validation/product,spec-presets}.ts`, `src/server/{repositories/product-admin.repo,services/product-admin.service,actions/product.actions}.ts`, `src/components/admin/{AdminForm.tsx,products/}`, `src/app/admin/(panel)/products/`, `tests/`, `DECISIONS.md`, `docs/07`, `12`, `CHANGELOG.md`
 
 - 2026-11-13 — Owner fixes + Phase 7c. Hero photo not showing: the build's `NEXT_PUBLIC_MEDIA_URL` is the site URL (GitHub variable), so image URLs 404. next.config now refuses that; owner must fix the variable. Contact: directions default = Google Maps place link (seed), "Message us on Facebook" (m.me link from facebookUrl), removed "Times are Dhaka time.". Phase 7c categories: list (move up/down, Active / On home switches, counts), create/edit (slug from name, image + remove, SEO), guarded delete, search-text refresh on rename, full revalidation. 222 unit tests; categories e2e added (CI only). Not checked in a browser locally (DB tunnel not available in this session). ADR-033. — `next.config.ts`, `src/app/(site)/contact/page.tsx`, `src/lib/{messenger,validation/category}.ts`, `src/server/{repositories/category.repo,services/category-admin.service,actions/category.actions}.ts`, `src/components/admin/categories/`, `src/app/admin/(panel)/categories/`, `prisma/seed.ts`, `tests/`, `DECISIONS.md`, `docs/06`, `07`, `10`, `12`, `CHANGELOG.md`
 

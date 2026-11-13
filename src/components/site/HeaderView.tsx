@@ -1,6 +1,11 @@
 import { ChevronDown, Phone } from "lucide-react";
 import Link from "next/link";
-import { COMPANY_LINKS, HEADER_CATEGORY_LABELS, MAX_HEADER_CATEGORIES } from "@/config/site";
+import {
+  COMPANY_LINKS,
+  HEADER_CATEGORY_LABELS,
+  HEADER_HIDDEN_CATEGORIES,
+  MAX_HEADER_CATEGORIES,
+} from "@/config/site";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Container } from "@/components/ui/Container";
 import { MobileNav } from "./MobileNav";
@@ -25,17 +30,18 @@ const NAV_LINK =
 
 /** Presentational header (05 §2). Also rendered with empty data as the streaming fallback. */
 export function HeaderView({
-  categories,
+  categories: allCategories,
   phone,
   telHref,
   whatsappHref,
   facebookUrl,
 }: HeaderViewProps) {
+  const categories = allCategories.filter((c) => !HEADER_HIDDEN_CATEGORIES.includes(c.slug));
   const primary = categories.slice(0, MAX_HEADER_CATEGORIES);
   const more = categories.slice(MAX_HEADER_CATEGORIES);
 
-  // One clean header row (ADR-026): no utility bar. Journal/About/Contact live in the footer and
-  // the mobile menu; the phone stays as an icon next to the Inquire button.
+  // One clean header row (ADR-026): categories, then Journal/About/Contact (ADR-035); the phone
+  // stays as an icon next to the Inquire button.
   return (
     <>
       <StickyHeader>
@@ -61,8 +67,8 @@ export function HeaderView({
             animated
             className="h-12 transition-[height] duration-200 ease-out group-data-[scrolled=true]/header:h-10"
           />
-          <nav aria-label="Categories" className="flex-1">
-            <ul className="flex items-center justify-center gap-x-6 xl:gap-x-8">
+          <nav aria-label="Main" className="flex-1">
+            <ul className="flex items-center justify-center gap-x-5 xl:gap-x-7">
               {primary.map((category) => (
                 <li key={category.slug}>
                   <Link href={category.href} className={NAV_LINK}>
@@ -96,6 +102,20 @@ export function HeaderView({
                   </details>
                 </li>
               )}
+              {COMPANY_LINKS.map((link, index) => (
+                <li
+                  key={link.href}
+                  className={
+                    index === 0 && categories.length > 0
+                      ? "border-line border-l pl-5 xl:pl-7"
+                      : undefined
+                  }
+                >
+                  <Link href={link.href} className={NAV_LINK}>
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </nav>
           <div className="flex items-center gap-1">

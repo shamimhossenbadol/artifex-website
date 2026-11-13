@@ -52,12 +52,10 @@ async function HeroSection() {
 
 /** Everything below the hero, fetched in parallel; empty sections render nothing (F6). */
 async function HomeSections() {
-  const [settings, categories, newArrivals, featured, popular, banners, posts] = await Promise.all([
+  const [settings, categories, newArrivals, banners, posts] = await Promise.all([
     getSiteSettings(),
     getHomeCategories(),
     getHomeRail("new"),
-    getHomeRail("featured"),
-    getHomeRail("popular"),
     getPromoBanners(),
     getLatestPosts(3),
   ]);
@@ -89,22 +87,13 @@ async function HomeSections() {
       <CategoryTiles categories={categories} />
       <ProductRail
         id="new-arrivals"
-        eyebrow="Just in"
         title="New arrivals"
         products={newArrivals}
         link={{ href: "/products", label: "View all" }}
         tinted
       />
       <BrandIntro text={settings.aboutShort} />
-      <ProductRail id="featured" eyebrow="Our picks" title="Featured pieces" products={featured} />
       <PromoBanners banners={banners} />
-      <ProductRail
-        id="popular"
-        eyebrow="Customer favourites"
-        title="Most loved"
-        products={popular}
-        tinted
-      />
       <WhatsAppBand whatsappHref={whatsappHref} phone={phone} telHref={telHref} />
       <LatestPosts posts={posts} />
     </>

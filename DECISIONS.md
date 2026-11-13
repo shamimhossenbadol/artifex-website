@@ -295,3 +295,30 @@ Format: each ADR has a number, date, status (Accepted / Superseded by ADR-x / Pr
 - **Delete** is refused by the service when products exist (also enforced by `onDelete: Restrict`); the list shows "View products" instead of Delete for those rows.
 - **Revalidation:** every category mutation calls `updateTag` for `categories`, `products` (product pages show the category; search), `home`, and `category:<slug>` (old and new).
 **Consequences:** "View products" links to `/admin/products?category=<slug>`, which becomes a real filtered list in milestone 7d.
+
+### ADR-034 — Admin products (Phase 7, milestone 7d)
+**Date:** 2026-11-13 · **Status:** Accepted (implements 07 §3.2 and the product rows of §5)
+**Context:** The product form is the largest admin screen: details, colours, specs, SEO and up to 12 photos, used mostly from a phone on shared hosting (one process, limited RAM).
+**Decision:**
+- **Photos are separate from the details form.** A new product is saved first ("Save and add photos"), then the edit page shows a Photos panel. Each photo is one Server Action request (07 §4); the browser queues files and runs **two uploads at a time**, showing a status per file (waiting / uploading / uploaded / failed) instead of a byte percentage (Server Actions don't report upload progress). Reorder, "Set as featured", alt text and delete save immediately. The first photo becomes featured; deleting the featured photo promotes the next. New photos get the product title as alt text, so alt is never empty. The 12-photo limit is checked on the server before uploading.
+- **Order uses up/down buttons** for photos, colours and specs, as for banners and categories (ADR-031/033): accessible on phones, no dependency.
+- **Colours and specs** are client-side rows sent as JSON in hidden inputs, validated with Zod (per-row errors map to `colors.0.name` etc.) and written with the product in one transaction (delete + recreate). Spec quick-add labels come from `lib/spec-presets.ts`, keyed by the selected category's slug.
+- **Derived columns** are computed in the service on every save: `searchText` (title, category, keywords, material, colour names) and `effectivePrice`. `publishedAt` is stamped on first publish and kept if the product goes back to draft.
+- **Slug and SKU** uniqueness is checked in the service; a P2002 race maps to the right field from the error target.
+- **Duplicate** copies everything except slug, SKU and photos as a draft, with a free `-copy`, `-copy-2`… slug, and opens the copy.
+- **Delete** removes the row (photos, colours and specs cascade), then deletes the photo variants from R2; a failed R2 delete is logged and leaves an orphan, never a broken page.
+- **Unsaved changes:** `AdminForm` has an opt-in `guardUnsaved` (beforeunload while dirty; cleared on a successful save). Controls that change the form without input events call `markDirty()` from the form context.
+- **Markdown preview** renders with the same `<Markdown>` component as the public page (admin-only client bundle).
+- **Revalidation:** product create/update/delete → `products`, `home`, `categories`, `product:<old>` and `product:<new>`; photo changes → `product:<slug>`, `products`, `home`. Duplicates are drafts and revalidate nothing public.
+**Consequences:** Drafts can't be previewed on the public page yet (F1.2 `?preview=1` for a signed-in admin); "View on site" shows only for published products in active categories. Two parallel uploads at 11/12 photos could both pass the limit check (13 photos); acceptable for a single admin.
+
+### ADR-035 — Owner layout changes: navigation in the header, compact footer, shorter product images
+**Date:** 2026-11-13 · **Status:** Accepted (supersedes parts of ADR-026 and 05 §2–3)
+**Context:** After seeing the test site, the owner asked for a simpler homepage, a more compact and premium footer, Journal/About/Contact in the top navigation, a Messenger button, and less tall product photos.
+**Decision:**
+- **Header:** categories (max 6, minus `HEADER_HIDDEN_CATEGORIES` = Chairs, hidden at the owner's request) then a divider and Journal · About · Contact. Chairs keeps its page, homepage tile and search results. The nav landmark is now labelled "Main".
+- **Footer:** logo, short description, social icons, address, phone, WhatsApp (and email if set), © line. Category and company links removed; navigation lives in the header and mobile menu.
+- **Floating buttons:** Messenger (`m.me` link from the Facebook URL, new `--color-messenger` token #0866FF) stacked above WhatsApp; both hide on mobile product pages like before.
+- **Homepage:** "Collections" heading (no "Shop by category"), "New arrivals" without the "Just in" eyebrow, Featured and Most loved rails removed (the product flags stay). The CTA band heading may use up to 56rem with balanced wrapping so it fits on one line on desktop.
+- **Product images:** cards square (1:1, was 4:5); gallery 1:1 on mobile and 4:3 on desktop. Category tiles stay 4:5.
+**Consequences:** Featured/Popular flags currently affect nothing public; they're kept for a possible future use (e.g. 7f or a "Featured" filter). Hiding a category from the header is a code constant, not an admin switch.

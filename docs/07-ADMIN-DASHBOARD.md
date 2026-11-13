@@ -46,6 +46,7 @@ Session and security mechanics are in `09-SECURITY-GUIDELINES.md` §2.
 - Validation errors show inline and in a summary at the top. A failed save keeps the form state.
 - Unsaved-changes guard (`beforeunload`).
 - "Duplicate" copies everything except slug/SKU/images as a Draft.
+- **As built (ADR-034):** photos are added on the edit page after the first save ("Save and add photos"), in a Photos panel that saves on its own, outside the details form. Reorder uses move up/down buttons (not drag), upload progress is a per-file status (waiting / uploading / uploaded / failed) rather than a byte percentage, and new photos get the product title as default alt text. Colours and specs reorder with up/down buttons.
 
 ### 3.3 Categories
 - List with move up/down buttons (saves `sortOrder`; ADR-033 replaces drag-to-reorder), switches for Active and Show on home, and a product count.

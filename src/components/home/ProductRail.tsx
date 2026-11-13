@@ -17,7 +17,7 @@ export function ProductRail({
   tinted = false,
 }: {
   id: string;
-  eyebrow: string;
+  eyebrow?: string;
   title: string;
   products: ProductCardVM[];
   link?: { href: string; label: string };

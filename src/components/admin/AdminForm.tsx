@@ -5,7 +5,9 @@ import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
   createContext,
+  useCallback,
   useContext,
+  useEffect,
   useState,
   useTransition,
   type ComponentProps,
@@ -18,8 +20,17 @@ import type { ActionResult } from "@/lib/action-result";
 import { FormMessage, fieldError } from "./FormMessage";
 import { useToast } from "./Toaster";
 
-type FormState = { state: ActionResult<unknown> | null; pending: boolean };
-const FormStateContext = createContext<FormState>({ state: null, pending: false });
+type FormState = {
+  state: ActionResult<unknown> | null;
+  pending: boolean;
+  /** For controls that change the form without input events (e.g. adding a row). */
+  markDirty: () => void;
+};
+const FormStateContext = createContext<FormState>({
+  state: null,
+  pending: false,
+  markDirty: () => undefined,
+});
 
 export function useAdminFormState(): FormState {
   return useContext(FormStateContext);
@@ -32,6 +43,11 @@ type AdminFormProps<T> = {
   /** After a successful save, go here. "{id}" is replaced with `data.id` when the action returns one. */
   redirectTo?: string;
   className?: string;
+  /**
+   * Warn before leaving the page with unsaved changes (07 §3.2). Controls inside an element with
+   * `data-guard-ignore` (e.g. the photo manager, which saves on its own) don't count.
+   */
+  guardUnsaved?: boolean;
 };
 
 export function AdminForm<T>({
@@ -40,9 +56,24 @@ export function AdminForm<T>({
   submitLabel = "Save changes",
   redirectTo,
   className,
+  guardUnsaved = false,
 }: AdminFormProps<T>) {
   const [state, setState] = useState<ActionResult<T> | null>(null);
   const [pending, startTransition] = useTransition();
+  const [dirty, setDirty] = useState(false);
+  const markDirty = useCallback(() => setDirty(true), []);
+
+  useEffect(() => {
+    if (!guardUnsaved || !dirty) return;
+    const warn = (event: BeforeUnloadEvent) => event.preventDefault();
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [guardUnsaved, dirty]);
+
+  function onEdit(event: FormEvent<HTMLFormElement>) {
+    const target = event.target as HTMLElement;
+    if (!target.closest("[data-guard-ignore]")) setDirty(true);
+  }
   const router = useRouter();
   const toast = useToast();
 
@@ -61,6 +92,7 @@ export function AdminForm<T>({
         toast.error(result.error);
         return;
       }
+      setDirty(false);
       toast.success(result.message ?? "Saved.");
       const id = (result.data as { id?: number } | undefined)?.id;
       if (redirectTo) router.push(redirectTo.replace("{id}", String(id ?? "")));
@@ -69,8 +101,13 @@ export function AdminForm<T>({
   }
 
   return (
-    <FormStateContext value={{ state, pending }}>
-      <form onSubmit={onSubmit} noValidate className={className ?? "flex flex-col gap-6"}>
+    <FormStateContext value={{ state, pending, markDirty }}>
+      <form
+        onSubmit={onSubmit}
+        onInput={guardUnsaved ? onEdit : undefined}
+        noValidate
+        className={className ?? "flex flex-col gap-6"}
+      >
         <FormMessage state={state as ActionResult | null} />
         {children}
         <div className="border-line bg-bg/95 sticky bottom-0 z-10 -mx-1 flex justify-end border-t px-1 py-3 backdrop-blur-sm">

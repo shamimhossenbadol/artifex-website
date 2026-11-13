@@ -22,11 +22,9 @@ test("shows the sections in order and hides empty ones", async ({ page }) => {
   await expect(sections.first()).toBeVisible();
   const titles = await sections.allInnerTexts();
   expect(titles).toEqual([
-    "Shop by category",
+    "Collections",
     "New arrivals",
     "Decor your dreams",
-    "Featured pieces",
-    "Most loved",
     "Not sure what fits your space? Talk to us.",
     "Ideas for your home",
   ]);
@@ -44,8 +42,10 @@ test("category tiles link to all six categories", async ({ page }) => {
 
 test("rails link to products and the CTA band opens WhatsApp", async ({ page }) => {
   await page.goto("/");
-  const featured = page.locator("section[aria-labelledby=featured] article a");
-  await expect(featured.first()).toHaveAttribute("href", /^\/products\/demo-/);
+  // Featured / Most loved rails were removed from the homepage (ADR-035).
+  await expect(page.locator("section[aria-labelledby=featured]")).toHaveCount(0);
+  const arrivals = page.locator("section[aria-labelledby=new-arrivals] article a");
+  await expect(arrivals.first()).toHaveAttribute("href", /^\/products\/demo-/);
   await expect(page.getByRole("link", { name: "Message on WhatsApp" })).toHaveAttribute(
     "href",
     /^https:\/\/wa\.me\/8801757758388\?text=/,

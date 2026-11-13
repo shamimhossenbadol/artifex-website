@@ -1,35 +1,25 @@
 import { MapPin, Phone } from "lucide-react";
-import Link from "next/link";
-import type { ReactNode } from "react";
-import { COMPANY_LINKS } from "@/config/site";
-import { formatHoursRange } from "@/lib/opening-hours";
 import { Container } from "@/components/ui/Container";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { getNavCategories } from "@/server/services/catalog.service";
 import { getSiteSettings } from "@/server/services/settings.service";
 import { getContactLinks } from "./contact-links";
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from "./SocialIcons";
 import { WhatsAppIcon } from "./WhatsAppIcon";
 import { Logo } from "./Logo";
 
-const HEADING = "text-eyebrow mb-4 text-ink";
-const LINK =
-  "inline-flex min-h-11 items-center text-ink-soft transition-colors hover:text-ink md:min-h-9";
+const ROW = "text-ink-soft flex items-start gap-3";
+const LINK_ROW = `${ROW} min-h-11 items-center transition-colors hover:text-ink md:min-h-9`;
+const ICON = "text-walnut mt-0.5 size-5 shrink-0";
 
-function FooterColumn({ title, children }: { title: string; children: ReactNode }) {
-  return (
-    <div>
-      <h2 className={HEADING}>{title}</h2>
-      {children}
-    </div>
-  );
-}
-
-/** Site footer (05 §2): brand intro, categories, company links, contact, hours, social, ©. */
+/**
+ * Compact footer (ADR-035): brand, short description and social icons on one side; address,
+ * phone and WhatsApp on the other; a quiet © line. Navigation lives in the header.
+ */
 export async function Footer() {
-  const [settings, categories] = await Promise.all([getSiteSettings(), getNavCategories()]);
+  const settings = await getSiteSettings();
   const { phone, telHref, whatsappHref } = getContactLinks(settings);
   const address = [settings.addressLine, settings.city].filter(Boolean).join(", ");
+  const description = settings.aboutShort ?? settings.tagline;
   const socials = [
     { href: settings.facebookUrl, label: "Facebook", Icon: FacebookIcon },
     { href: settings.instagramUrl, label: "Instagram", Icon: InstagramIcon },
@@ -38,14 +28,12 @@ export async function Footer() {
 
   return (
     <footer className="border-line bg-sand border-t">
-      <Container className="reveal grid gap-10 py-16 md:grid-cols-2 md:py-20 lg:grid-cols-[1.4fr_1fr_1fr_1.4fr]">
+      <Container className="grid gap-8 py-10 md:grid-cols-[1.3fr_1fr] md:items-start md:gap-16 md:py-12">
         <div className="flex flex-col items-start gap-4">
-          <Logo variant="full" className="h-20" />
-          {(settings.aboutShort ?? settings.tagline) && (
-            <p className="text-ink-soft max-w-sm">{settings.aboutShort ?? settings.tagline}</p>
-          )}
+          <Logo variant="full" className="h-14" />
+          {description && <p className="text-ink-soft text-small max-w-md">{description}</p>}
           {socials.length > 0 && (
-            <ul className="-ml-3 flex items-center">
+            <ul className="-ml-2.5 flex items-center">
               {socials.map(({ href, label, Icon }) => (
                 <li key={label}>
                   <a
@@ -65,82 +53,35 @@ export async function Footer() {
           )}
         </div>
 
-        {categories.length > 0 && (
-          <FooterColumn title="Shop">
-            <ul>
-              {categories.map((category) => (
-                <li key={category.slug}>
-                  <Link href={category.href} className={LINK}>
-                    {category.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </FooterColumn>
-        )}
-
-        <FooterColumn title="Company">
-          <ul>
-            {COMPANY_LINKS.map((link) => (
-              <li key={link.href}>
-                <Link href={link.href} className={LINK}>
-                  {link.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </FooterColumn>
-
-        <FooterColumn title="Visit & contact">
-          <address className="flex flex-col gap-1 not-italic">
-            {address && (
-              <p className="text-ink-soft flex gap-3 py-2">
-                <MapPin
-                  aria-hidden
-                  strokeWidth={1.5}
-                  className="text-walnut mt-0.5 size-5 shrink-0"
-                />
-                {address}
-              </p>
-            )}
-            {phone && telHref && (
-              <a href={telHref} className={`${LINK} gap-3 tabular-nums`}>
-                <Phone aria-hidden strokeWidth={1.5} className="text-walnut size-5" />
-                {phone}
-              </a>
-            )}
-            {whatsappHref && (
-              <a
-                href={whatsappHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`${LINK} gap-3`}
-              >
-                <WhatsAppIcon className="text-whatsapp-dark size-5" />
-                WhatsApp us
-              </a>
-            )}
-            {settings.email && (
-              <a href={`mailto:${settings.email}`} className={LINK}>
-                {settings.email}
-              </a>
-            )}
-          </address>
-          {settings.openingHours.length > 0 && (
-            <dl className="text-small mt-4 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
-              {settings.openingHours.map((entry) => (
-                <div key={entry.days} className="contents">
-                  <dt className="text-ink">{entry.days}</dt>
-                  <dd className="text-ink-soft tabular-nums">{formatHoursRange(entry)}</dd>
-                </div>
-              ))}
-            </dl>
+        <address className="flex flex-col gap-1 not-italic md:pt-2">
+          {address && (
+            <p className={`${ROW} py-1.5`}>
+              <MapPin aria-hidden strokeWidth={1.5} className={ICON} />
+              {address}
+            </p>
           )}
-        </FooterColumn>
+          {phone && telHref && (
+            <a href={telHref} className={`${LINK_ROW} tabular-nums`}>
+              <Phone aria-hidden strokeWidth={1.5} className="text-walnut size-5 shrink-0" />
+              {phone}
+            </a>
+          )}
+          {whatsappHref && (
+            <a href={whatsappHref} target="_blank" rel="noopener noreferrer" className={LINK_ROW}>
+              <WhatsAppIcon className="text-whatsapp-dark size-5 shrink-0" />
+              WhatsApp us
+            </a>
+          )}
+          {settings.email && (
+            <a href={`mailto:${settings.email}`} className={LINK_ROW}>
+              {settings.email}
+            </a>
+          )}
+        </address>
       </Container>
 
       <div className="border-line border-t">
-        <Container className="text-small text-muted py-6">
+        <Container className="text-small text-muted py-4">
           © {new Date().getFullYear()} {settings.businessName}. All rights reserved.
         </Container>
       </div>
@@ -152,15 +93,18 @@ export async function Footer() {
 export function FooterFallback() {
   return (
     <footer aria-hidden className="border-line bg-sand border-t">
-      <Container className="grid gap-10 py-16 md:grid-cols-2 md:py-20 lg:grid-cols-4">
-        {Array.from({ length: 4 }, (_, i) => (
-          <div key={i} className="flex flex-col gap-3">
-            <Skeleton className="bg-line h-4 w-24" />
-            <Skeleton className="bg-line h-4 w-40" />
-            <Skeleton className="bg-line h-4 w-32" />
-          </div>
-        ))}
+      <Container className="grid gap-8 py-10 md:grid-cols-[1.3fr_1fr] md:gap-16 md:py-12">
+        <div className="flex flex-col gap-3">
+          <Skeleton className="bg-line h-14 w-36" />
+          <Skeleton className="bg-line h-4 w-72" />
+        </div>
+        <div className="flex flex-col gap-3">
+          <Skeleton className="bg-line h-4 w-56" />
+          <Skeleton className="bg-line h-4 w-40" />
+          <Skeleton className="bg-line h-4 w-32" />
+        </div>
       </Container>
+      <div className="border-line h-12 border-t" />
     </footer>
   );
 }

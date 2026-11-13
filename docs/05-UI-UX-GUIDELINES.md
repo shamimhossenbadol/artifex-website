@@ -12,15 +12,15 @@
 
 **Desktop header** (h-20, sticky; it shrinks to h-16 with a bottom border after scrolling):
 `[Logo]   Sofas · Dining · Chairs · Beds · Curtains · Chandeliers   [Search icon] [Phone icon] [WhatsApp button "Inquire"]`
-- Category links come from active categories (max 7; extras go under "More").
-- **No top utility bar** (ADR-026): the logo row is the only header row, for a cleaner premium look. Secondary links (Journal, About, Contact) live in the footer and the mobile menu; the phone number is the phone icon in the header.
+- Category links come from active categories (max 6; extras go under "More"), except those in `HEADER_HIDDEN_CATEGORIES` (`src/config/site.ts`; currently Chairs, ADR-035). After the categories, a thin divider and **Journal · About · Contact**.
+- **No top utility bar** (ADR-026): the logo row is the only header row, for a cleaner premium look. Journal, About and Contact sit in the main header row after the categories (ADR-035) and in the mobile menu; the phone number is the phone icon in the header.
 
 **Mobile header** (h-16, sticky): `[Menu]  [Wordmark centred]  [Search]`
 - The menu opens a full-height left drawer with categories (each with a small thumbnail), then Blog, About, and Contact, then the phone number, WhatsApp, and Facebook. It traps focus and closes on Esc or backdrop click.
 
-**Footer:** brand intro (aboutShort), category links, company links (About, Blog, Contact), contact block (address, phone, WhatsApp, hours), social icons, and © line. On mobile it's collapsed into simple stacked sections, not accordions (there's little content).
+**Footer (compact, ADR-035):** two columns: logo, short description (aboutShort) and social icons; then address, phone, WhatsApp (and email when set). A quiet © line below. No category or company links (navigation lives in the header). Stacks on mobile.
 
-**Floating WhatsApp button** (bottom-right, 56 px circle, whatsapp-dark):
+**Floating contact buttons** (bottom-right): Messenger (48 px circle, `messenger` blue, links to `m.me/<page>` from the Facebook URL) above WhatsApp (56 px circle, whatsapp-dark). Both:
 - Shown on all public pages **except** product detail on mobile, which has its own sticky bottom bar.
 - It has an `aria-label` of "Chat with Artifex Furniture on WhatsApp".
 
@@ -28,14 +28,14 @@
 
 ### Home
 1. Hero: full-bleed image (min-h 80svh mobile / 88vh desktop), heading, subheading, and two CTAs ("Explore collection", "Visit showroom").
-2. Shop by category: 7 tiles (mobile: horizontal scroll-snap row with partial next-tile peek; desktop: grid of 4 + 3 or 7-across).
-3. New arrivals: rail of 8 cards (mobile horizontal scroll; desktop 4-col grid).
+2. Collections (heading "Collections", no eyebrow): category tiles (mobile: horizontal scroll-snap row with partial next-tile peek; desktop: grid of 4 + 3 or 7-across).
+3. New arrivals (heading only, no eyebrow): rail of 8 cards (mobile horizontal scroll; desktop 4-col grid).
 4. Brand introduction: split image/text, with "Our story →".
-5. Featured products: 4–8 cards.
-6. Promo banner(s): 1–2 wide banners (active and in date range).
-7. Popular products: 4–8 cards.
-8. WhatsApp CTA band: sand background, "Not sure what fits your space? Talk to us." with a WhatsApp button and the phone number.
-9. Latest from the journal: 3 blog cards.
+5. Promo banner(s): 1–2 wide banners (active and in date range).
+6. WhatsApp CTA band: sand background, "Not sure what fits your space? Talk to us." with a WhatsApp button and the phone number.
+7. Latest from the journal: 3 blog cards.
+
+The Featured and Most loved rails were removed from the homepage (ADR-035); the Featured/Popular product flags remain for later use.
 Sections with no content are **hidden**, never left empty.
 
 ### Category / All products

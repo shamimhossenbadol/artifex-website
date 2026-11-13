@@ -210,7 +210,7 @@ function ProductSkeleton() {
       aria-label="Loading product"
       className="grid gap-8 lg:grid-cols-12 lg:gap-12"
     >
-      <Skeleton className="-mx-4 aspect-[4/5] sm:-mx-6 lg:col-span-7 lg:mx-0" />
+      <Skeleton className="-mx-4 aspect-square sm:-mx-6 lg:col-span-7 lg:mx-0 lg:aspect-[4/3]" />
       <div className="flex flex-col gap-4 lg:col-span-5">
         <Skeleton className="h-4 w-48" />
         <Skeleton className="h-12 w-3/4" />

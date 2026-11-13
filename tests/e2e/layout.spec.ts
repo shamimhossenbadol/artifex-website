@@ -14,6 +14,15 @@ test.describe("site layout", () => {
     await expect(page).toHaveURL(/#main-content$/);
   });
 
+  test("search and menu overlays live outside the streamed header (ADR-043)", async ({ page }) => {
+    // If they were inside the header, an overlay opened before the header finished streaming
+    // would be removed when the real header replaces its fallback.
+    await page.goto("/");
+    await expect(page.locator("dialog#search-dialog")).toHaveCount(1);
+    await expect(page.locator("dialog#mobile-menu")).toHaveCount(1);
+    await expect(page.locator("header dialog")).toHaveCount(0);
+  });
+
   test("unknown URLs return a branded 404", async ({ page }) => {
     const response = await page.goto("/this-page-does-not-exist");
     expect(response?.status()).toBe(404);

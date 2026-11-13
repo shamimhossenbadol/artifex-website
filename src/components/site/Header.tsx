@@ -6,24 +6,10 @@ import { HeaderView } from "./HeaderView";
 /** Data-backed header. Render inside <Suspense fallback={<HeaderFallback />}> (ADR-020). */
 export async function Header() {
   const [settings, categories] = await Promise.all([getSiteSettings(), getNavCategories()]);
-  return (
-    <HeaderView
-      categories={categories}
-      facebookUrl={settings.facebookUrl}
-      {...getContactLinks(settings)}
-    />
-  );
+  return <HeaderView categories={categories} {...getContactLinks(settings)} />;
 }
 
 /** Same layout without data, so nothing shifts when the real header streams in. */
 export function HeaderFallback() {
-  return (
-    <HeaderView
-      categories={[]}
-      phone={null}
-      telHref={null}
-      whatsappHref={null}
-      facebookUrl={null}
-    />
-  );
+  return <HeaderView categories={[]} phone={null} telHref={null} whatsappHref={null} />;
 }

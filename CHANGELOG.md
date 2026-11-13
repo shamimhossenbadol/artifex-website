@@ -6,6 +6,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 ## [Unreleased]
 
 ### Fixed
+- 2026-11-13 — Mobile menu and search overlay could vanish if opened in the first moment after a page started loading (when the full header streamed in, it replaced them). They now stay open (ADR-043); this also fixes the flaky mobile tests in CI.
 - 2026-11-13 — Admin: opening a product edit page right after creating it (and other in-admin navigation to forms) could show "Something went wrong"; form labels now always reach their fields, including the Category and Status dropdowns (ADR-038). CI is green again.
 - 2026-11-13 — Homepage hero/banner photos didn't show after upload: the build pointed image URLs at the site instead of the media domain (a GitHub variable). Builds now stop with a clear error when `NEXT_PUBLIC_MEDIA_URL` equals the site URL.
 - 2026-11-13 — Deploy bundle: image processing (sharp) now ships with its native libraries, so admin image uploads work on the server (ADR-032).

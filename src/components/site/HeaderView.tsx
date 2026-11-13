@@ -8,9 +8,8 @@ import {
 } from "@/config/site";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Container } from "@/components/ui/Container";
-import { MobileNav } from "./MobileNav";
+import { MobileMenuButton } from "./MobileNav";
 import { SearchButton } from "./SearchButton";
-import { SearchDialog } from "./SearchDialog";
 import { WhatsAppIcon } from "./WhatsAppIcon";
 import { Logo } from "./Logo";
 
@@ -19,7 +18,6 @@ export type HeaderViewProps = {
   phone: string | null;
   telHref: string | null;
   whatsappHref: string | null;
-  facebookUrl: string | null;
 };
 
 const ICON_LINK =
@@ -27,13 +25,15 @@ const ICON_LINK =
 const NAV_LINK =
   "inline-flex min-h-11 items-center text-sm font-medium text-ink transition-colors hover:text-walnut";
 
-/** Presentational header (05 §2). Also rendered with empty data as the streaming fallback. */
+/**
+ * Presentational header (05 §2). Also rendered with empty data as the streaming fallback, so it
+ * holds only buttons: the search overlay and the mobile drawer live in SiteShell (ADR-043).
+ */
 export function HeaderView({
   categories: allCategories,
   phone,
   telHref,
   whatsappHref,
-  facebookUrl,
 }: HeaderViewProps) {
   const categories = allCategories.filter((c) => !HEADER_HIDDEN_CATEGORIES.includes(c.slug));
   const primary = categories.slice(0, MAX_HEADER_CATEGORIES);
@@ -48,14 +48,7 @@ export function HeaderView({
         {/* Mobile: [Menu] [Logo] [Search] */}
         <Container className="grid h-16 grid-cols-[1fr_auto_1fr] items-center lg:hidden">
           <div className="justify-self-start">
-            <MobileNav
-              categories={categories}
-              companyLinks={COMPANY_LINKS}
-              phone={phone}
-              telHref={telHref}
-              whatsappHref={whatsappHref}
-              facebookUrl={facebookUrl}
-            />
+            <MobileMenuButton />
           </div>
           <Logo animated className="h-10" />
           <SearchButton className="-mr-2 justify-self-end" iconClassName="size-6" />
@@ -132,8 +125,6 @@ export function HeaderView({
           </div>
         </Container>
       </header>
-      {/* One shared search overlay for both header layouts (opens in the top layer). */}
-      <SearchDialog />
     </>
   );
 }

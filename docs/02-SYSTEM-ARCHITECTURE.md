@@ -71,7 +71,7 @@ E:\ArtifexFurniture\Website\      # repo root (git)
 │  │  └─ layout.tsx              # root html, fonts, globals.css
 │  ├─ components/
 │  │  ├─ ui/                     # primitives: Button, Container, Badge, Input, Price, Skeleton…
-│  │  ├─ site/                   # Header, Footer, MobileNav, WhatsAppFab, Breadcrumbs, SectionHeading
+│  │  ├─ site/                   # Header, Footer, MobileNav (button + drawer), MobileMenuContent, SearchDialog, WhatsAppFab, SiteTracker…
 │  │  ├─ product/                # ProductCard, ProductGrid, Gallery, ColorSwatches, SpecsTable, WhatsAppInquiry
 │  │  ├─ blog/                   # PostCard, PostBody (markdown)
 │  │  └─ admin/                  # AdminShell, DataTable, ImageUploader, FormField, ConfirmDialog

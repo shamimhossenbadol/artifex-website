@@ -381,3 +381,9 @@ Format: each ADR has a number, date, status (Accepted / Superseded by ADR-x / Pr
 - Footer credit "Developed by Shamim Hossen Badol", linked to the developer's WhatsApp; marked `data-no-track` so it isn't counted as a customer inquiry.
 **Consequences:** Existing Featured ticks and home sort numbers are deleted with the columns (they had no visible effect). Every table and remaining field is used by the website or the admin. All dependencies are in use.
 
+### ADR-043 — Search overlay and mobile drawer render outside the streamed header
+**Date:** 2026-11-13 · **Status:** Accepted
+**Context:** Mobile e2e tests were flaky (search overlay and menu tests failed, then passed on retry). Cause: every public page sends a fallback header in its static shell and streams the real header in later (ADR-020). Both headers contained their own search `<dialog>` and mobile-menu `<dialog>`. When the real header replaced the fallback, an overlay the visitor had already opened (easy with Invoker Commands before hydration, ADR-024) was removed from the page together with anything typed into it. Real phone users on slow connections could hit this too.
+**Decision:** The header (fallback and real) holds only the buttons. `SiteShell` renders `<SearchDialog />` and `<MobileMenu>` once, outside the header's Suspense boundary. The drawer's static parts (title, close button, company links) are in the shell; categories and contact links stream into it through an inner `<Suspense>` (`MobileMenuContent`, fallback = company links only), so the drawer stays open while they arrive. Following any link in the drawer closes it (one delegated handler). An e2e check asserts the dialogs exist once and not inside `<header>`.
+**Consequences:** No layout change. The overlays work from first paint until navigation, whatever the streaming timing.
+

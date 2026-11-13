@@ -83,7 +83,7 @@ Each phase ends with a short manual review of the phase's acceptance checks.
 - [x] Dashboard overview + warnings
 - [x] Products: list/filter, create/edit form (all sections), image uploader (sharp variants → R2, reorder, primary, alt, R2 delete on remove), duplicate, delete (7d, ADR-034; draft preview `?preview=1` still open)
 - [x] Categories: CRUD, reorder, toggles (7c, ADR-033)
-- [ ] Blog: CRUD with Markdown editor + image insert
+- [x] Blog: CRUD with Markdown editor + image insert (7e, ADR-036)
 - [ ] Homepage: hero, promo banners, featured lists — hero + banners done (7b, ADR-031); featured lists in 7f
 - [x] Settings: business, contact/WhatsApp (test link), location/map/hours, social, SEO (ADR-031)
 - [ ] Revalidation wired per 07 §5 (verify each)

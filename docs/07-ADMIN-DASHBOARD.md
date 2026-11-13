@@ -57,6 +57,7 @@ Session and security mechanics are in `09-SECURITY-GUIDELINES.md` §2.
 ### 3.4 Blog
 - List: title, status, published date, updated; search plus a status filter.
 - Form: title, slug, excerpt, cover image + alt, author name (defaults to the admin's name), tags, content (Markdown editor with preview and "Insert image"), status, publish date (editable for back-dating), SEO.
+- **As built (ADR-036):** the publish date can be today or earlier, never in the future (no scheduling). "Insert image" uploads one photo to R2 (`blog/` folder) and inserts `![Describe the image](blog/…)`; images removed from the Markdown are deleted from R2 when the post is saved, and all of a post's images when it is deleted. Blank cover description uses the title.
 
 ### 3.5 Homepage
 - **Hero:** heading, eyebrow, subheading, image, two CTA label/link pairs, with a live preview card.

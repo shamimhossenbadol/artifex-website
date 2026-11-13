@@ -272,3 +272,41 @@ test("products: create a draft, publish it, duplicate and delete", async ({ page
   }
   await expect(page.getByText("No products match these filters.")).toBeVisible();
 });
+
+// --- Milestone 7e: Journal. Creates a throwaway post on the CI database and removes it. --------
+
+test("journal: write a draft, publish it, then delete it", async ({ page }) => {
+  await signIn(page, EMAIL!, NEW_PASSWORD);
+  await expect(page).toHaveURL(/\/admin$/);
+
+  await page.goto("/admin/blog/new");
+  await page.waitForLoadState("networkidle");
+  await page.getByLabel("Title", { exact: true }).fill("E2E Caring for Rattan");
+  await page.getByLabel("Excerpt").fill("A short e2e post.");
+  await page.getByLabel("Content", { exact: true }).fill("## Dust weekly\n\nUse a soft brush.");
+  await expect(page.getByLabel("Author")).not.toHaveValue("");
+  await page.getByLabel("Publish date").fill("2999-01-01");
+  await page.getByRole("button", { name: "Create post" }).click();
+  await expect(page.getByText("The publish date can't be in the future.").first()).toBeVisible();
+
+  await page.getByLabel("Publish date").fill("");
+  await page.getByRole("tab", { name: "Preview" }).click();
+  await expect(page.getByRole("heading", { name: "Dust weekly" })).toBeVisible();
+  await page.getByRole("tab", { name: "Write" }).click();
+  await page.getByRole("button", { name: "Create post" }).click();
+  await expect(page).toHaveURL(/\/admin\/blog\/\d+$/);
+
+  await page.waitForLoadState("networkidle");
+  await page.getByLabel("Status").selectOption("PUBLISHED");
+  await page.getByRole("button", { name: "Save post" }).click();
+  await expect(page.getByText("Post saved.").first()).toBeVisible();
+
+  await page.goto("/blog/e2e-caring-for-rattan");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("E2E Caring for Rattan");
+
+  await page.goto("/admin/blog?q=E2E+Caring");
+  await page.getByRole("button", { name: "Delete" }).first().click();
+  await page.getByRole("dialog").getByRole("button", { name: "Delete" }).click();
+  await expect(page.getByText("Post deleted.").first()).toBeVisible();
+  await expect(page.getByText("No posts match these filters.")).toBeVisible();
+});

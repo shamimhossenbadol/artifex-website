@@ -322,3 +322,14 @@ Format: each ADR has a number, date, status (Accepted / Superseded by ADR-x / Pr
 - **Homepage:** "Collections" heading (no "Shop by category"), "New arrivals" without the "Just in" eyebrow, Featured and Most loved rails removed (the product flags stay). The CTA band heading may use up to 56rem with balanced wrapping so it fits on one line on desktop.
 - **Product images:** cards square (1:1, was 4:5); gallery 1:1 on mobile and 4:3 on desktop. Category tiles stay 4:5.
 **Consequences:** Featured/Popular flags currently affect nothing public; they're kept for a possible future use (e.g. 7f or a "Featured" filter). Hiding a category from the header is a code constant, not an admin switch.
+
+### ADR-036 — Admin Journal (Phase 7, milestone 7e)
+**Date:** 2026-11-13 · **Status:** Accepted (implements 07 §3.4 and the blog row of §5)
+**Context:** Posts need a cover photo, inline photos, back-dating and the same editing comfort as products.
+**Decision:**
+- **Shared editor pieces:** `MarkdownEditor` and `SeoFields` moved to `components/admin/` and are used by products and posts. The editor takes an optional `uploadImage` Server Action; with it, "Insert image" uploads one photo (one request, sharp → WebP → R2 `blog/`) and inserts `![Describe the image](blog/yyyy/mm/hash)` with the alt text selected. The public renderer already allows only our media keys (F4, 09 §4).
+- **Image cleanup:** on save, inline keys that were in the old Markdown but not the new one are deleted from R2 (only `blog/` keys); deleting a post deletes its cover and inline images. Cleanup errors are logged, never fail the save. A photo inserted and removed before the first save is an orphan (rare, harmless).
+- **Publish date:** a Dhaka calendar day, today or earlier (back-dating only). Public queries don't filter future dates and pages are cached, so scheduling would need more work; it's out of scope. Unchanged day keeps the stored time; today = now; earlier days are stored at noon Dhaka. Blank = keep, or now on first publish.
+- **Tags** are normalised on save (lowercase, unique, comma-separated) to match `parseTags` used for related posts.
+- **Revalidation:** `blog`, `home`, `post:<old>` and `post:<new>`.
+**Consequences:** No draft preview on the public site yet (same as products; the editor's Preview tab covers the content).

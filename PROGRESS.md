@@ -9,10 +9,10 @@
 
 | Item | Value |
 |---|---|
-| **Current phase** | Phase 7: Admin dashboard (7a–7d done; 7e journal next) |
+| **Current phase** | Phase 7: Admin dashboard (7a–7e done; 7f next) |
 | **Overall state** | ✅ Phase 1 complete. Code is on GitHub (`shamimhossenbadol/artifex-website`, private); CI is green. ✅ **First deploy succeeded 2026-11-12**: https://artifex.codespherestudio.site serves the placeholder page with security headers (via Cloudflare). Migration applied; seed created 7 categories, settings, hero and the admin (`mustChangePassword = 1`); backup saved in `~/backups`. |
 | **Last updated** | 2026-11-13 |
-| **Next action** | Owner: Deploy, then on your phone add a product in Admin → Products (details → Save and add photos → upload photos → set Published). Agent: Phase 7 milestone 7e (Journal admin), then 7f (homepage featured lists) and draft preview (`?preview=1`). |
+| **Next action** | Owner: Deploy, then on your phone add a product in Admin → Products (details → Save and add photos → upload photos → set Published). Owner: also try Admin → Journal (write a post, insert a photo, publish). Agent: 7f (homepage featured lists; note ADR-035 removed the Featured/Most loved rails, so confirm with the owner what 7f should cover), draft preview (`?preview=1`), then Phase 8. |
 
 ## Phase overview
 
@@ -25,7 +25,7 @@
 | 4 | Global search | ✅ Done 2026-11-12 |
 | 5 | Blog, About, Contact/Location | ✅ Done 2026-11-12 |
 | 6 | Homepage | ✅ Done 2026-11-12 |
-| 7 | Admin dashboard | 🟡 7a–7d done (auth, account, shell, dashboard, settings, hero/banners, categories, products); 7e–7f next |
+| 7 | Admin dashboard | 🟡 7a–7e done (auth, account, shell, dashboard, settings, hero/banners, categories, products, journal); 7f next |
 | 8 | SEO, security & performance hardening | ⚪ Not started |
 | 9 | Production build, deployment & QA | ⚪ Not started |
 
@@ -84,6 +84,8 @@ Answer these by editing this list. Agents: use the **default** until an answer i
 ## Session log
 
 Add one line per session, newest first: `YYYY-MM-DD — summary — files touched`.
+
+- 2026-11-13 — Phase 7e Journal admin: list (search, status, 20/page, delete), write/edit form (Markdown editor with Insert image, cover photo + remove, author default = admin name, tags, back-dating only, SEO preview), inline image cleanup on save/delete. MarkdownEditor and SeoFields moved to components/admin for reuse. 254 unit tests; journal e2e added (CI only). Not checked in a browser locally (no DB). ADR-036. — `src/lib/validation/blog.ts`, `src/server/{repositories/blog-admin.repo,services/blog-admin.service,actions/blog.actions}.ts`, `src/components/admin/{MarkdownEditor,SeoFields}.tsx`, `src/components/admin/blog/`, `src/app/admin/(panel)/blog/`, `tests/`, `DECISIONS.md`, `docs/07`, `12`, `CHANGELOG.md`
 
 - 2026-11-13 — Owner layout changes (ADR-035): header gets Journal/About/Contact, Chairs hidden from it; compact footer; Messenger FAB; homepage headings simplified, Featured/Most loved rails removed, CTA heading on one line; square product cards, 1:1/4:3 gallery. e2e updated (home sections, header/FAB/footer). Not checked in a browser locally (no DB in this session). — `src/components/site/{HeaderView,Footer,WhatsAppFab,SocialIcons}.tsx`, `src/config/site.ts`, `src/styles/globals.css`, `src/components/home/`, `src/components/product/`, `src/app/(site)/page.tsx`, `tests/e2e/`, `DECISIONS.md`, `docs/03`, `05`, `CHANGELOG.md`
 

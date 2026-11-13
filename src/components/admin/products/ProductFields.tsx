@@ -4,10 +4,10 @@ import { Textarea } from "@/components/ui/Textarea";
 import { MAX_COLORS, MAX_SPECS } from "@/lib/validation/product";
 import type { AdminProductRow, CategoryOption } from "@/server/services/product-admin.service";
 import { AdminField, FormSection } from "../AdminForm";
-import { MarkdownEditor } from "./MarkdownEditor";
+import { MarkdownEditor } from "../MarkdownEditor";
 import { PricingFields } from "./PricingFields";
 import { ColorsEditor, SpecsEditor } from "./RowsEditor";
-import { SeoFields } from "./SeoFields";
+import { SeoFields } from "../SeoFields";
 
 const CHECK = "text-small flex min-h-11 items-center gap-2";
 const BOX = "accent-ink size-4";

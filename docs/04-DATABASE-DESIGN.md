@@ -12,7 +12,7 @@ BlogPost
 HomeHero (singleton)   HomeHeroSlide *   PromoBanner *
 SiteSetting (singleton)
 AdminUser   LoginAttempt
-InquiryClick (optional, Phase 8)
+SiteEvent (first-party visit/click counts, ADR-040)
 ```
 
 ## 2. Conventions
@@ -221,6 +221,7 @@ model SiteSetting {                   // singleton, id = 1
   defaultSeoTitle       String  @db.VarChar(70)
   defaultSeoDescription String  @db.VarChar(170)
   ogImagePath           String? @db.VarChar(255)
+  facebookPixelId       String? @db.VarChar(20)       // Meta Pixel ID, digits only (ADR-040)
   updatedAt             DateTime @updatedAt
 }
 
@@ -245,14 +246,17 @@ model LoginAttempt {
   @@index([key, createdAt])
 }
 
-model InquiryClick {                                  // optional (Phase 8)
-  id         Int      @id @default(autoincrement())
-  productId  Int?
-  source     String   @db.VarChar(30)                 // "product", "fab", "contact", "home"
-  createdAt  DateTime @default(now())
+model SiteEvent {                     // first-party, cookieless visit/click counts (ADR-040)
+  id           Int      @id @default(autoincrement())
+  type         String   @db.VarChar(20)               // "view" | "whatsapp" | "messenger" | "call"
+  path         String   @db.VarChar(255)              // page path only, no query string
+  visitorHash  String   @db.Char(16)                  // HMAC(day + IP + user agent): rotates daily
+  createdAt    DateTime @default(now())
 
-  @@index([productId, createdAt])
+  @@index([createdAt])
+  @@index([type, createdAt])
 }
+// Replaces the planned InquiryClick table. Rows older than 400 days are pruned while recording.
 ```
 
 > Implemented with Prisma 7.10 (ADR-018): the live schema is `prisma/schema.prisma`, the connection URL lives in `prisma.config.ts`, and `engineType` is no longer needed because Prisma 7 is Rust-free by default. The first migration is `prisma/migrations/20261112000000_init`.

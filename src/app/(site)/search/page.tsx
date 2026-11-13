@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { EmptyListing } from "@/components/product/EmptyListing";
 import { ProductGrid } from "@/components/product/ProductGrid";
 import { ProductGridSkeleton } from "@/components/product/ProductGridSkeleton";
+import { TrackSearch } from "@/components/site/SiteTracker";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { Input } from "@/components/ui/Input";
@@ -81,6 +82,7 @@ async function SearchResults({ searchParams }: Pick<Props, "searchParams">) {
     <>
       <p className="text-eyebrow text-walnut">Search results</p>
       <h1 className="text-h1 mt-2 break-words">“{raw.trim()}”</h1>
+      <TrackSearch query={raw.trim()} />
       <p className="text-small text-muted mt-3 mb-8" aria-live="polite">
         {results.total} {results.total === 1 ? "product" : "products"} found
       </p>

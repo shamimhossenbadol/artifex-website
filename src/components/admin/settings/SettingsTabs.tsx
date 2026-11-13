@@ -11,6 +11,7 @@ export const SETTINGS_TABS = [
   { href: "/admin/settings/location", label: "Location" },
   { href: "/admin/settings/social", label: "Social" },
   { href: "/admin/settings/seo", label: "SEO" },
+  { href: "/admin/settings/tracking", label: "Tracking" },
 ] as const;
 
 export function SettingsTabs() {

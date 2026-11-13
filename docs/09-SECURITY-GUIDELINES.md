@@ -66,12 +66,12 @@ Referrer-Policy: strict-origin-when-cross-origin
 Permissions-Policy: camera=(), microphone=(), geolocation=()
 Content-Security-Policy:
   default-src 'self';
-  img-src 'self' data: blob: https://media.<domain>;   # NEXT_PUBLIC_MEDIA_URL host
-  script-src 'self' 'unsafe-inline';          # Next inline bootstrap; tighten with nonces later if feasible
+  img-src 'self' data: blob: https://media.<domain> https://www.facebook.com;   # media host; Meta Pixel image beacon (ADR-040)
+  script-src 'self' 'unsafe-inline' https://connect.facebook.net;   # Next inline bootstrap; Meta Pixel loader
   style-src 'self' 'unsafe-inline';
   font-src 'self';
   frame-src https://www.google.com;            # Maps embed
-  connect-src 'self';
+  connect-src 'self' https://www.facebook.com https://connect.facebook.net;   # Meta Pixel events
   frame-ancestors 'self';
   form-action 'self';
   base-uri 'self';

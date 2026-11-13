@@ -96,7 +96,7 @@ Each phase ends with a short manual review of the phase's acceptance checks.
 - [x] Upload hardening tests (non-image, oversized, > 8000 px, disguised SVG, key pattern guard on R2 delete); r2.dev is off on `artifex-media` (confirmed 2026-11-13)
 - [x] Lint rule audit, `npm audit --omit=dev` (0 vulnerabilities, 2026-11-13)
 - [x] Bundle analysis: client JS within budget (live test site, brotli: ~195 KB JS of which ~150 KB is the React/Next framework, ~45 KB app; HTML 19.5 KB; CSS 10.7 KB)
-- [ ] Optional: WhatsApp click tracking + dashboard "Top inquired"
+- [x] WhatsApp/Messenger/call click tracking + dashboard KPIs (visitors, views, inquiries, top products) and Meta Pixel setting (ADR-040)
 - [ ] Accessibility pass (axe + manual keyboard/screen reader spot check)
 
 ## Phase 9 — Production deployment & QA

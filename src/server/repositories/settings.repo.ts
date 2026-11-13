@@ -23,6 +23,7 @@ export const SITE_SETTINGS_SELECT = {
   latitude: true,
   longitude: true,
   ogImagePath: true,
+  facebookPixelId: true,
   defaultSeoTitle: true,
   defaultSeoDescription: true,
 } as const;

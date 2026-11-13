@@ -60,7 +60,7 @@ Format: `Intl.NumberFormat('en-IN')` grouping with the `৳` prefix (BD uses lak
   `{color}` renders as ` (Colour: Walnut Brown)` when a colour is selected, otherwise empty. `{url}` is the absolute canonical product URL.
 - **General message** (`whatsappDefaultMessage`), used by the floating button, home CTA, and contact page: "Hello Artifex Furniture, I'd like to know more about your furniture."
 - Links open with `target="_blank" rel="noopener noreferrer"`. On mobile `wa.me` opens the app, and on desktop it opens WhatsApp Web.
-- Optional (Phase 8): fire `navigator.sendBeacon('/api/track', {source, productId})` on click so the admin dashboard can show "Top inquired products". It's anonymous, with no cookies.
+- **As built (ADR-040):** every WhatsApp, Messenger and phone link is counted by one delegated click listener (`SiteTracker`) that sends `navigator.sendBeacon('/api/track', {type, path})`; page views are sent the same way. Anonymous, no cookies; the dashboard shows the totals and the most inquired products. With a Pixel ID set, the same taps are sent to Meta as `Contact` events.
 - **AC:** the message includes the product name, the selected colour, and a full URL; special characters (`&`, `#`, Bangla text) are encoded correctly; and the link works on Android, iOS, and desktop.
 
 ---

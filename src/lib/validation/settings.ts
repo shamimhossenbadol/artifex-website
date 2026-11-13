@@ -1,5 +1,6 @@
 // Zod schemas for site settings (09 §3): the stored opening hours, and the admin settings forms.
 import { z } from "zod";
+import { PIXEL_ID_PATTERN } from "@/lib/meta-pixel";
 
 const time = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Use HH:MM (24-hour)");
 
@@ -181,12 +182,26 @@ export const seoSettingsSchema = z.object({
     .transform((v) => v === "on"),
 });
 
+/** Meta Pixel ID only (digits), never pasted code (ADR-040, AGENTS rule 6). */
+export const trackingSettingsSchema = z.object({
+  section: z.literal("tracking"),
+  facebookPixelId: z
+    .string()
+    .trim()
+    .transform((v) => v.replace(/\s/g, ""))
+    .refine((v) => v === "" || PIXEL_ID_PATTERN.test(v), {
+      message: "Enter only the Pixel ID: the 10–20 digit number from Meta Events Manager",
+    })
+    .transform((v) => (v === "" ? null : v)),
+});
+
 export const settingsFormSchema = z.discriminatedUnion("section", [
   businessSettingsSchema,
   contactSettingsSchema,
   locationSettingsSchema,
   socialSettingsSchema,
   seoSettingsSchema,
+  trackingSettingsSchema,
 ]);
 
 export type SettingsForm = z.infer<typeof settingsFormSchema>;

@@ -6,6 +6,7 @@ import { Gallery } from "@/components/product/Gallery";
 import { ProductGrid } from "@/components/product/ProductGrid";
 import { ProductInquiry } from "@/components/product/ProductInquiry";
 import { PreviewBanner } from "@/components/site/PreviewBanner";
+import { TrackProductView } from "@/components/site/SiteTracker";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { getContactLinks } from "@/components/site/contact-links";
 import { Badge } from "@/components/ui/Badge";
@@ -75,10 +76,18 @@ async function ProductDetail({ params, searchParams }: Props) {
     { label: "Material", value: product.material },
     { label: "Dimensions", value: product.dimensions },
   ].filter((f): f is { label: string; value: string } => Boolean(f.value));
+  const price = getPriceInfo(product.regularPrice, product.discountPrice);
 
   return (
     <>
       {preview && <PreviewBanner editHref={`/admin/products/${product.id}`} />}
+      {!preview && (
+        <TrackProductView
+          slug={product.slug}
+          name={product.title}
+          price={price.kind === "onRequest" ? null : price.price}
+        />
+      )}
       <JsonLd
         data={[
           productJsonLd({

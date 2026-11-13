@@ -1,6 +1,7 @@
 import { Suspense, type ReactNode } from "react";
 import { Footer, FooterFallback } from "./Footer";
 import { Header, HeaderFallback } from "./Header";
+import { SiteTracking } from "./SiteTracking";
 import { WhatsAppFab } from "./WhatsAppFab";
 
 export const MAIN_CONTENT_ID = "main-content";
@@ -29,6 +30,9 @@ export function SiteShell({ children }: { children: ReactNode }) {
       </Suspense>
       <Suspense fallback={null}>
         <WhatsAppFab />
+      </Suspense>
+      <Suspense fallback={null}>
+        <SiteTracking />
       </Suspense>
     </>
   );

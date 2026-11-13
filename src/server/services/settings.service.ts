@@ -31,6 +31,7 @@ export const FALLBACK_SETTINGS: SiteSettings = {
   latitude: null,
   longitude: null,
   ogImagePath: null,
+  facebookPixelId: null,
   defaultSeoTitle: SITE_NAME,
   defaultSeoDescription: SITE_TAGLINE,
 };

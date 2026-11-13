@@ -193,7 +193,19 @@ model SiteSetting {                   // singleton, id = 1
   defaultSeoTitle       String  @db.VarChar(70)
   defaultSeoDescription String  @db.VarChar(170)
   ogImagePath           String? @db.VarChar(255)
+  facebookPixelId       String? @db.VarChar(20)       // Meta Pixel ID, digits only (ADR-040)
   updatedAt             DateTime @updatedAt
+}
+
+model SiteEvent {                     // first-party, cookieless visit/click counts (ADR-040)
+  id           Int      @id @default(autoincrement())
+  type         String   @db.VarChar(20)               // "view" | "whatsapp" | "messenger" | "call"
+  path         String   @db.VarChar(255)              // page path only, no query string
+  visitorHash  String   @db.Char(16)                  // HMAC(day + IP + user agent): rotates daily
+  createdAt    DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([type, createdAt])
 }
 
 model AdminUser {

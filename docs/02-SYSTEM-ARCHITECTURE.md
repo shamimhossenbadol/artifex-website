@@ -8,7 +8,7 @@ Browser ──HTTPS──▶ Apache (cPanel, LiteSpeed/Apache) ──▶ Phusion
                                                          Next.js standalone server.js
                                                          ├── Server Components (public pages, SSG/ISR)
                                                          ├── Server Actions (admin mutations)
-                                                         ├── Route Handlers (/api/search, sitemap, robots)
+                                                         ├── Route Handlers (/api/search, /api/track, sitemap, robots)
                                                          ├── Prisma Client (JS driver adapter, no Rust engine)
                                                          │          │
                                                          │   MySQL / MariaDB (cPanel)
@@ -130,6 +130,7 @@ E:\ArtifexFurniture\Website\      # repo root (git)
 | `/about`, `/contact` | Static + tags | Contact info comes from settings |
 | `/admin/**` | Dynamic, `noindex`, no cache | |
 | `/api/search?q=` | Dynamic, short `Cache-Control` | Max 8 suggestions |
+| `/api/track` (POST) | Dynamic, `no-store` | Anonymous visit/click beacon, same-origin only, 204 (ADR-040) |
 | `https://media.<domain>/<key>` | Served by Cloudflare R2, not by our app | `Cache-Control: public, max-age=31536000, immutable` is set on each object at upload (keys are content-hashed) |
 | `/sitemap.xml`, `/robots.txt` | Generated | |
 

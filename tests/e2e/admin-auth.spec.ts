@@ -342,3 +342,46 @@ test("journal: write a draft, publish it, then delete it", async ({ page }) => {
   await expect(page.getByText("Post deleted.").first()).toBeVisible();
   await expect(page.getByText("No posts match these filters.")).toBeVisible();
 });
+
+// --- ADR-040: dashboard KPIs and the Meta Pixel setting. ----------------------------------------
+
+test("dashboard shows visitor KPIs; the Pixel ID is validated and loads the pixel", async ({
+  page,
+  browser,
+}) => {
+  await signIn(page, EMAIL!, NEW_PASSWORD);
+  await expect(page).toHaveURL(/\/admin$/);
+  await expect(page.getByRole("heading", { name: "Visitors & inquiries" })).toBeVisible();
+  await page.getByRole("link", { name: "7 days" }).click();
+  await expect(page).toHaveURL(/\/admin\?range=7$/);
+  await expect(shown(page.getByRole("link", { name: "7 days" }))).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
+
+  await page.goto("/admin/settings/tracking");
+  await page.waitForLoadState("networkidle");
+  const pixel = page.getByLabel("Pixel ID");
+  await pixel.fill("<script>fbq('init','1')</script>");
+  await page.getByRole("button", { name: /save/i }).click();
+  await expect(page.getByText(/Enter only the Pixel ID/).first()).toBeVisible();
+
+  await pixel.fill("1234 5678 9012 345");
+  await page.getByRole("button", { name: /save/i }).click();
+  await expect(page.getByText("Settings saved. The website is updated.").first()).toBeVisible();
+
+  // A visitor (no admin session) gets the pixel stub with the configured ID.
+  const visitor = await newPage(browser);
+  await visitor.route("https://connect.facebook.net/**", (route) => route.abort());
+  await visitor.goto("/");
+  await expect
+    .poll(() => visitor.evaluate(() => JSON.stringify(window.fbq?.queue ?? [])))
+    .toContain("123456789012345");
+  await visitor.close();
+
+  await page.goto("/admin/settings/tracking");
+  await page.waitForLoadState("networkidle");
+  await page.getByLabel("Pixel ID").fill("");
+  await page.getByRole("button", { name: /save/i }).click();
+  await expect(page.getByText("Settings saved. The website is updated.").first()).toBeVisible();
+});

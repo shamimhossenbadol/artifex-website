@@ -21,14 +21,17 @@ if (
 }
 
 // 09 §7. 'unsafe-eval' is only needed by the dev server (React refresh), never in production.
+// Meta Pixel hosts (ADR-040): its script, the image/beacon endpoint, and its event requests.
+const META_SCRIPT = "https://connect.facebook.net";
+const META_EVENTS = "https://www.facebook.com";
 const contentSecurityPolicy = [
   "default-src 'self'",
-  `img-src 'self' data: blob: ${mediaUrl.origin}`,
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
+  `img-src 'self' data: blob: ${mediaUrl.origin} ${META_EVENTS}`,
+  `script-src 'self' 'unsafe-inline' ${META_SCRIPT}${isDev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
   "font-src 'self'",
   "frame-src https://www.google.com",
-  "connect-src 'self'",
+  `connect-src 'self' ${META_EVENTS} ${META_SCRIPT}`,
   "frame-ancestors 'self'",
   "form-action 'self'",
   "base-uri 'self'",

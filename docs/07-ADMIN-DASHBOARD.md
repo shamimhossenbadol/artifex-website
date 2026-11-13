@@ -29,7 +29,7 @@ Session and security mechanics are in `09-SECURITY-GUIDELINES.md` §2.
 - Counts: published/draft products, categories, published posts.
 - Quick links: Add product, Write post, Edit homepage.
 - "Recently updated products" (5).
-- Optional (Phase 8): top 5 products by WhatsApp clicks (last 30 days).
+- **Visitors & inquiries (ADR-040):** period switch 7/30/90 days (`?range=`, default 30); KPI cards with the change vs the previous period: visitors (unique per day), page views, product views, inquiries, WhatsApp / Messenger / call taps, inquiry rate; lists: most viewed products, most inquired products, top pages. Signed-in admin visits aren't counted.
 - Warnings: products without images, the WhatsApp number not set, no hero photos.
 
 ### 3.2 Products
@@ -72,6 +72,7 @@ Session and security mechanics are in `09-SECURITY-GUIDELINES.md` §2.
 - *Location*: address, city, map embed URL (with paste help: Google Maps → Share → Embed a map → copy the `src`), directions link, lat/lng, opening hours editor (rows: days, open, close, closed).
 - *Social*: Facebook (prefilled with the brand page), Instagram, YouTube.
 - *SEO*: default title, description, default OG image.
+- *Tracking* (ADR-040): Meta (Facebook) Pixel ID, digits only; the site adds the pixel code itself. Empty turns it off.
 
 ### 3.7 Account
 - Profile (name, email) and change password (see §1). Logout everywhere (bumps `sessionVersion`).

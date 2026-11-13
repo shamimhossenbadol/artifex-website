@@ -2,8 +2,11 @@ import { AlertTriangle, FilePlus2, House, PackagePlus } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AdminPageHeader, AdminPanel } from "@/components/admin/AdminPageHeader";
+import { AnalyticsPanel } from "@/components/admin/dashboard/AnalyticsPanel";
 import { Badge } from "@/components/ui/Badge";
 import { formatPostDate } from "@/lib/blog";
+import { analyticsRangeSchema } from "@/lib/validation/analytics";
+import { getAnalyticsSummary } from "@/server/services/analytics.service";
 import { requireAdmin } from "@/server/services/auth.service";
 import { getDashboard } from "@/server/services/dashboard.service";
 
@@ -15,9 +18,22 @@ const QUICK_LINKS = [
   { href: "/admin/homepage", label: "Edit homepage", Icon: House },
 ];
 
-export default async function DashboardPage() {
+/** Analytics shouldn't take the dashboard down (e.g. before the migration has run). */
+async function loadAnalytics(range: unknown) {
+  try {
+    return await getAnalyticsSummary(analyticsRangeSchema.parse(range));
+  } catch (err) {
+    console.error("[dashboard.analytics]", err);
+    return null;
+  }
+}
+
+export default async function DashboardPage({ searchParams }: PageProps<"/admin">) {
   const admin = await requireAdmin();
-  const { counts, recent, warnings } = await getDashboard();
+  const [{ counts, recent, warnings }, analytics] = await Promise.all([
+    getDashboard(),
+    searchParams.then((params) => loadAnalytics(params.range)),
+  ]);
   const stats = [
     { label: "Published products", value: counts.published },
     { label: "Draft products", value: counts.drafts },
@@ -49,6 +65,15 @@ export default async function DashboardPage() {
         </ul>
       )}
 
+      {analytics ? (
+        <AnalyticsPanel summary={analytics} />
+      ) : (
+        <p className="border-line bg-surface text-ink-soft mb-8 rounded-md border px-4 py-3">
+          Visitor numbers can&apos;t be loaded right now. Please try again later.
+        </p>
+      )}
+
+      <h2 className="text-h3 mb-3">Catalogue</h2>
       <dl className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
         {stats.map((s) => (
           <div key={s.label} className="border-line bg-surface rounded-md border p-4">

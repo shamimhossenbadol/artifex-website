@@ -5,7 +5,7 @@
 1. **Photography first.** Images take up the majority of the viewport on product and category pages.
 2. **One primary action per screen.** On product pages that's *Message on WhatsApp*; elsewhere it's discovery ("Explore sofas").
 3. **Mobile first.** Design at 360 px, then enhance. Most visitors arrive from Facebook on phones.
-4. **Calm.** No pop-ups, no autoplay, no cookie walls (we set no tracking cookies; see 09).
+4. **Calm.** No pop-ups, no autoplay, no cookie walls (our own visit counts use no cookies; the optional Meta Pixel sets Meta's `_fbp` cookie, ADR-040).
 5. **Fast feedback.** Every action shows a state (loading, success, error) within 100 ms.
 
 ## 2. Global navigation

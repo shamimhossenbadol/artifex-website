@@ -48,9 +48,10 @@ Session and security mechanics are in `09-SECURITY-GUIDELINES.md` §2.
 - "Duplicate" copies everything except slug/SKU/images as a Draft.
 
 ### 3.3 Categories
-- List with drag-to-reorder (saves `sortOrder`), toggles for Active and Show on home, and a product count.
-- Form: name, slug, description, image, SEO fields.
-- Delete is blocked while products exist (with a message and a link to the filtered product list).
+- List with move up/down buttons (saves `sortOrder`; ADR-033 replaces drag-to-reorder), switches for Active and Show on home, and a product count.
+- Form: name, slug (blank = derived from the name), description, image (with "Remove the current image"), Active, Show on home, SEO fields.
+- Delete is blocked while products exist: the row shows "View products" (link to the filtered product list) instead of Delete, and the server refuses with a message.
+- Renaming a category recomputes `searchText` for its products (04 §4).
 
 ### 3.4 Blog
 - List: title, status, published date, updated; search plus a status filter.

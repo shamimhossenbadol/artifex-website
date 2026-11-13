@@ -80,8 +80,9 @@ Format: `Intl.NumberFormat('en-IN')` grouping with the `৳` prefix (BD uses lak
 
 - Data comes from `SiteSetting` (cached, tag `settings`).
 - Google Map: an `<iframe>` with `src = mapEmbedUrl` (admin-entered and validated to begin with `https://www.google.com/maps/embed`). It shows a "Tap to load the map" placeholder **on every device** and only loads the iframe on click (saves ~500 KB; ADR-028). Without an embed URL, an "Open in Google Maps" card is shown.
-- "Get directions" uses `mapLinkUrl`, or falls back to `https://www.google.com/maps/search/?api=1&query=<lat>,<lng>`.
+- "Get directions" uses `mapLinkUrl` (default: Google Maps directions to the Artifex Furniture place, `https://www.google.com/maps/dir//Artifex+Furniture,+House+02+Road-05,+Dhaka+1230`), or falls back to `https://www.google.com/maps/search/?api=1&query=<lat>,<lng>`.
 - Opening hours come from JSON and render as a table. The "Open now / Closed now" indicator is computed on the client in the `Asia/Dhaka` timezone (avoids caching issues).
+- "Message us on Facebook": `facebookUrl` mapped to a Messenger link (`https://m.me/<page>`, `src/lib/messenger.ts`); URLs that can't be mapped link to the page itself. Hidden when no Facebook URL is set.
 - LocalBusiness (`FurnitureStore`) JSON-LD.
 
 ---

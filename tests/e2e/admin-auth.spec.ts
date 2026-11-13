@@ -176,3 +176,39 @@ test("homepage editor saves the hero and validates new banners", async ({ page }
   await page.getByRole("button", { name: "Create banner" }).click();
   await expect(page.getByText("Choose an image for the banner.").first()).toBeVisible();
 });
+
+// --- Milestone 7c: categories. Creates a throwaway category on the CI database and removes it. --
+
+test("categories: create, show on the site, guard delete, then delete", async ({ page }) => {
+  await signIn(page, EMAIL!, NEW_PASSWORD);
+  await expect(page).toHaveURL(/\/admin$/);
+
+  await page.goto("/admin/categories/new");
+  await page.getByLabel("Name", { exact: true }).fill("E2E Lounge Chairs");
+  await page.getByRole("button", { name: "Create category" }).click();
+  await expect(page).toHaveURL(/\/admin\/categories$/);
+  await expect(page.getByText("/categories/e2e-lounge-chairs")).toBeVisible();
+
+  // A duplicate web address is rejected and the form keeps what was typed.
+  await page.goto("/admin/categories/new");
+  await page.getByLabel("Name", { exact: true }).fill("E2E Lounge Chairs");
+  await page.getByRole("button", { name: "Create category" }).click();
+  await expect(page.getByText(/already uses this web address/).first()).toBeVisible();
+  await expect(page.getByLabel("Name", { exact: true })).toHaveValue("E2E Lounge Chairs");
+
+  // It's live on the public site straight away (cache revalidated).
+  await page.goto("/categories/e2e-lounge-chairs");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("E2E Lounge Chairs");
+
+  // Categories with products can't be deleted: they link to their products instead.
+  await page.goto("/admin/categories");
+  const sofas = page.getByRole("listitem").filter({ hasText: "/categories/sofas" });
+  await expect(sofas.getByRole("link", { name: "View products" })).toBeVisible();
+  await expect(sofas.getByRole("button", { name: "Delete" })).toHaveCount(0);
+
+  const item = page.getByRole("listitem").filter({ hasText: "/categories/e2e-lounge-chairs" });
+  await item.getByRole("button", { name: "Delete" }).click();
+  await page.getByRole("dialog").getByRole("button", { name: "Delete" }).click();
+  await expect(page.getByText("Category deleted.").first()).toBeVisible();
+  await expect(page.getByText("/categories/e2e-lounge-chairs")).toHaveCount(0);
+});

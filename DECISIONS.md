@@ -283,3 +283,15 @@ Format: each ADR has a number, date, status (Accepted / Superseded by ADR-x / Pr
 **Decision:** `scripts/package-standalone.mjs` copies every installed `@img/*` package in full into the bundle (npm installs only the build machine's platform, so CI ships the linux-x64 ones). The alias check resolves `<alias>/package.json` as before. When a package hides that path (sharp), the check **loads** the package instead, which proves its native parts work. CI runs this on Linux for every push. Server checked: glibc 2.28 and x86-64-v2 CPU features (SSE4.2, POPCNT), as sharp's Linux binary requires.
 **Consequences:** About 8 MB more in the bundle. Any future native package that is traced the same way gets the same load check.
 
+
+### ADR-033 — Admin categories (Phase 7, milestone 7c)
+**Date:** 2026-11-13 · **Status:** Accepted (implements 07 §3.3)
+**Context:** 07 §3.3 asks for drag-to-reorder, toggles, a form with an image, and a delete that is blocked while products exist. The owner manages the site from a phone.
+**Decision:**
+- **Order uses move up/down buttons**, like promo banners (ADR-031), instead of drag-and-drop. Drag needs a library or a lot of pointer/keyboard code and is unreliable on phones; buttons are accessible and fit the dependency policy. sortOrder is rewritten as 10, 20, 30… in one transaction.
+- **Slug:** blank means "derive from the name" (`slugify`: ASCII kebab-case, `&` → "and", accents stripped). Typed slugs are normalised the same way. Uniqueness is checked in the service and a P2002 race maps to the same field error. The edit form warns that changing it breaks saved links (no redirects table; out of scope).
+- **Rename recomputes product `searchText`** for that category (04 §4) in batched transactions of 100.
+- **Image:** optional, one file sent with the form (ADR-031 order: upload → save → delete old). "Remove the current image" clears it. Alt text is the category name (no alt column).
+- **Delete** is refused by the service when products exist (also enforced by `onDelete: Restrict`); the list shows "View products" instead of Delete for those rows.
+- **Revalidation:** every category mutation calls `updateTag` for `categories`, `products` (product pages show the category; search), `home`, and `category:<slug>` (old and new).
+**Consequences:** "View products" links to `/admin/products?category=<slug>`, which becomes a real filtered list in milestone 7d.

@@ -6,6 +6,20 @@ const siteUrl = new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:30
 const mediaUrl = new URL(process.env.NEXT_PUBLIC_MEDIA_URL ?? "http://localhost:3000");
 const isDev = process.env.NODE_ENV !== "production";
 
+// ADR-014: images live on the R2 media domain and are never served by the app. If the media URL
+// is set to the site's own address, every uploaded photo 404s (and CSP would block the real media
+// domain), so refuse to build rather than ship broken images. Unset values (local smoke builds) skip this.
+if (
+  process.env.NEXT_PUBLIC_SITE_URL &&
+  process.env.NEXT_PUBLIC_MEDIA_URL &&
+  mediaUrl.origin === siteUrl.origin
+) {
+  throw new Error(
+    `NEXT_PUBLIC_MEDIA_URL (${mediaUrl.origin}) must be the R2 media domain, not the site URL. ` +
+      "Set the GitHub repository variable NEXT_PUBLIC_MEDIA_URL to e.g. https://media.<domain>.",
+  );
+}
+
 // 09 §7. 'unsafe-eval' is only needed by the dev server (React refresh), never in production.
 const contentSecurityPolicy = [
   "default-src 'self'",

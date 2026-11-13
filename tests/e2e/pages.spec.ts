@@ -68,6 +68,11 @@ test.describe("Contact & location (F5)", () => {
       "href",
       /^https:\/\/www\.google\.com\/maps\//,
     );
+    await expect(main.getByRole("link", { name: /Message us on Facebook/ })).toHaveAttribute(
+      "href",
+      "https://m.me/artifexfurniturebd",
+    );
+    await expect(main.getByText("Times are Dhaka time.")).toHaveCount(0);
     expect(await jsonLdTypes(page)).toContain("FurnitureStore");
   });
 

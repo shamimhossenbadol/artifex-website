@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { MapLoader } from "@/components/contact/MapLoader";
 import { OpeningStatus } from "@/components/contact/OpeningStatus";
+import { FacebookIcon } from "@/components/site/SocialIcons";
 import { WhatsAppIcon } from "@/components/site/WhatsAppIcon";
 import { getContactLinks } from "@/components/site/contact-links";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
@@ -10,6 +11,7 @@ import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Container } from "@/components/ui/Container";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { toMessengerUrl } from "@/lib/messenger";
 import { formatHoursRange, toOpeningHoursSpecification } from "@/lib/opening-hours";
 import { breadcrumbJsonLd, localBusinessJsonLd } from "@/lib/seo";
 import { getSiteSettings, type SiteSettings } from "@/server/services/settings.service";
@@ -41,6 +43,7 @@ async function ContactDetails() {
   const { phone, telHref, whatsappHref } = getContactLinks(settings);
   const address = [settings.addressLine, settings.city].filter(Boolean).join(", ");
   const directions = directionsHref(settings);
+  const messengerHref = toMessengerUrl(settings.facebookUrl);
   // Only Google Maps embed URLs are allowed in the iframe (09 §3); anything else is ignored.
   const embedUrl = settings.mapEmbedUrl?.startsWith(MAP_EMBED_PREFIX) ? settings.mapEmbedUrl : null;
 
@@ -92,6 +95,15 @@ async function ContactDetails() {
                 </span>
               </a>
             )}
+            {messengerHref && (
+              <a href={messengerHref} target="_blank" rel="noopener noreferrer" className={ROW}>
+                <FacebookIcon className={ICON} />
+                <span>
+                  <span className="text-small text-muted block">Facebook</span>
+                  <span className="text-ink">Message us on Facebook</span>
+                </span>
+              </a>
+            )}
             {settings.email && (
               <a href={`mailto:${settings.email}`} className={ROW}>
                 <Mail aria-hidden strokeWidth={1.5} className={ICON} />
@@ -123,7 +135,6 @@ async function ContactDetails() {
                   ))}
                 </tbody>
               </table>
-              <p className="text-small text-muted mt-2">Times are Dhaka time.</p>
             </section>
           )}
 

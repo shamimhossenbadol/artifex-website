@@ -9,10 +9,10 @@
 
 | Item | Value |
 |---|---|
-| **Current phase** | Phase 7: Admin dashboard (7a–7b done; 7c next) |
+| **Current phase** | Phase 7: Admin dashboard (7a–7c done; 7d products next) |
 | **Overall state** | ✅ Phase 1 complete. Code is on GitHub (`shamimhossenbadol/artifex-website`, private); CI is green. ✅ **First deploy succeeded 2026-11-12**: https://artifex.codespherestudio.site serves the placeholder page with security headers (via Cloudflare). Migration applied; seed created 7 categories, settings, hero and the admin (`mustChangePassword = 1`); backup saved in `~/backups`. |
-| **Last updated** | 2026-11-12 |
-| **Next action** | Owner: Deploy, sign in at /admin (first sign-in asks for a new password), then try Settings and Homepage on your phone and upload a hero photo. Agent: Phase 7 milestone 7c (categories). |
+| **Last updated** | 2026-11-13 |
+| **Next action** | Owner: (1) GitHub → Settings → Secrets and variables → Actions → Variables: set `NEXT_PUBLIC_MEDIA_URL` = `https://media.codespherestudio.site` (it currently holds the site URL, so uploaded photos 404; builds now refuse that). (2) Admin → Settings → Location: paste the new directions link (below) into "Directions link" and save. (3) Deploy, then try Categories on your phone. Agent: Phase 7 milestone 7d (products). |
 
 ## Phase overview
 
@@ -25,7 +25,7 @@
 | 4 | Global search | ✅ Done 2026-11-12 |
 | 5 | Blog, About, Contact/Location | ✅ Done 2026-11-12 |
 | 6 | Homepage | ✅ Done 2026-11-12 |
-| 7 | Admin dashboard | 🟡 7a–7b done (auth, account, shell, dashboard, settings, hero/banners); 7c–7f next |
+| 7 | Admin dashboard | 🟡 7a–7c done (auth, account, shell, dashboard, settings, hero/banners, categories); 7d–7f next |
 | 8 | SEO, security & performance hardening | ⚪ Not started |
 | 9 | Production build, deployment & QA | ⚪ Not started |
 
@@ -52,6 +52,9 @@ Legend: ⚪ not started · 🟡 in progress · ✅ done · ⛔ blocked
 | Cloudflare R2 | ✅ Buckets `artifex-media` (custom domain **media.codespherestudio.site**, r2.dev off) + `artifex-media-dev` (r2.dev on). cPanel app has `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET=artifex-media` (formats verified, values never printed). **Live test from the server:** PUT 200 → read via media domain 200, `image/webp`, `public, max-age=31536000, immutable`, Cloudflare MISS then **HIT** → DELETE 204. Dev keys not on the dev PC yet (optional) | 2026-11-13 |
 
 ## Blockers
+
+- **Homepage photos don't show on the test site** until the GitHub variable `NEXT_PUBLIC_MEDIA_URL` is set to `https://media.codespherestudio.site` and the site is redeployed. Found 2026-11-13: the live page requests `https://artifex.codespherestudio.site/home/…webp` (404) while the file is on the media domain (200).
+- **Directions link:** the test DB still has the old address-search link in `mapLinkUrl`. Paste `https://www.google.com/maps/dir//Artifex+Furniture,+House+02+Road-05,+Dhaka+1230` into Admin → Settings → Location → Directions link (the seed only sets it on fresh databases).
 
 - **Before the first test deploy:** Cloudflare DNS record for `artifex` + GitHub `production` secrets/variables. cPanel side is done (ADR-019). Doesn't block Phase 2.
 - No local MySQL/MariaDB or WSL on the dev PC, so DB-backed checks run in CI. Optional: install MariaDB 11.4 locally for `npm run db:migrate` during development.
@@ -83,6 +86,8 @@ Answer these by editing this list. Agents: use the **default** until an answer i
 ## Session log
 
 Add one line per session, newest first: `YYYY-MM-DD — summary — files touched`.
+
+- 2026-11-13 — Owner fixes + Phase 7c. Hero photo not showing: the build's `NEXT_PUBLIC_MEDIA_URL` is the site URL (GitHub variable), so image URLs 404. next.config now refuses that; owner must fix the variable. Contact: directions default = Google Maps place link (seed), "Message us on Facebook" (m.me link from facebookUrl), removed "Times are Dhaka time.". Phase 7c categories: list (move up/down, Active / On home switches, counts), create/edit (slug from name, image + remove, SEO), guarded delete, search-text refresh on rename, full revalidation. 222 unit tests; categories e2e added (CI only). Not checked in a browser locally (DB tunnel not available in this session). ADR-033. — `next.config.ts`, `src/app/(site)/contact/page.tsx`, `src/lib/{messenger,validation/category}.ts`, `src/server/{repositories/category.repo,services/category-admin.service,actions/category.actions}.ts`, `src/components/admin/categories/`, `src/app/admin/(panel)/categories/`, `prisma/seed.ts`, `tests/`, `DECISIONS.md`, `docs/06`, `07`, `10`, `12`, `CHANGELOG.md`
 
 - 2026-11-13 — CI follow-up: deploy bundle now ships sharp's libvips (uploads would have failed on the server), alias check loads packages that hide package.json (ADR-032); admin e2e waits for bcrypt (15 s) and uses an exact label; search keyboard test waits for load, and a new test covers typing while JS is still loading. — `scripts/package-standalone.mjs`, `tests/e2e/{search.spec,helpers,admin-auth.spec}.ts`, `DECISIONS.md`, `CHANGELOG.md`
 

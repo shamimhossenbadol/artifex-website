@@ -82,7 +82,7 @@ Each phase ends with a short manual review of the phase's acceptance checks.
 - [x] Admin shell (sidebar, mobile drawer, toasts, confirm dialog)
 - [x] Dashboard overview + warnings
 - [ ] Products: list/filter, create/edit form (all sections), image uploader (sharp variants → R2, reorder, primary, alt, R2 delete on remove), duplicate, delete
-- [ ] Categories: CRUD, reorder, toggles
+- [x] Categories: CRUD, reorder, toggles (7c, ADR-033)
 - [ ] Blog: CRUD with Markdown editor + image insert
 - [ ] Homepage: hero, promo banners, featured lists — hero + banners done (7b, ADR-031); featured lists in 7f
 - [x] Settings: business, contact/WhatsApp (test link), location/map/hours, social, SEO (ADR-031)

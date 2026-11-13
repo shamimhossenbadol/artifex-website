@@ -73,8 +73,9 @@ async function seedSettings(): Promise<void> {
       email: null,
       addressLine: "House 02, Road 05, Sector 01, Uttara",
       city: "Dhaka 1230",
+      // Directions to the showroom's Google Maps place (owner-supplied 2026-11-13), not just the address.
       mapLinkUrl:
-        "https://www.google.com/maps/search/?api=1&query=House%2002%2C%20Road%2005%2C%20Sector%2001%2C%20Uttara%2C%20Dhaka%201230",
+        "https://www.google.com/maps/dir//Artifex+Furniture,+House+02+Road-05,+Dhaka+1230",
       facebookUrl: "https://www.facebook.com/artifexfurniturebd",
       instagramUrl: "https://www.instagram.com/artifexdecoryourdreams",
       youtubeUrl: "https://www.youtube.com/@ArtifexFurniture",

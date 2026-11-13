@@ -6,12 +6,14 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 ## [Unreleased]
 
 ### Fixed
+- 2026-11-13 — Homepage hero/banner photos didn't show after upload: the build pointed image URLs at the site instead of the media domain (a GitHub variable). Builds now stop with a clear error when `NEXT_PUBLIC_MEDIA_URL` equals the site URL.
 - 2026-11-13 — Deploy bundle: image processing (sharp) now ships with its native libraries, so admin image uploads work on the server (ADR-032).
 - 2026-11-13 — Search: words typed into the search box while the page is still loading on a slow connection now show suggestions as soon as loading finishes.
 - 2026-11-12 — Mobile menu now opens instantly, even before the page's JavaScript has loaded on slow connections (ADR-024).
 - 2026-11-12 — Test site showed a blank white page after the Phase 2 deploy: the deploy bundle was missing Turbopack's Prisma alias. Packaging now recreates and verifies it, CI boots the real bundle, and the deploy health check requires a complete page (ADR-023).
 
 ### Changed
+- 2026-11-13 — Contact page: "Get directions" opens Google Maps directions to the Artifex Furniture place; new "Message us on Facebook" link (Messenger); removed the "Times are Dhaka time." note.
 - 2026-11-12 — Opening hours set to every day, 10:00 AM – 10:00 PM, shown in 12-hour format; the contact page map now shows the showroom (tap to load).
 - 2026-11-12 — Product range: Doors and Tables removed, Chandeliers added (ADR-026).
 - 2026-11-12 — Header simplified to a single row with the logo (no top utility bar); Journal/About/Contact remain in the footer and mobile menu.
@@ -20,6 +22,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 - 2026-11-10 — Image storage moved from local disk to **Cloudflare R2** served at `media.<domain>` (ADR-014). Docs updated: architecture, database, SEO, security, deployment, roadmap, and testing.
 
 ### Added
+- 2026-11-13 — Admin (Phase 7c): Categories: create and edit (name, web address, description, image, visibility, SEO), reorder, Active / Show on home switches, product counts; delete only when a category has no products. Changes show on the site immediately.
 - 2026-11-13 — Admin (Phase 7b): Settings pages for business details, contact and WhatsApp (with a test link and message preview), location, map and opening hours, social links, and SEO with a share image; Homepage editor for the hero (live preview and photo upload) and promo banners (schedule, order, edit, delete).
 - 2026-11-13 — Admin (Phase 7a): secure sign-in with lockout protection, a forced password change on first sign-in, account page (profile, password, sign out other devices), admin dashboard with counts, recent products and setup warnings, and a mobile-friendly admin menu.
 - 2026-11-12 — Homepage (Phase 6): hero, shop-by-category tiles, New arrivals / Featured / Most loved rails, brand story, promo banners, WhatsApp help band and latest Journal posts; empty sections hide themselves. Organization, WebSite (search) and store structured data.

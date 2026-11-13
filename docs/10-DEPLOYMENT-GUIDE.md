@@ -77,7 +77,7 @@ If `sharp` is missing from the trace, the script runs `npm install --os=linux --
 | Application startup file | `server.js` |
 | Environment variables | `DATABASE_URL` (`mysql://<dbuser>:<pw>@localhost:3306/<dbname>`), `AUTH_SECRET`, `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_MEDIA_URL`, `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`, `NODE_ENV=production`, `HOSTNAME=127.0.0.1`, `NODE_OPTIONS=--max-old-space-size=512` (set below the plan's RAM limit) |
 
-> `NEXT_PUBLIC_*` vars are inlined at **build time**, so set `NEXT_PUBLIC_SITE_URL` and `NEXT_PUBLIC_MEDIA_URL` in the build environment too.
+> `NEXT_PUBLIC_*` vars are inlined at **build time**, so set `NEXT_PUBLIC_SITE_URL` and `NEXT_PUBLIC_MEDIA_URL` in the build environment too. `NEXT_PUBLIC_MEDIA_URL` must be the R2 media domain (e.g. `https://media.codespherestudio.site`), never the site URL; `next.config.ts` refuses to build if they match.
 > Don't click "Run NPM Install". The bundle already contains `node_modules`. If cPanel insists on a `package.json`, keep `dependencies` empty in the deployed `package.json` so nothing reinstalls.
 
 Passenger hooks `server.listen`, so the standalone `server.js` works as-is (it reads `PORT`; Passenger manages it).

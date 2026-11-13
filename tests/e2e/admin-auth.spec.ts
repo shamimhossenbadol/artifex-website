@@ -14,7 +14,9 @@ const expect = baseExpect.configure({ timeout: 15_000 });
 /** The sign-in form's own message (Next's route announcer is also role="alert"). */
 const loginMessage = (page: Page) => page.locator("form").getByRole("alert");
 
-test.describe.configure({ mode: "serial" });
+// Serial, no retries: these tests share one admin whose password changes on first login, so a
+// retry would replay one-time steps and fail for the wrong reason.
+test.describe.configure({ mode: "serial", retries: 0 });
 test.skip(!EMAIL || !INITIAL, "admin e2e only runs in CI (E2E_ADMIN_EMAIL/PASSWORD)");
 test.skip(({ isMobile }) => isMobile, "runs once, on the desktop project");
 

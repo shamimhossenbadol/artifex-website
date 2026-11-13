@@ -23,6 +23,9 @@ export default defineConfig({
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
+    // Server errors (Server Actions, rendering) show up in the CI log next to the failing test.
+    stdout: "pipe",
+    stderr: "pipe",
     env: {
       DATABASE_URL: process.env.DATABASE_URL ?? "mysql://test:test@localhost:3306/artifex_test",
       AUTH_SECRET: process.env.AUTH_SECRET ?? "e2e-only-secret-not-used-in-production-xxxxxxxx",

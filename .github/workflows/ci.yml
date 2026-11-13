@@ -82,6 +82,16 @@ jobs:
           npx playwright install --with-deps chromium
           npm run test:e2e
 
+      # Page snapshots and traces of failed tests, to see what the browser saw.
+      - name: Upload e2e failure details
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: e2e-test-results
+          path: test-results/
+          retention-days: 7
+          if-no-files-found: ignore
+
       - name: Package deploy bundle
         run: npm run package
 

@@ -36,8 +36,8 @@ export function ProductImages({
       images={images}
       max={max}
       actions={actions}
-      limitMessage={`Up to ${max} photos per product.`}
-      emptyMessage="No photos yet. The first photo becomes the featured one shown on cards."
+      limitMessage={`Up to ${max} photos per product: 1 main photo and ${max - 1} gallery photos.`}
+      emptyMessage="No photos yet. The first photo becomes the main photo."
       deleteDescription="The photo is removed from the product and the website. This can't be undone."
     />
   );

@@ -37,7 +37,7 @@ Session and security mechanics are in `09-SECURITY-GUIDELINES.md` §2.
 - **Create/Edit form** (one page with sections; sticky Save bar):
   1. *Basics*: title, slug (auto, editable, with a warning on change after publish), category, short description (counter 300), full description (Markdown textarea with a toolbar: bold, italic, heading, list, link, and preview tab).
   2. *Pricing*: regular price (blank = Price on request), discount price, with a live preview "৳ 38,675 ~~৳ 45,500~~ -15%".
-  3. *Images*: drag & drop multi-upload (max 12, ≤ 10 MB each, JPEG/PNG/WebP), per-file upload progress, drag-to-reorder, "Set as featured" (primary), alt text per image (required), and delete.
+  3. *Images*: drag & drop multi-upload (max 5: 1 main + 4 gallery, ADR-041; ≤ 10 MB each, JPEG/PNG/WebP), per-file upload progress, move up/down, "Set as main photo" (primary: cards, listings, sharing), alt text per image (required), and delete. Gallery photos show only on the product page.
   4. *Colours*: repeatable rows (name + colour picker/hex), reorderable.
   5. *Specifications*: repeatable label/value rows, reorderable, with quick-add presets per category (e.g. Sofas: Frame, Upholstery, Seating capacity, Cushion, Warranty).
   6. *Details*: SKU, material, dimensions, made-to-order, keywords (comma-separated synonyms for search).

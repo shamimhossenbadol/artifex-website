@@ -55,9 +55,14 @@ export default async function EditProductPage({ params }: PageProps<"/admin/prod
           aria-labelledby="photos-title"
           className="border-line bg-surface rounded-md border p-5 sm:p-6"
         >
-          <h2 id="photos-title" className="text-ink mb-4 text-base font-semibold">
+          <h2 id="photos-title" className="text-ink text-base font-semibold">
             Photos
           </h2>
+          <p className="text-small text-ink-soft mt-1 mb-4">
+            Up to {MAX_PRODUCT_IMAGES} photos. The <strong>main photo</strong> is shown on product
+            cards, in listings and when the product is shared. The others are the{" "}
+            <strong>gallery</strong> (other angles, close-ups), shown only on the product page.
+          </p>
           <ProductImages productId={product.id} images={product.images} max={MAX_PRODUCT_IMAGES} />
         </section>
 

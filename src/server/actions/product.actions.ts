@@ -141,7 +141,7 @@ export async function updateImageAltAction(imageId: number, alt: string): Promis
 }
 
 export async function setPrimaryImageAction(imageId: number): Promise<ActionResult> {
-  return imageAction(imageId, setPrimaryImage, "Featured photo set.");
+  return imageAction(imageId, setPrimaryImage, "Main photo set.");
 }
 
 export async function moveImageAction(

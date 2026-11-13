@@ -2,7 +2,7 @@
 // Photo manager (07 §4) for product photos and hero slides (ADR-039): drag & drop or pick several
 // files; each is uploaded in its own request (low memory on shared hosting), two at a time, with a
 // status per file. Saved photos can be reordered, described (alt text), deleted and, where the
-// owner supports it, set as featured. Changes save immediately.
+// owner supports it, set as the main photo. Changes save immediately.
 import { ArrowDown, ArrowUp, Check, ImageUp, Loader2, Star, TriangleAlert, X } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -23,7 +23,7 @@ export type PhotoActions = {
   setAlt: (id: number, alt: string) => Promise<ActionResult>;
   move: (id: number, direction: "up" | "down") => Promise<ActionResult>;
   remove: (id: number) => Promise<ActionResult>;
-  /** Omit when there is no "featured" photo (hero slides). */
+  /** Omit when there is no main photo (hero slides). */
   setPrimary?: (id: number) => Promise<ActionResult>;
 };
 
@@ -285,7 +285,7 @@ function ImageRow({
         />
         {image.isPrimary && (
           <Badge variant="new" className="absolute top-2 left-2">
-            Featured
+            Main photo
           </Badge>
         )}
       </div>
@@ -331,7 +331,7 @@ function ImageRow({
               className="text-small text-ink-soft hover:text-ink inline-flex min-h-11 items-center gap-1 px-2"
             >
               <Star aria-hidden strokeWidth={1.5} className="size-4" />
-              Set as featured
+              Set as main photo
             </button>
           )}
         </div>

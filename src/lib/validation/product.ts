@@ -4,7 +4,8 @@ import { slugify } from "./category";
 import { optionalText, requiredText } from "./settings";
 
 export const PRODUCT_SLUG_MAX = 170;
-export const MAX_PRODUCT_IMAGES = 12;
+/** One main photo (cards, listings, sharing) + up to 4 gallery photos for the product page (ADR-041). */
+export const MAX_PRODUCT_IMAGES = 5;
 export const MAX_COLORS = 20;
 export const MAX_SPECS = 40;
 export const ADMIN_PRODUCTS_PER_PAGE = 20;

@@ -267,11 +267,22 @@ describe("product admin service", () => {
   describe("images", () => {
     const file = new File(["x"], "a.jpg", { type: "image/jpeg" });
 
-    it("refuses a 13th photo before uploading", async () => {
+    it("refuses a 6th photo (1 main + 4 gallery) before uploading", async () => {
       repo.findProductForEdit.mockResolvedValue(editRow());
-      repo.countProductImages.mockResolvedValue(12);
-      expect(await service.addProductImage(7, file)).toMatchObject({ ok: false });
+      repo.countProductImages.mockResolvedValue(5);
+      expect(await service.addProductImage(7, file)).toMatchObject({
+        ok: false,
+        error: "A product can have up to 5 photos.",
+      });
       expect(media.storeImage).not.toHaveBeenCalled();
+    });
+
+    it("still accepts the 5th photo", async () => {
+      repo.findProductForEdit.mockResolvedValue(editRow());
+      repo.countProductImages.mockResolvedValue(4);
+      media.storeImage.mockResolvedValue({ ok: false, error: "stop here" });
+      await service.addProductImage(7, file);
+      expect(media.storeImage).toHaveBeenCalled();
     });
 
     it("stores a photo with the title as default alt text", async () => {

@@ -10,8 +10,6 @@ export async function findActiveCategoriesForNav() {
   });
 }
 
-export type NavCategoryRow = Awaited<ReturnType<typeof findActiveCategoriesForNav>>[number];
-
 /** Categories for the homepage "Shop by category" tiles (F6). */
 export async function findHomeCategories() {
   return db.category.findMany({
@@ -46,8 +44,6 @@ export async function findActiveCategoryBySlug(slug: string) {
     },
   });
 }
-
-export type CategoryRow = NonNullable<Awaited<ReturnType<typeof findActiveCategoryBySlug>>>;
 
 // --- Admin (07 §3.3) ---------------------------------------------------------------------------
 

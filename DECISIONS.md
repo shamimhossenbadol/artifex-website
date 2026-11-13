@@ -371,3 +371,13 @@ Format: each ADR has a number, date, status (Accepted / Superseded by ADR-x / Pr
 **Decision:** `MAX_PRODUCT_IMAGES` = 5, enforced in the service and the admin uploader. The admin calls the primary the **main photo** ("Set as main photo") and explains that the others are the gallery, shown only on the product page. No schema change.
 **Consequences:** Products that already have more than 5 photos keep them (nothing is deleted), but no more can be added until some are removed. Less storage and a lighter product page.
 
+### ADR-042 — Production cleanup: drop the Featured flag and home sort order, remove dead code
+**Date:** 2026-11-13 · **Status:** Accepted
+**Context:** The owner asked for a production-grade cleanup of the database and code. After ADR-035 removed the Featured and Most loved rails, `Product.isFeatured` and `Product.homeSortOrder` still appeared in the admin but changed nothing on the website. A scan of every export and schema field found a few unused exports and one unused component.
+**Decision:**
+- Migration `20261113200000_drop_product_featured` drops `isFeatured`, `homeSortOrder` and their indexes, and adds `[status, isPopular, publishedAt]` for the popular ordering used by search and related products. The admin form, list filter/badge, validation, seed and tests follow. `isPopular` stays (it ranks search results and related products); its label says so.
+- Homepage code keeps only the New arrivals rail (`findNewArrivals` / `getNewArrivals`).
+- Removed dead code: `ComingSoon`, `IDLE`, `publicEnv`, and unused type exports. Stale comments fixed. The original brief moved from the repo root to `docs/history/`.
+- Footer credit "Developed by Shamim Hossen Badol", linked to the developer's WhatsApp; marked `data-no-track` so it isn't counted as a customer inquiry.
+**Consequences:** Existing Featured ticks and home sort numbers are deleted with the columns (they had no visible effect). Every table and remaining field is used by the website or the admin. All dependencies are in use.
+

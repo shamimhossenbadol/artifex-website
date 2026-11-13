@@ -205,4 +205,3 @@ export const settingsFormSchema = z.discriminatedUnion("section", [
 ]);
 
 export type SettingsForm = z.infer<typeof settingsFormSchema>;
-export type SettingsSection = SettingsForm["section"];

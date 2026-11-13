@@ -33,7 +33,7 @@ Session and security mechanics are in `09-SECURITY-GUIDELINES.md` §2.
 - Warnings: products without images, the WhatsApp number not set, no hero photos.
 
 ### 3.2 Products
-- **List:** search by title, filter by category/status/flags, and sort by updated/price. Columns: thumb, title, category, price, status, flags (★ featured, 🔥 popular, New), updated. Row actions: Edit, View, Duplicate, Delete (with confirmation). Paginated at 20.
+- **List:** search by title, filter by category/status/flags, and sort by updated/price. Columns: thumb, title, category, price, status, flags (Popular, New), updated. Row actions: Edit, View, Duplicate, Delete (with confirmation). Paginated at 20.
 - **Create/Edit form** (one page with sections; sticky Save bar):
   1. *Basics*: title, slug (auto, editable, with a warning on change after publish), category, short description (counter 300), full description (Markdown textarea with a toolbar: bold, italic, heading, list, link, and preview tab).
   2. *Pricing*: regular price (blank = Price on request), discount price, with a live preview "৳ 38,675 ~~৳ 45,500~~ -15%".
@@ -41,7 +41,7 @@ Session and security mechanics are in `09-SECURITY-GUIDELINES.md` §2.
   4. *Colours*: repeatable rows (name + colour picker/hex), reorderable.
   5. *Specifications*: repeatable label/value rows, reorderable, with quick-add presets per category (e.g. Sofas: Frame, Upholstery, Seating capacity, Cushion, Warranty).
   6. *Details*: SKU, material, dimensions, made-to-order, keywords (comma-separated synonyms for search).
-  7. *Visibility*: status (Draft/Published), Featured, Popular, New arrival, home sort order.
+  7. *Visibility*: status (Draft/Published), Popular (ranks search and related products), New arrival (badge + homepage New arrivals). Featured and home sort order were removed (ADR-042).
   8. *SEO* (collapsed): SEO title and description with a counter and a Google-style preview; defaults are derived when blank.
 - Validation errors show inline and in a summary at the top. A failed save keeps the form state.
 - Unsaved-changes guard (`beforeunload`).
@@ -63,7 +63,7 @@ Session and security mechanics are in `09-SECURITY-GUIDELINES.md` §2.
 - **Hero:** heading, eyebrow, subheading, two CTA label/link pairs, with a live preview card over the first photo.
 - **Hero photos (ADR-039):** up to 5 slides managed like product photos (multi-upload queue, alt text, move up/down, delete; changes save immediately).
 - **Promo banners:** list + form (title, subtitle, image, link, active, date range, order).
-- **Featured content:** three reorderable lists (New arrivals, Featured, Popular) showing flagged products; add via product picker search and remove (unflags). This is a convenience view over the product flags + `homeSortOrder`.
+- ~~Featured content~~: not built (7f skipped); the Featured/Most loved rails were removed (ADR-035) and the Featured flag dropped (ADR-042).
 - **Home categories:** shortcut to the category ordering and visibility.
 
 ### 3.6 Settings (tabs)

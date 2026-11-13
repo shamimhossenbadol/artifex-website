@@ -8,7 +8,7 @@
 
 ## 1. What the owner asked for (in order)
 
-1. **Initial brief** (`initial-prompt.txt` in the repo root, kept unchanged): build a simple but premium catalogue website for Artifex Furniture. It's a demo, so explore competitors like HATIL. The Facebook page is https://www.facebook.com/profile.php?id=61560352716152. It must have a predefined admin panel where the password can be changed. **For now, only make the plan and the Markdown files; coding comes later.** Development will rely on the MD files rather than the chat, so all progress and updates must be kept in MD files.
+1. **Initial brief** (`docs/history/initial-prompt.txt`, kept unchanged; moved out of the repo root 2026-11-13): build a simple but premium catalogue website for Artifex Furniture. It's a demo, so explore competitors like HATIL. The Facebook page is https://www.facebook.com/profile.php?id=61560352716152. It must have a predefined admin panel where the password can be changed. **For now, only make the plan and the Markdown files; coding comes later.** Development will rely on the MD files rather than the chat, so all progress and updates must be kept in MD files.
 2. **"We will use Cloudflare R2 bucket for images."**
 3. **"The Namecheap cPanel shows Node versions up to 26, but the recommended version is 14.21.3."**
 4. **"I'm deleting the chat, so keep a backup in the project for later use."** That's this file and the zip.

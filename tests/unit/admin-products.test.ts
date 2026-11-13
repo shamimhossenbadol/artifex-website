@@ -44,7 +44,6 @@ const FORM = {
   dimensions: "",
   keywords: "",
   status: "DRAFT",
-  homeSortOrder: "0",
   seoTitle: "",
   seoDescription: "",
 };
@@ -73,15 +72,13 @@ const editRow = (over: Record<string, unknown> = {}) => ({
   material: "Oak",
   dimensions: null,
   isMadeToOrder: false,
-  isFeatured: true,
-  isPopular: false,
+  isPopular: true,
   isNewArrival: false,
   status: "PUBLISHED",
   publishedAt: new Date("2026-11-01T00:00:00Z"),
   keywords: null,
   seoTitle: null,
   seoDescription: null,
-  homeSortOrder: 0,
   updatedAt: new Date(),
   category: { slug: "sofas", isActive: true },
   images: [],
@@ -92,12 +89,12 @@ const editRow = (over: Record<string, unknown> = {}) => ({
 
 describe("productSchema", () => {
   it("derives the slug, parses prices and reads checkboxes", () => {
-    const data = input({ isFeatured: "on" });
+    const data = input({ isPopular: "on" });
     expect(data.slug).toBe("oslo-3-seater-sofa");
     expect(data.regularPrice).toBe(45500);
     expect(data.discountPrice).toBeNull();
-    expect(data.isFeatured).toBe(true);
-    expect(data.isPopular).toBe(false);
+    expect(data.isPopular).toBe(true);
+    expect(data.isNewArrival).toBe(false);
     expect(data.categoryId).toBe(1);
   });
 
@@ -131,9 +128,8 @@ describe("productSchema", () => {
     expect(errorPaths({ specs: "not json" })).toContain("specs");
   });
 
-  it("only accepts the two statuses and a sane home order", () => {
+  it("only accepts the two statuses", () => {
     expect(errorPaths({ status: "ARCHIVED" })).toContain("status");
-    expect(errorPaths({ homeSortOrder: "-1" })).toContain("homeSortOrder");
   });
 });
 
@@ -243,7 +239,7 @@ describe("product admin service", () => {
       sku: null,
       status: "DRAFT",
       publishedAt: null,
-      isFeatured: true,
+      isPopular: true,
     });
     expect(children.colors).toEqual([{ name: "Grey", hex: "#808080" }]);
     expect(repo.insertProductImage).not.toHaveBeenCalled();

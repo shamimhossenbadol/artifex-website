@@ -131,7 +131,6 @@ function toData(
     material: input.material,
     dimensions: input.dimensions,
     isMadeToOrder: input.isMadeToOrder,
-    isFeatured: input.isFeatured,
     isPopular: input.isPopular,
     isNewArrival: input.isNewArrival,
     status: input.status,
@@ -147,7 +146,6 @@ function toData(
     }),
     seoTitle: input.seoTitle,
     seoDescription: input.seoDescription,
-    homeSortOrder: input.homeSortOrder,
   };
 }
 
@@ -223,10 +221,8 @@ export async function duplicateProduct(id: number): Promise<SaveResult<{ id: num
     isMadeToOrder: source.isMadeToOrder,
     keywords: source.keywords,
     status: "DRAFT",
-    isFeatured: source.isFeatured,
     isPopular: source.isPopular,
     isNewArrival: source.isNewArrival,
-    homeSortOrder: source.homeSortOrder,
     seoTitle: source.seoTitle,
     seoDescription: source.seoDescription,
   };

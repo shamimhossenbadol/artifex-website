@@ -10,7 +10,6 @@ const ADMIN_ROW_SELECT = {
   status: true,
   regularPrice: true,
   discountPrice: true,
-  isFeatured: true,
   isPopular: true,
   isNewArrival: true,
   updatedAt: true,
@@ -33,7 +32,6 @@ const ORDER_BY: Record<AdminProductSort, Prisma.ProductOrderByWithRelationInput[
 };
 
 const FLAG_WHERE: Record<AdminProductFlag, Prisma.ProductWhereInput> = {
-  featured: { isFeatured: true },
   popular: { isPopular: true },
   new: { isNewArrival: true },
   sale: { discountPrice: { not: null } },
@@ -96,7 +94,6 @@ const EDIT_SELECT = {
   material: true,
   dimensions: true,
   isMadeToOrder: true,
-  isFeatured: true,
   isPopular: true,
   isNewArrival: true,
   status: true,
@@ -104,7 +101,6 @@ const EDIT_SELECT = {
   keywords: true,
   seoTitle: true,
   seoDescription: true,
-  homeSortOrder: true,
   updatedAt: true,
   category: { select: { slug: true, isActive: true } },
   images: {
@@ -144,7 +140,6 @@ export type ProductData = {
   material: string | null;
   dimensions: string | null;
   isMadeToOrder: boolean;
-  isFeatured: boolean;
   isPopular: boolean;
   isNewArrival: boolean;
   status: "DRAFT" | "PUBLISHED";
@@ -153,7 +148,6 @@ export type ProductData = {
   searchText: string;
   seoTitle: string | null;
   seoDescription: string | null;
-  homeSortOrder: number;
 };
 
 export type ProductChildren = {

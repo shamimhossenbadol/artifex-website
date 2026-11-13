@@ -22,7 +22,7 @@ import { getLatestPosts } from "@/server/services/blog.service";
 import {
   getHomeCategories,
   getHomeHero,
-  getHomeRail,
+  getNewArrivals,
   getPromoBanners,
 } from "@/server/services/home.service";
 import { getSiteSettings } from "@/server/services/settings.service";
@@ -55,7 +55,7 @@ async function HomeSections() {
   const [settings, categories, newArrivals, banners, posts] = await Promise.all([
     getSiteSettings(),
     getHomeCategories(),
-    getHomeRail("new"),
+    getNewArrivals(),
     getPromoBanners(),
     getLatestPosts(3),
   ]);

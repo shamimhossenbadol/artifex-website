@@ -56,9 +56,6 @@ export const specSchema = z.object({
   value: z.string().trim().min(1, "Add a value").max(255, "Keep this under 255 characters"),
 });
 
-export type ColorInput = z.infer<typeof colorSchema>;
-export type SpecInput = z.infer<typeof specSchema>;
-
 export const productSchema = z
   .object({
     title: requiredText(150, "Title"),
@@ -76,14 +73,8 @@ export const productSchema = z
     isMadeToOrder: checkbox,
     keywords: optionalText(255),
     status: z.enum(["DRAFT", "PUBLISHED"], { error: "Choose Draft or Published" }),
-    isFeatured: checkbox,
     isPopular: checkbox,
     isNewArrival: checkbox,
-    homeSortOrder: z.coerce
-      .number({ error: "Use a number" })
-      .int("Use a whole number")
-      .min(0, "Use 0 or more")
-      .max(9999, "Use 9999 or less"),
     seoTitle: optionalText(70),
     seoDescription: optionalText(170),
   })
@@ -111,7 +102,7 @@ export const imageAltSchema = requiredText(160, "Image description");
 // --- List filters (search params) --------------------------------------------------------------
 
 export const ADMIN_PRODUCT_SORTS = ["updated", "title", "price_asc", "price_desc"] as const;
-export const ADMIN_PRODUCT_FLAGS = ["featured", "popular", "new", "sale", "no-images"] as const;
+export const ADMIN_PRODUCT_FLAGS = ["popular", "new", "sale", "no-images"] as const;
 export type AdminProductSort = (typeof ADMIN_PRODUCT_SORTS)[number];
 export type AdminProductFlag = (typeof ADMIN_PRODUCT_FLAGS)[number];
 

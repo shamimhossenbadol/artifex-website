@@ -60,7 +60,7 @@ E:\ArtifexFurniture\Website\      # repo root (git)
 │  │  │     ├─ products/…        # list, new, [id]/edit
 │  │  │     ├─ categories/…
 │  │  │     ├─ blog/…
-│  │  │     ├─ homepage/…        # hero, promo banners, featured selections
+│  │  │     ├─ homepage/…        # hero text, hero photos, promo banners
 │  │  │     ├─ settings/…        # contact, WhatsApp, location, SEO defaults
 │  │  │     └─ account/…         # change password
 │  │  ├─ api/

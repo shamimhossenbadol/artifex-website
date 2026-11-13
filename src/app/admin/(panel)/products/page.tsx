@@ -93,7 +93,6 @@ export default async function ProductsAdminPage({ searchParams }: PageProps<"/ad
           <span className="sr-only">Show only</span>
           <Select name="flag" defaultValue={query.flag ?? ""}>
             <option value="">All products</option>
-            <option value="featured">Featured</option>
             <option value="popular">Popular</option>
             <option value="new">New arrivals</option>
             <option value="sale">On sale</option>
@@ -168,7 +167,6 @@ export default async function ProductsAdminPage({ searchParams }: PageProps<"/ad
                         <Badge variant={p.status === "PUBLISHED" ? "new" : "neutral"}>
                           {p.status === "PUBLISHED" ? "Published" : "Draft"}
                         </Badge>
-                        {p.isFeatured && <Badge>★ Featured</Badge>}
                         {p.isPopular && <Badge>Popular</Badge>}
                         {p.isNewArrival && <Badge>New</Badge>}
                       </div>

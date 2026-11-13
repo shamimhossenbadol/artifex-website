@@ -2,7 +2,7 @@
 // Counts page views and contact clicks for the admin dashboard (first-party, cookieless) and, when
 // a Pixel ID is set, sends the same moments to Meta for ads (ADR-040). Renders nothing.
 // Contact clicks are caught with one delegated listener, so every WhatsApp/Messenger/phone link on
-// the site is covered without touching each button.
+// the site is covered without touching each button; links marked `data-no-track` are skipped.
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { classifyContactLink, productSlugFromPath, type SiteEventType } from "@/lib/analytics";
@@ -36,7 +36,8 @@ export function SiteTracker({ pixelId }: { pixelId: string | null }) {
     function onClick(event: MouseEvent) {
       if (event.button > 1) return;
       const link = (event.target as Element | null)?.closest?.("a[href]");
-      if (!link) return;
+      // e.g. the developer credit: a WhatsApp link that isn't a customer inquiry.
+      if (!link || link.closest("[data-no-track]")) return;
       const channel = classifyContactLink(link.getAttribute("href") ?? "");
       if (!channel) return;
       const path = window.location.pathname;

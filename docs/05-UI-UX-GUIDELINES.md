@@ -35,7 +35,7 @@
 6. WhatsApp CTA band: sand background, "Not sure what fits your space? Talk to us." with a WhatsApp button and the phone number.
 7. Latest from the journal: 3 blog cards.
 
-The Featured and Most loved rails were removed from the homepage (ADR-035); the Featured/Popular product flags remain for later use.
+The Featured and Most loved rails were removed from the homepage (ADR-035); the Featured flag was then dropped (ADR-042). Popular remains: it ranks search results and related products.
 Sections with no content are **hidden**, never left empty.
 
 ### Category / All products

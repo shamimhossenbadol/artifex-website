@@ -149,7 +149,7 @@ writeFileSync(
 // 5. Passenger restarts the app when tmp/restart.txt is touched.
 mkdirSync(join(appDir, "tmp"), { recursive: true });
 
-// 6. Native modules must be in the bundle (10 §3). sharp joins the deps in Phase 3.
+// 6. Native modules must be in the bundle (10 §3): sharp (image uploads, ADR-032).
 for (const nativeDep of ["sharp"]) {
   if (pkg.dependencies?.[nativeDep] && !existsSync(join(appDir, "node_modules", nativeDep))) {
     fail(`${nativeDep} is a dependency but missing from the standalone trace.`);

@@ -13,7 +13,6 @@ type DemoProduct = {
   dimensions?: string;
   isMadeToOrder?: boolean;
   isNewArrival?: boolean;
-  isFeatured?: boolean;
   isPopular?: boolean;
   colors?: [string, string][];
   specs?: [string, string][];
@@ -39,7 +38,6 @@ const HANDMADE: DemoProduct[] = [
     discountPrice: 125000,
     material: "Mahogany frame, linen-blend fabric",
     dimensions: "W 280 × D 180 × H 85 cm",
-    isFeatured: true,
     isPopular: true,
     isNewArrival: true,
     colors: FABRICS,
@@ -69,7 +67,6 @@ const HANDMADE: DemoProduct[] = [
     discountPrice: 82800,
     material: "Solid oak",
     dimensions: "L 180 × W 90 × H 76 cm",
-    isFeatured: true,
     colors: WOODS,
     specs: [
       ["Seats", "6"],
@@ -84,7 +81,6 @@ const HANDMADE: DemoProduct[] = [
     material: "K9 crystal, brushed brass",
     dimensions: "Ø 80 × H 95 cm (custom sizes available)",
     isMadeToOrder: true,
-    isFeatured: true,
     colors: [
       ["Brushed Brass", "#B08D57"],
       ["Polished Chrome", "#C9CCCE"],
@@ -129,7 +125,6 @@ const HANDMADE: DemoProduct[] = [
     discountPrice: 119000,
     material: "Mahogany, upholstered headboard",
     dimensions: "King (76 × 80 in)",
-    isFeatured: true,
     colors: FABRICS,
     specs: [
       ["Size", "King"],
@@ -187,7 +182,6 @@ export async function seedDemoCatalogue(db: PrismaClient): Promise<void> {
         dimensions: p.dimensions ?? null,
         isMadeToOrder: p.isMadeToOrder ?? false,
         isNewArrival: p.isNewArrival ?? false,
-        isFeatured: p.isFeatured ?? false,
         isPopular: p.isPopular ?? false,
         keywords: p.keywords ?? null,
         searchText: buildSearchText({

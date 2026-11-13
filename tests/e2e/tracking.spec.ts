@@ -41,7 +41,10 @@ test.describe("visit tracking", () => {
     await page.goto("/contact");
     expect(JSON.parse((await views).postData()!)).toEqual({ type: "view", path: "/contact" });
 
-    const link = page.locator('a[href^="https://wa.me/"]').filter({ visible: true }).first();
+    const link = page
+      .locator('a[href^="https://wa.me/"]:not([data-no-track])')
+      .filter({ visible: true })
+      .first();
     test.skip((await link.count()) === 0, "No WhatsApp number configured on this database");
     // Don't actually leave for WhatsApp.
     await page.context().route("https://wa.me/**", (route) => route.abort());

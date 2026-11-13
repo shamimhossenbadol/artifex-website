@@ -162,20 +162,11 @@ export function ProductFields({
           <label className={CHECK}>
             <input
               type="checkbox"
-              name="isFeatured"
-              defaultChecked={product?.isFeatured ?? false}
-              className={BOX}
-            />
-            Featured (homepage “Featured pieces”)
-          </label>
-          <label className={CHECK}>
-            <input
-              type="checkbox"
               name="isPopular"
               defaultChecked={product?.isPopular ?? false}
               className={BOX}
             />
-            Popular (homepage “Most loved”)
+            Popular (ranked higher in search and related products)
           </label>
           <label className={CHECK}>
             <input
@@ -187,21 +178,6 @@ export function ProductFields({
             New arrival (badge + homepage “New arrivals”)
           </label>
         </div>
-        <AdminField
-          name="homeSortOrder"
-          label="Homepage order"
-          hint="Lower numbers come first in the Featured and Most loved rails."
-        >
-          <Input
-            name="homeSortOrder"
-            type="number"
-            inputMode="numeric"
-            min={0}
-            max={9999}
-            defaultValue={product?.homeSortOrder ?? 0}
-            className="max-w-40"
-          />
-        </AdminField>
       </FormSection>
 
       <details className="border-line bg-surface group rounded-md border">

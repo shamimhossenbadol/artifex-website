@@ -16,8 +16,6 @@ export async function findHomeHero() {
   });
 }
 
-export type HomeHeroRow = NonNullable<Awaited<ReturnType<typeof findHomeHero>>>;
-
 /** Hero slides in admin order (public and admin). */
 export async function findHeroSlides() {
   return db.homeHeroSlide.findMany({

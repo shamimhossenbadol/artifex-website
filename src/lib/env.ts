@@ -8,7 +8,7 @@ const mysqlUrl = z
 
 const absoluteHttpUrl = z.url({ protocol: /^https?$/ }).transform((v) => v.replace(/\/+$/, ""));
 
-/** Variables that are inlined into the client bundle at build time. */
+/** Variables that are inlined into the client bundle at build time (validated here for the server). */
 const publicSchema = z.object({
   NEXT_PUBLIC_SITE_URL: absoluteHttpUrl,
   NEXT_PUBLIC_MEDIA_URL: absoluteHttpUrl,
@@ -22,8 +22,8 @@ const serverSchema = publicSchema.extend({
   // Seed only: removed from the environment after the first login (09 §8).
   ADMIN_EMAIL: z.email().optional(),
   ADMIN_INITIAL_PASSWORD: z.string().min(12).optional(),
-  // Cloudflare R2 (ADR-014). Optional until the media module lands in Phase 3; the storage
-  // module validates them on first use, so uploads fail loudly instead of the whole site.
+  // Cloudflare R2 (ADR-014). Optional here: the storage module validates them on first use, so
+  // a missing R2 setup only breaks uploads, not the whole site.
   R2_ACCOUNT_ID: z
     .string()
     .regex(/^[0-9a-f]{32}$/, "must be the 32-char account ID")
@@ -33,7 +33,6 @@ const serverSchema = publicSchema.extend({
   R2_BUCKET: z.string().min(3).optional(),
 });
 
-export type PublicEnv = z.infer<typeof publicSchema>;
 export type ServerEnv = z.infer<typeof serverSchema>;
 
 function formatIssues(error: z.ZodError): string {
@@ -61,15 +60,4 @@ export function resetServerEnvForTests(): void {
 export function serverEnv(): ServerEnv {
   cached ??= parseServerEnv(process.env);
   return cached;
-}
-
-/**
- * Public env for code that may run in the browser. `process.env.NEXT_PUBLIC_*` must be
- * referenced literally so Next.js can inline the values at build time.
- */
-export function publicEnv(): PublicEnv {
-  return publicSchema.parse({
-    NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
-    NEXT_PUBLIC_MEDIA_URL: process.env.NEXT_PUBLIC_MEDIA_URL,
-  });
 }

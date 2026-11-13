@@ -25,3 +25,9 @@ export const HEADER_CATEGORY_LABELS: Record<string, string> = {
 
 export const WHATSAPP_FAB_LABEL = `Chat with ${SITE_NAME} on WhatsApp`;
 export const MESSENGER_FAB_LABEL = `Message ${SITE_NAME} on Facebook Messenger`;
+
+/** Developer credit in the footer, linked to the developer's WhatsApp (not counted as an inquiry). */
+export const DEVELOPER = {
+  name: "Shamim Hossen Badol",
+  href: "https://wa.me/8801630133873",
+} as const;

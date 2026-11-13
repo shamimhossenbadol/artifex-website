@@ -5,9 +5,6 @@ export type ActionResult<T = void> =
   | { ok: true; data?: T; message?: string }
   | { ok: false; error: string; fieldErrors?: Record<string, string[]> };
 
-/** The initial state for useActionState before the first submit. */
-export const IDLE: ActionResult | null = null;
-
 export function fieldErrorsFrom(error: ZodError): Record<string, string[]> {
   const out: Record<string, string[]> = {};
   for (const issue of error.issues) {

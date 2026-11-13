@@ -1,5 +1,6 @@
 import { MapPin, Phone } from "lucide-react";
 import { Container } from "@/components/ui/Container";
+import { DEVELOPER } from "@/config/site";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { getSiteSettings } from "@/server/services/settings.service";
 import { getContactLinks } from "./contact-links";
@@ -13,7 +14,8 @@ const ICON = "text-walnut mt-0.5 size-5 shrink-0";
 
 /**
  * Compact footer (ADR-035): brand, short description and social icons on one side; address,
- * phone and WhatsApp on the other; a quiet © line. Navigation lives in the header.
+ * phone and WhatsApp on the other; a quiet © line with the developer credit. Navigation lives in
+ * the header.
  */
 export async function Footer() {
   const settings = await getSiteSettings();
@@ -81,8 +83,22 @@ export async function Footer() {
       </Container>
 
       <div className="border-line border-t">
-        <Container className="text-small text-muted py-4">
-          © {new Date().getFullYear()} {settings.businessName}. All rights reserved.
+        <Container className="text-small text-muted flex flex-col gap-1 py-3 sm:flex-row-reverse sm:items-center sm:justify-between sm:gap-4">
+          <p className="py-1">
+            © {new Date().getFullYear()} {settings.businessName}. All rights reserved.
+          </p>
+          <p>
+            Developed by{" "}
+            <a
+              href={DEVELOPER.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-no-track
+              className="text-ink-soft hover:text-ink inline-flex min-h-11 items-center underline-offset-4 hover:underline sm:min-h-0"
+            >
+              {DEVELOPER.name}
+            </a>
+          </p>
         </Container>
       </div>
     </footer>

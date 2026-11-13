@@ -9,7 +9,7 @@ import {
   findHomeHero,
   type PromoBannerRow,
 } from "@/server/repositories/home.repo";
-import { findHomeRail, type HomeRail } from "@/server/repositories/product.repo";
+import { findNewArrivals } from "@/server/repositories/product.repo";
 import { categoryHref, toCardVM, type ProductCardVM } from "./catalog.service";
 
 export const RAIL_SIZE = 8;
@@ -74,11 +74,11 @@ async function loadCategories(): Promise<HomeCategoryVM[]> {
   return (await findHomeCategories()).map((c) => ({ ...c, href: categoryHref(c.slug) }));
 }
 
-async function loadRail(rail: HomeRail): Promise<ProductCardVM[]> {
+async function loadNewArrivals(): Promise<ProductCardVM[]> {
   "use cache";
   cacheTag("products", "home");
   cacheLife("hours");
-  return (await findHomeRail(rail, RAIL_SIZE)).map(toCardVM);
+  return (await findNewArrivals(RAIL_SIZE)).map(toCardVM);
 }
 
 async function loadBanners(): Promise<PromoBannerRow[]> {
@@ -108,9 +108,9 @@ export async function getHomeCategories(): Promise<HomeCategoryVM[]> {
   return safely("categories", [], loadCategories);
 }
 
-export async function getHomeRail(rail: HomeRail): Promise<ProductCardVM[]> {
+export async function getNewArrivals(): Promise<ProductCardVM[]> {
   await connection();
-  return safely(`rail.${rail}`, [], () => loadRail(rail));
+  return safely("newArrivals", [], loadNewArrivals);
 }
 
 /** Banners that are active and inside their date window right now (max 2, F6). */

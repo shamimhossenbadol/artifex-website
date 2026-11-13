@@ -76,8 +76,7 @@ model Product {
   material          String?        @db.VarChar(120)    // quick facet shown on cards/detail
   dimensions        String?        @db.VarChar(120)    // e.g. "W 220 × D 95 × H 85 cm"
   isMadeToOrder     Boolean        @default(false)
-  isFeatured        Boolean        @default(false)
-  isPopular         Boolean        @default(false)
+  isPopular         Boolean        @default(false)     // ranks search results and related products
   isNewArrival      Boolean        @default(false)     // explicit flag; fallback = newest by createdAt
   status            ContentStatus  @default(DRAFT)
   publishedAt       DateTime?
@@ -85,7 +84,6 @@ model Product {
   searchText        String         @db.VarChar(1000)   // denormalised: title + category + keywords + material (lowercased)
   seoTitle          String?        @db.VarChar(70)
   seoDescription    String?        @db.VarChar(170)
-  homeSortOrder     Int            @default(0)         // ordering inside featured/popular rails
   images            ProductImage[]
   colors            ProductColor[]
   specs             ProductSpec[]
@@ -93,8 +91,7 @@ model Product {
   updatedAt         DateTime       @updatedAt
 
   @@index([status, categoryId, createdAt])
-  @@index([status, isFeatured, homeSortOrder])
-  @@index([status, isPopular, homeSortOrder])
+  @@index([status, isPopular, publishedAt])
   @@index([status, isNewArrival, createdAt])
   @@index([status, effectivePrice])
   @@index([searchText(length: 191)])
@@ -108,7 +105,7 @@ model ProductImage {
   alt        String   @db.VarChar(160)
   width      Int                         // original (max variant) dimensions for aspect ratio
   height     Int
-  isPrimary  Boolean  @default(false)    // the "featured image"; exactly one per product (service-enforced)
+  isPrimary  Boolean  @default(false)    // the main photo (ADR-041); exactly one per product (service-enforced)
   sortOrder  Int      @default(0)
   createdAt  DateTime @default(now())
 
@@ -277,7 +274,7 @@ model SiteEvent {                     // first-party, cookieless visit/click cou
 | Query | Index used |
 |---|---|
 | Category page: published products in category, newest first, paginated | `[status, categoryId, createdAt]` |
-| Home rails: featured / popular / new | `[status, isFeatured, homeSortOrder]` etc. |
+| Home "New arrivals" / popular ordering | `[status, isNewArrival, createdAt]`, `[status, isPopular, publishedAt]` |
 | Sort by price | `[status, effectivePrice]` (nulls last, ADR-025) |
 | Search `searchText LIKE %term%` | Prefix index helps little for leading wildcards. This is acceptable below ~2,000 products (see ADR-007); upgrade to FULLTEXT if the catalogue grows. |
 | Product detail by slug | `slug` unique |

@@ -10,7 +10,7 @@
 
 ## 2. Global navigation
 
-**Desktop header** (h-20, sticky; it shrinks to h-16 with a bottom border after scrolling):
+**Desktop header** (h-16, sticky, always compact with a bottom border; it no longer changes size on scroll, owner request 2026-11-13):
 `[Logo]   Sofas · Dining · Chairs · Beds · Curtains · Chandeliers   [Search icon] [Phone icon] [WhatsApp button "Inquire"]`
 - Category links come from active categories (max 6; extras go under "More"), except those in `HEADER_HIDDEN_CATEGORIES` (`src/config/site.ts`; currently Chairs, ADR-035). After the categories, a thin divider and **Journal · About · Contact**.
 - **No top utility bar** (ADR-026): the logo row is the only header row, for a cleaner premium look. Journal, About and Contact sit in the main header row after the categories (ADR-035) and in the mobile menu; the phone number is the phone icon in the header.

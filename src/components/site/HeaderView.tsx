@@ -11,7 +11,6 @@ import { Container } from "@/components/ui/Container";
 import { MobileNav } from "./MobileNav";
 import { SearchButton } from "./SearchButton";
 import { SearchDialog } from "./SearchDialog";
-import { StickyHeader } from "./StickyHeader";
 import { WhatsAppIcon } from "./WhatsAppIcon";
 import { Logo } from "./Logo";
 
@@ -44,7 +43,8 @@ export function HeaderView({
   // stays as an icon next to the Inquire button.
   return (
     <>
-      <StickyHeader>
+      {/* Always compact (64 px) and sticky; no scroll script. */}
+      <header className="bg-bg border-line sticky top-0 z-40 border-b">
         {/* Mobile: [Menu] [Logo] [Search] */}
         <Container className="grid h-16 grid-cols-[1fr_auto_1fr] items-center lg:hidden">
           <div className="justify-self-start">
@@ -62,11 +62,8 @@ export function HeaderView({
         </Container>
 
         {/* Desktop: [Logo] categories [Search] [Phone] [Inquire] */}
-        <Container className="hidden h-20 items-center gap-8 transition-[height] duration-200 ease-out group-data-[scrolled=true]/header:h-16 lg:flex">
-          <Logo
-            animated
-            className="h-12 transition-[height] duration-200 ease-out group-data-[scrolled=true]/header:h-10"
-          />
+        <Container className="hidden h-16 items-center gap-8 lg:flex">
+          <Logo animated className="h-10" />
           <nav aria-label="Main" className="flex-1">
             <ul className="flex items-center justify-center gap-x-5 xl:gap-x-7">
               {primary.map((category) => (
@@ -134,7 +131,7 @@ export function HeaderView({
             )}
           </div>
         </Container>
-      </StickyHeader>
+      </header>
       {/* One shared search overlay for both header layouts (opens in the top layer). */}
       <SearchDialog />
     </>

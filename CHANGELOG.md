@@ -14,6 +14,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 - 2026-11-12 — Test site showed a blank white page after the Phase 2 deploy: the deploy bundle was missing Turbopack's Prisma alias. Packaging now recreates and verifies it, CI boots the real bundle, and the deploy health check requires a complete page (ADR-023).
 
 ### Changed
+- 2026-11-13 — Header: always compact (64 px with a 40 px logo, bottom border) instead of shrinking and growing while scrolling; the small scroll script was removed.
 - 2026-11-13 — Cleanup (ADR-042): the unused "Featured" product tick and "Homepage order" field were removed from the admin and the database (they no longer affected the website); "Popular" now explains that it ranks search results and related products. Dead code and stale comments removed. Footer shows "Developed by Shamim Hossen Badol", linked to WhatsApp.
 - 2026-11-13 — Product photos: up to 5 per product, 1 main photo (cards, listings, sharing) and up to 4 gallery photos shown only on the product page; the admin now says "main photo" instead of "featured" (ADR-041).
 - 2026-11-13 — Homepage "Our story" section is more compact: a smaller logo panel (narrower column, shorter shape) and less padding.

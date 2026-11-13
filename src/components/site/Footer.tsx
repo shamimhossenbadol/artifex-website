@@ -83,10 +83,8 @@ export async function Footer() {
       </Container>
 
       <div className="border-line border-t">
-        <Container className="text-small text-muted flex flex-col gap-1 py-3 sm:flex-row-reverse sm:items-center sm:justify-between sm:gap-4">
-          <p className="py-1">
-            © {new Date().getFullYear()} {settings.businessName}. All rights reserved.
-          </p>
+        {/* Credit first: left on desktop, top line on phones. */}
+        <Container className="text-small text-muted flex flex-col gap-1 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
           <p>
             Developed by{" "}
             <a
@@ -98,6 +96,9 @@ export async function Footer() {
             >
               {DEVELOPER.name}
             </a>
+          </p>
+          <p className="py-1">
+            © {new Date().getFullYear()} {settings.businessName}. All rights reserved.
           </p>
         </Container>
       </div>

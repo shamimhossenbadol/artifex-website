@@ -81,21 +81,21 @@ Each phase ends with a short manual review of the phase's acceptance checks.
 - [x] `scripts/admin-reset-password.ts` CLI (runs through the DB tunnel)
 - [x] Admin shell (sidebar, mobile drawer, toasts, confirm dialog)
 - [x] Dashboard overview + warnings
-- [x] Products: list/filter, create/edit form (all sections), image uploader (sharp variants → R2, reorder, primary, alt, R2 delete on remove), duplicate, delete (7d, ADR-034; draft preview `?preview=1` still open)
+- [x] Products: list/filter, create/edit form (all sections), image uploader (sharp variants → R2, reorder, primary, alt, R2 delete on remove), duplicate, delete (7d, ADR-034); draft preview `?preview=1` for products and posts (ADR-037)
 - [x] Categories: CRUD, reorder, toggles (7c, ADR-033)
 - [x] Blog: CRUD with Markdown editor + image insert (7e, ADR-036)
-- [ ] Homepage: hero, promo banners, featured lists — hero + banners done (7b, ADR-031); featured lists in 7f
+- [x] Homepage: hero, promo banners (7b, ADR-031). Featured lists (7f) **skipped**: the owner removed the Featured/Most loved rails (ADR-035, ADR-037)
 - [x] Settings: business, contact/WhatsApp (test link), location/map/hours, social, SEO (ADR-031)
-- [ ] Revalidation wired per 07 §5 (verify each)
+- [x] Revalidation wired per 07 §5 (verified per action 2026-11-13: products, images, categories, blog, hero/banners, settings)
 
 **Exit check:** the owner can do every workflow in 07 on a phone, and the auth tests pass.
 
 ## Phase 8 — SEO, security & performance hardening
-- [ ] `sitemap.ts`, `robots.ts`, canonical audit, OG image check (Facebook Sharing Debugger)
-- [ ] CSP + headers verified (securityheaders.com ≥ A)
-- [ ] Upload hardening tests (non-image, oversized, key pattern guard on R2 delete); confirm r2.dev is disabled on the production bucket
-- [ ] Lint rule audit, `npm audit --omit=dev`
-- [ ] Bundle analysis: client JS within budget
+- [x] `sitemap.ts`, `robots.ts`, canonical audit (ADR-037) — [ ] OG image check in the Facebook Sharing Debugger (owner, after the domain is final)
+- [x] CSP + headers verified on the test site with curl 2026-11-13 (HSTS, nosniff, SAMEORIGIN, referrer, permissions, CSP). `script-src 'unsafe-inline'` remains (Next inline bootstrap); run securityheaders.com on the production domain
+- [x] Upload hardening tests (non-image, oversized, > 8000 px, disguised SVG, key pattern guard on R2 delete); r2.dev is off on `artifex-media` (confirmed 2026-11-13)
+- [x] Lint rule audit, `npm audit --omit=dev` (0 vulnerabilities, 2026-11-13)
+- [x] Bundle analysis: client JS within budget (live test site, brotli: ~195 KB JS of which ~150 KB is the React/Next framework, ~45 KB app; HTML 19.5 KB; CSS 10.7 KB)
 - [ ] Optional: WhatsApp click tracking + dashboard "Top inquired"
 - [ ] Accessibility pass (axe + manual keyboard/screen reader spot check)
 

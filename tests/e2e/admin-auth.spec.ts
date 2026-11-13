@@ -215,7 +215,7 @@ test("categories: create, show on the site, guard delete, then delete", async ({
 
 // --- Milestone 7d: products. Creates throwaway products on the CI database and removes them. ---
 
-test("products: create a draft, publish it, duplicate and delete", async ({ page }) => {
+test("products: create a draft, publish it, duplicate and delete", async ({ page, browser }) => {
   await signIn(page, EMAIL!, NEW_PASSWORD);
   await expect(page).toHaveURL(/\/admin$/);
 
@@ -246,6 +246,16 @@ test("products: create a draft, publish it, duplicate and delete", async ({ page
   const editUrl = page.url();
   await page.goto("/products/e2e-walnut-bench");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("We couldn't find that page");
+  // …but the signed-in admin can preview it (F1.2), marked noindex.
+  await page.goto("/products/e2e-walnut-bench?preview=1");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("E2E Walnut Bench");
+  await expect(page.getByText("Only you can see this")).toBeVisible();
+  await expect(page.locator('meta[name="robots"][content*="noindex"]').first()).toBeAttached();
+  // Anyone else gets not-found, even with ?preview=1.
+  const visitor = await newPage(browser);
+  await visitor.goto("/products/e2e-walnut-bench?preview=1");
+  await expect(visitor.getByRole("heading", { level: 1 })).toHaveText("We couldn't find that page");
+  await visitor.context().close();
 
   await page.goto(editUrl);
   await page.waitForLoadState("networkidle");

@@ -31,16 +31,14 @@ export default async function EditPostPage({ params }: PageProps<"/admin/blog/[i
             : "Draft: only visible here until you publish it."
         }
         action={
-          live ? (
-            <Link
-              href={`/blog/${post.slug}`}
-              target="_blank"
-              className="text-small text-ink-soft hover:text-ink inline-flex min-h-11 items-center gap-1 underline underline-offset-4"
-            >
-              View on site
-              <ExternalLink aria-hidden strokeWidth={1.5} className="size-4" />
-            </Link>
-          ) : undefined
+          <Link
+            href={live ? `/blog/${post.slug}` : `/blog/${post.slug}?preview=1`}
+            target="_blank"
+            className="text-small text-ink-soft hover:text-ink inline-flex min-h-11 items-center gap-1 underline underline-offset-4"
+          >
+            {live ? "View on site" : "Preview"}
+            <ExternalLink aria-hidden strokeWidth={1.5} className="size-4" />
+          </Link>
         }
       />
       <div className="max-w-3xl">

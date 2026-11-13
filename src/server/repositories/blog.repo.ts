@@ -35,20 +35,24 @@ export async function findPublishedPosts(skip: number, take: number) {
   return { total, rows };
 }
 
+const POST_DETAIL_SELECT = {
+  ...POST_CARD_SELECT,
+  content: true,
+  seoTitle: true,
+  seoDescription: true,
+  updatedAt: true,
+} satisfies Prisma.BlogPostSelect;
+
+export type PostDetailRow = Prisma.BlogPostGetPayload<{ select: typeof POST_DETAIL_SELECT }>;
+
 export async function findPublishedPostBySlug(slug: string) {
-  return db.blogPost.findFirst({
-    where: { slug, ...PUBLISHED },
-    select: {
-      ...POST_CARD_SELECT,
-      content: true,
-      seoTitle: true,
-      seoDescription: true,
-      updatedAt: true,
-    },
-  });
+  return db.blogPost.findFirst({ where: { slug, ...PUBLISHED }, select: POST_DETAIL_SELECT });
 }
 
-export type PostDetailRow = NonNullable<Awaited<ReturnType<typeof findPublishedPostBySlug>>>;
+/** Any status: only for a signed-in admin's draft preview. */
+export async function findAnyPostBySlug(slug: string) {
+  return db.blogPost.findUnique({ where: { slug }, select: POST_DETAIL_SELECT });
+}
 
 /** Recent published posts other than `excludeId`, newest first (for related posts). */
 export async function findRecentPosts(excludeId: number, take: number) {

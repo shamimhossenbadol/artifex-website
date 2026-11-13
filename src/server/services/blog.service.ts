@@ -3,10 +3,12 @@ import { cacheLife, cacheTag } from "next/cache";
 import { connection } from "next/server";
 import { POSTS_PER_PAGE, parseTags, readingTimeMinutes } from "@/lib/blog";
 import {
+  findAnyPostBySlug,
   findPublishedPostBySlug,
   findPublishedPosts,
   findRecentPosts,
   type PostCardRow,
+  type PostDetailRow,
 } from "@/server/repositories/blog.repo";
 
 export type PostCardVM = {
@@ -70,7 +72,10 @@ async function loadPost(slug: string): Promise<PostDetailVM | null> {
   cacheTag("blog", `post:${slug}`);
   cacheLife("hours");
   const row = await findPublishedPostBySlug(slug);
-  if (!row) return null;
+  return row ? toDetailVM(row) : null;
+}
+
+function toDetailVM(row: PostDetailRow): PostDetailVM {
   return {
     ...toCardVM(row),
     content: row.content,
@@ -112,6 +117,17 @@ export async function listPosts(page: number): Promise<PostListing> {
 export async function getPostBySlug(slug: string): Promise<PostDetailVM | null> {
   await connection();
   return loadPost(slug);
+}
+
+/**
+ * Draft preview: any status, read uncached so drafts never enter the shared cache. Callers must
+ * check that an admin is signed in first (see preview.service). Unpublished posts show "now".
+ */
+export async function getPostPreview(slug: string): Promise<PostDetailVM | null> {
+  await connection();
+  const row = await findAnyPostBySlug(slug);
+  if (!row) return null;
+  return toDetailVM({ ...row, publishedAt: row.publishedAt ?? new Date() });
 }
 
 export async function getRelatedPosts(postId: number, tags: string[]): Promise<PostCardVM[]> {

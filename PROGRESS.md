@@ -9,10 +9,10 @@
 
 | Item | Value |
 |---|---|
-| **Current phase** | Phase 7: Admin dashboard (7a–7e done; 7f next) |
+| **Current phase** | Phase 8: SEO, security & performance hardening (in progress; Phase 7 done, 7f skipped) |
 | **Overall state** | ✅ Phase 1 complete. Code is on GitHub (`shamimhossenbadol/artifex-website`, private); CI is green. ✅ **First deploy succeeded 2026-11-12**: https://artifex.codespherestudio.site serves the placeholder page with security headers (via Cloudflare). Migration applied; seed created 7 categories, settings, hero and the admin (`mustChangePassword = 1`); backup saved in `~/backups`. |
 | **Last updated** | 2026-11-13 |
-| **Next action** | Owner: Deploy, then on your phone add a product in Admin → Products (details → Save and add photos → upload photos → set Published). Owner: also try Admin → Journal (write a post, insert a photo, publish). Agent: 7f (homepage featured lists; note ADR-035 removed the Featured/Most loved rails, so confirm with the owner what 7f should cover), draft preview (`?preview=1`), then Phase 8. |
+| **Next action** | Owner: Deploy, then try Admin → Products / Journal on your phone, including **Preview** on a draft. Agent: finish Phase 8 (accessibility pass with keyboard + screen-reader spot checks, optional WhatsApp click tracking), then Phase 9 (production domain, PageSpeed, Search Console). |
 
 ## Phase overview
 
@@ -25,8 +25,8 @@
 | 4 | Global search | ✅ Done 2026-11-12 |
 | 5 | Blog, About, Contact/Location | ✅ Done 2026-11-12 |
 | 6 | Homepage | ✅ Done 2026-11-12 |
-| 7 | Admin dashboard | 🟡 7a–7e done (auth, account, shell, dashboard, settings, hero/banners, categories, products, journal); 7f next |
-| 8 | SEO, security & performance hardening | ⚪ Not started |
+| 7 | Admin dashboard | ✅ Done 2026-11-13 (7f skipped, ADR-037) |
+| 8 | SEO, security & performance hardening | 🟡 Preview, sitemap/robots, upload tests, headers, audit, bundle done; accessibility pass next |
 | 9 | Production build, deployment & QA | ⚪ Not started |
 
 Legend: ⚪ not started · 🟡 in progress · ✅ done · ⛔ blocked
@@ -84,6 +84,8 @@ Answer these by editing this list. Agents: use the **default** until an answer i
 ## Session log
 
 Add one line per session, newest first: `YYYY-MM-DD — summary — files touched`.
+
+- 2026-11-13 — Phase 7 closed (7f skipped, owner removed the rails). Phase 8: admin draft preview (`?preview=1`, uncached, noindex, banner; Preview link on draft edit pages), sitemap.xml + robots.txt, upload hardening tests (size, 8000 px, disguised SVG, discardImage guard). Checked live test site: all security headers present; `npm audit --omit=dev` 0 vulnerabilities; homepage brotli JS ~195 KB (~150 KB framework), HTML 19.5 KB, CSS 10.7 KB. 268 unit tests; seo e2e + preview checks added (CI). ADR-037. — `src/app/{sitemap,robots}.ts`, `src/app/(site)/{products,blog}/[slug]/page.tsx`, `src/server/services/{preview,sitemap,catalog,blog}.service.ts`, repos, `src/components/site/PreviewBanner.tsx`, admin edit pages, `tests/`, `DECISIONS.md`, `docs/06`, `12`, `CHANGELOG.md`
 
 - 2026-11-13 — Phase 7e Journal admin: list (search, status, 20/page, delete), write/edit form (Markdown editor with Insert image, cover photo + remove, author default = admin name, tags, back-dating only, SEO preview), inline image cleanup on save/delete. MarkdownEditor and SeoFields moved to components/admin for reuse. 254 unit tests; journal e2e added (CI only). Not checked in a browser locally (no DB). ADR-036. — `src/lib/validation/blog.ts`, `src/server/{repositories/blog-admin.repo,services/blog-admin.service,actions/blog.actions}.ts`, `src/components/admin/{MarkdownEditor,SeoFields}.tsx`, `src/components/admin/blog/`, `src/app/admin/(panel)/blog/`, `tests/`, `DECISIONS.md`, `docs/07`, `12`, `CHANGELOG.md`
 

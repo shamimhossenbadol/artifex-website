@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { Gallery } from "@/components/product/Gallery";
 import { ProductGrid } from "@/components/product/ProductGrid";
 import { ProductInquiry } from "@/components/product/ProductInquiry";
+import { PreviewBanner } from "@/components/site/PreviewBanner";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { getContactLinks } from "@/components/site/contact-links";
 import { Badge } from "@/components/ui/Badge";
@@ -19,24 +20,32 @@ import { absoluteImageUrl, absoluteUrl, breadcrumbJsonLd, productJsonLd } from "
 import { slugSchema } from "@/lib/validation/catalog";
 import {
   getProductBySlug,
+  getProductPreview,
   getRelatedProducts,
   type ProductDetailVM,
 } from "@/server/services/catalog.service";
+import { isAdminPreview } from "@/server/services/preview.service";
 import { getSiteSettings } from "@/server/services/settings.service";
 
 type Props = PageProps<"/products/[slug]">;
 
-async function loadProduct(params: Props["params"]): Promise<ProductDetailVM | null> {
+async function loadProduct(
+  params: Props["params"],
+  preview: boolean,
+): Promise<ProductDetailVM | null> {
   const { slug } = await params;
   if (!slugSchema.safeParse(slug).success) return null;
-  return getProductBySlug(slug);
+  // Draft preview (F1.2) is uncached and only for a signed-in admin.
+  return preview ? getProductPreview(slug) : getProductBySlug(slug);
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const product = await loadProduct(params);
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
+  const preview = await isAdminPreview(searchParams);
+  const product = await loadProduct(params, preview);
   if (!product) return { title: "Product not found", robots: { index: false } };
   const primary = product.images[0];
   return {
+    ...(preview ? { robots: { index: false, follow: false } } : {}),
     title: product.seoTitle ?? `${product.title} — ${product.category.name}`,
     description: product.seoDescription ?? product.shortDescription,
     alternates: { canonical: product.href },
@@ -55,8 +64,9 @@ function priceLabel(regular: number | null, discount: number | null): string {
   return info.kind === "onRequest" ? "Price on request" : formatBDT(info.price);
 }
 
-async function ProductDetail({ params }: Pick<Props, "params">) {
-  const [product, settings] = await Promise.all([loadProduct(params), getSiteSettings()]);
+async function ProductDetail({ params, searchParams }: Props) {
+  const preview = await isAdminPreview(searchParams);
+  const [product, settings] = await Promise.all([loadProduct(params, preview), getSiteSettings()]);
   if (!product) notFound();
   const { phone, telHref } = getContactLinks(settings);
   const hasWhatsApp = settings.whatsappNumber.replace(/\D/g, "").length >= 8;
@@ -68,6 +78,7 @@ async function ProductDetail({ params }: Pick<Props, "params">) {
 
   return (
     <>
+      {preview && <PreviewBanner editHref={`/admin/products/${product.id}`} />}
       <JsonLd
         data={[
           productJsonLd({
@@ -222,11 +233,11 @@ function ProductSkeleton() {
   );
 }
 
-export default function ProductPage({ params }: Props) {
+export default function ProductPage({ params, searchParams }: Props) {
   return (
     <Container className="py-6 md:py-10">
       <Suspense fallback={<ProductSkeleton />}>
-        <ProductDetail params={params} />
+        <ProductDetail params={params} searchParams={searchParams} />
       </Suspense>
     </Container>
   );

@@ -333,3 +333,13 @@ Format: each ADR has a number, date, status (Accepted / Superseded by ADR-x / Pr
 - **Tags** are normalised on save (lowercase, unique, comma-separated) to match `parseTags` used for related posts.
 - **Revalidation:** `blog`, `home`, `post:<old>` and `post:<new>`.
 **Consequences:** No draft preview on the public site yet (same as products; the editor's Preview tab covers the content).
+
+### ADR-037 — Draft preview, sitemap and robots; 7f skipped (Phase 8 start)
+**Date:** 2026-11-13 · **Status:** Accepted (implements F1.2 preview, 08 §7)
+**Context:** Admins need to see a draft before publishing; search engines need a sitemap and robots rules. Milestone 7f (homepage featured lists) lost its purpose when the owner removed the Featured/Most loved rails (ADR-035).
+**Decision:**
+- **Preview:** `?preview=1` on `/products/[slug]` and `/blog/[slug]` checks the admin session (`preview.service.isAdminPreview`, which reads the cookie only when the param is present). For an admin the page reads the row **uncached** (any status; products in hidden categories too), shows a "Preview" banner with a link back to editing, and is `noindex, nofollow`. Everyone else gets the normal cached, published-only page, so the param leaks nothing. Draft edit pages link to it as "Preview".
+- **sitemap.xml:** home, /products, /blog, /about, /contact, active categories, published products in active categories and published posts, with `lastModified = updatedAt`. Read through a `"use cache"` loader tagged `products`, `categories`, `blog`, so admin changes update it; it is request-time (`connection()`), and falls back to the static pages if the database fails.
+- **robots.txt:** allow `/`, disallow `/admin`, `/api`, `/search`, point to the sitemap. Built statically from `NEXT_PUBLIC_SITE_URL`.
+- **7f skipped.** The product flags stay in the schema and form for possible later use.
+**Consequences:** Phase 8 checks recorded in the roadmap. Still open: accessibility pass (axe + manual), PageSpeed on the production domain, Facebook OG check, optional WhatsApp click tracking.

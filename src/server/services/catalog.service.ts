@@ -8,6 +8,7 @@ import {
   findActiveCategoryBySlug,
 } from "@/server/repositories/category.repo";
 import {
+  findAnyProductBySlug,
   findPublishedBySlug,
   findPublishedCards,
   findRelatedCards,
@@ -137,7 +138,10 @@ async function loadProduct(slug: string): Promise<ProductDetailVM | null> {
   cacheTag("products", `product:${slug}`);
   cacheLife("hours");
   const row = await findPublishedBySlug(slug);
-  if (!row) return null;
+  return row ? toDetailVM(row) : null;
+}
+
+function toDetailVM(row: ProductDetailRow): ProductDetailVM {
   const { images, category, categoryId, ...rest } = row;
   return {
     ...rest,
@@ -184,6 +188,16 @@ export async function listProducts(
 export async function getProductBySlug(slug: string): Promise<ProductDetailVM | null> {
   await connection();
   return loadProduct(slug);
+}
+
+/**
+ * Draft preview (F1.2): any status, read uncached so drafts never enter the shared cache.
+ * Callers must check that an admin is signed in first (see preview.service).
+ */
+export async function getProductPreview(slug: string): Promise<ProductDetailVM | null> {
+  await connection();
+  const row = await findAnyProductBySlug(slug);
+  return row ? toDetailVM(row) : null;
 }
 
 export async function getRelatedProducts(

@@ -23,6 +23,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 - 2026-11-10 — Image storage moved from local disk to **Cloudflare R2** served at `media.<domain>` (ADR-014). Docs updated: architecture, database, SEO, security, deployment, roadmap, and testing.
 
 ### Added
+- 2026-11-13 — Phase 8: draft preview for admins ("Preview" on the edit page of a draft product or post), `sitemap.xml` and `robots.txt`; upload hardening tests; header, dependency and bundle checks recorded.
 - 2026-11-13 — Admin (Phase 7e): Journal: list with search and status filter; write and edit posts with a Markdown editor (toolbar, preview, insert image), cover photo, author, tags, back-dating and SEO preview; delete with its images.
 - 2026-11-13 — Admin (Phase 7d): Products: searchable, filterable list (category, status, featured/popular/new/on sale/without photos, sort, 20 per page); add and edit products with Markdown description (toolbar + preview), live price preview, colours, specifications with quick-add labels per category, details, visibility flags and SEO preview; photos with drag & drop multi-upload, featured photo, order, descriptions and delete; duplicate as draft; delete with photos; unsaved-changes warning.
 - 2026-11-13 — Admin (Phase 7c): Categories: create and edit (name, web address, description, image, visibility, SEO), reorder, Active / Show on home switches, product counts; delete only when a category has no products. Changes show on the site immediately.

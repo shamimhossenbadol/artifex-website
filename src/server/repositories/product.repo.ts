@@ -94,6 +94,11 @@ export async function findPublishedBySlug(slug: string): Promise<ProductDetailRo
   });
 }
 
+/** Any status, any category state: only for a signed-in admin's draft preview (F1.2). */
+export async function findAnyProductBySlug(slug: string): Promise<ProductDetailRow | null> {
+  return db.product.findUnique({ where: { slug }, select: PRODUCT_DETAIL_SELECT });
+}
+
 export type HomeRail = "new" | "featured" | "popular";
 
 /**

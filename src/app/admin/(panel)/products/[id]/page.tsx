@@ -38,16 +38,14 @@ export default async function EditProductPage({ params }: PageProps<"/admin/prod
             : "Draft: only visible here until you publish it."
         }
         action={
-          live ? (
-            <Link
-              href={`/products/${product.slug}`}
-              target="_blank"
-              className="text-small text-ink-soft hover:text-ink inline-flex min-h-11 items-center gap-1 underline underline-offset-4"
-            >
-              View on site
-              <ExternalLink aria-hidden strokeWidth={1.5} className="size-4" />
-            </Link>
-          ) : undefined
+          <Link
+            href={live ? `/products/${product.slug}` : `/products/${product.slug}?preview=1`}
+            target="_blank"
+            className="text-small text-ink-soft hover:text-ink inline-flex min-h-11 items-center gap-1 underline underline-offset-4"
+          >
+            {live ? "View on site" : "Preview"}
+            <ExternalLink aria-hidden strokeWidth={1.5} className="size-4" />
+          </Link>
         }
       />
       <div className="flex max-w-3xl flex-col gap-8">

@@ -18,7 +18,7 @@ Each feature lists its **behaviour**, **data source**, and **acceptance criteria
 - Source: `catalog.service.getProductBySlug(slug)` (published only; drafts are visible to a logged-in admin via `?preview=1`).
 - Shows: gallery (primary image first, then by `sortOrder`), title, category link, price (see F1.3), colours, made-to-order note, WhatsApp CTA (F3), short description, quick facts, specs table, full description (Markdown), and related products.
 - **AC:** a missing or unpublished slug renders the not-found page with `noindex` (ADR-025), the gallery works with 1–12 images, and the page has Product JSON-LD (see 08).
-- `?preview=1` for drafts is deferred to Phase 7 (needs admin auth).
+- `?preview=1`: a signed-in admin sees drafts (and products in hidden categories), uncached, with a "Preview" banner and `noindex`; anyone else gets the normal page (ADR-037). Blog posts work the same way.
 
 ### F1.3 Pricing display rules
 | Data | Display |

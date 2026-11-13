@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { PostCard } from "@/components/blog/PostCard";
 import { ShareLinks } from "@/components/blog/ShareLinks";
+import { PreviewBanner } from "@/components/site/PreviewBanner";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Container } from "@/components/ui/Container";
@@ -13,20 +14,29 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { formatPostDate } from "@/lib/blog";
 import { absoluteImageUrl, absoluteUrl, articleJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 import { slugSchema } from "@/lib/validation/catalog";
-import { getPostBySlug, getRelatedPosts, type PostDetailVM } from "@/server/services/blog.service";
+import {
+  getPostBySlug,
+  getPostPreview,
+  getRelatedPosts,
+  type PostDetailVM,
+} from "@/server/services/blog.service";
+import { isAdminPreview } from "@/server/services/preview.service";
 
 type Props = PageProps<"/blog/[slug]">;
 
-async function loadPost(params: Props["params"]): Promise<PostDetailVM | null> {
+async function loadPost(params: Props["params"], preview: boolean): Promise<PostDetailVM | null> {
   const { slug } = await params;
   if (!slugSchema.safeParse(slug).success) return null;
-  return getPostBySlug(slug);
+  // Draft preview is uncached and only for a signed-in admin.
+  return preview ? getPostPreview(slug) : getPostBySlug(slug);
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const post = await loadPost(params);
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
+  const preview = await isAdminPreview(searchParams);
+  const post = await loadPost(params, preview);
   if (!post) return { title: "Post not found", robots: { index: false } };
   return {
+    ...(preview ? { robots: { index: false, follow: false } } : {}),
     title: post.seoTitle ?? post.title,
     description: post.seoDescription ?? post.excerpt,
     alternates: { canonical: post.href },
@@ -44,13 +54,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-async function PostContent({ params }: Pick<Props, "params">) {
-  const post = await loadPost(params);
+async function PostContent({ params, searchParams }: Props) {
+  const preview = await isAdminPreview(searchParams);
+  const post = await loadPost(params, preview);
   if (!post) notFound();
   const url = absoluteUrl(post.href);
 
   return (
     <article>
+      {preview && <PreviewBanner editHref={`/admin/blog/${post.id}`} />}
       <JsonLd
         data={[
           articleJsonLd({
@@ -142,11 +154,11 @@ function PostSkeleton() {
   );
 }
 
-export default function PostPage({ params }: Props) {
+export default function PostPage({ params, searchParams }: Props) {
   return (
     <Container className="py-8 md:py-12">
       <Suspense fallback={<PostSkeleton />}>
-        <PostContent params={params} />
+        <PostContent params={params} searchParams={searchParams} />
       </Suspense>
     </Container>
   );

@@ -1,9 +1,13 @@
+"use client";
+// A client component on purpose: <Field> (client) wires id/aria props with cloneElement. A server
+// component arrives already rendered, so those props would land on the wrapper <div> and the
+// label wouldn't reach the <select>. Not used on public pages, so no public JS cost.
 import { ChevronDown } from "lucide-react";
 import type { ComponentProps } from "react";
 import { cn } from "@/lib/utils";
 import { FIELD_CLASSES } from "./field-styles";
 
-/** Native <select> (accessible, zero JS) with a Lucide chevron. */
+/** Native <select> with a Lucide chevron. */
 export function Select({ className, children, ...props }: ComponentProps<"select">) {
   return (
     <div className="relative">

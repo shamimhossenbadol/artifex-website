@@ -53,8 +53,10 @@ test("a wrong password shows a generic error", async ({ page }) => {
   await expect(page.getByText("Invalid email or password.")).toBeVisible();
 });
 
-test("too many failures lock the email out", async ({ page }) => {
-  const victim = "nobody-lockout@example.com";
+test("too many failures lock the email out", async ({ page }, testInfo) => {
+  // A fresh email per attempt: in serial mode a retry re-runs this test, and the previous
+  // attempt's lockout would still be in force for the same address.
+  const victim = `nobody-lockout-${testInfo.retry}-${Date.now()}@example.com`;
   for (let i = 0; i < 5; i++) {
     await signIn(page, victim, `wrong-${i}`);
     // toHaveText reports what the form actually said if this ever fails.

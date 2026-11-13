@@ -12,7 +12,8 @@ export default defineConfig({
   reporter: process.env.CI ? "github" : "list",
   use: {
     baseURL: `http://localhost:${PORT}`,
-    trace: "on-first-retry",
+    // CI keeps a trace (console, network, DOM) for every failed test; locally only on retry.
+    trace: process.env.CI ? "retain-on-failure" : "on-first-retry",
   },
   projects: [
     { name: "chromium", use: { ...devices["Desktop Chrome"] } },

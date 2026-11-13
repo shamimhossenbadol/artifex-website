@@ -238,7 +238,8 @@ test("products: create a draft, publish it, duplicate and delete", async ({ page
   await page.goto("/admin/products/new");
   await page.waitForLoadState("networkidle");
   await page.getByLabel("Title", { exact: true }).fill("E2E Walnut Bench");
-  await page.getByLabel("Category").selectOption({ label: "Sofas" });
+  // Curtains, not Sofas: other e2e files count Sofas and run in parallel with this one.
+  await page.getByLabel("Category").selectOption({ label: "Curtains" });
   await page.getByLabel("Short description").fill("A bench made for e2e tests.");
   await page.getByLabel("Regular price (৳)").fill("20000");
   await page.getByLabel("Discount price (৳, optional)").fill("25000");
@@ -251,8 +252,8 @@ test("products: create a draft, publish it, duplicate and delete", async ({ page
   await page.getByLabel("Discount price (৳, optional)").fill("18000");
   await page.getByRole("button", { name: "Add colour" }).click();
   await page.getByLabel("Name of colour 1").fill("Walnut");
-  await page.getByRole("button", { name: "Frame" }).click(); // Sofa preset
-  await page.getByLabel("Value of “Frame”").fill("Solid walnut");
+  await page.getByRole("button", { name: "Fabric" }).click(); // Curtains preset
+  await page.getByLabel("Value of “Fabric”").fill("Solid walnut");
   await page.getByRole("button", { name: "Save and add photos" }).click();
   await expect(page).toHaveURL(/\/admin\/products\/\d+$/);
   await expect(page.getByRole("heading", { name: "Photos" })).toBeVisible();

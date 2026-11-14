@@ -18,7 +18,7 @@
 **Mobile header** (h-16, sticky): `[Menu]  [Wordmark centred]  [Search]`
 - The menu opens a full-height left drawer with categories (each with a small thumbnail), then Blog, About, and Contact, then the phone number, WhatsApp, and Facebook. It traps focus and closes on Esc or backdrop click.
 
-**Footer (compact, ADR-035):** two columns: logo, short description (aboutShort) and social icons; then address, phone, WhatsApp (and email when set). A quiet © line below. No category or company links (navigation lives in the header). Stacks on mobile.
+**Footer (compact, ADR-035, ADR-049):** two columns from md: logo (h-11), short description (aboutShort, at most two lines) and social icons; then a one-line address, phone and WhatsApp as rounded pill buttons (44 px tall), and the email link when set. Padding `py-8 md:py-10`. A quiet line below with the developer credit and ©. No category or company links (navigation lives in the header). On phones everything stacks and is centred.
 
 **Floating contact buttons** (bottom-right): Messenger (`messenger` blue, links to `m.me/<page>` from the Facebook URL) above WhatsApp (whatsapp-dark). 44 px circles on phones, 48/56 px from md; on phones they sit above the home indicator (`env(safe-area-inset-bottom)`, `viewportFit: cover`). Messenger and WhatsApp always appear together: the sales team answers on both (ADR-044). Both:
 - Shown on all public pages **except** product detail on mobile, whose sticky bottom bar has price, a Messenger button and a WhatsApp button.
@@ -27,8 +27,8 @@
 ## 3. Page layouts
 
 ### Home
-1. Hero (ADR-048): the photos sit behind the text on every screen size. Phones: a shorter 5:4 frame (16:9 from sm) with compact text (h2-size heading, small subheading, two small buttons side by side) so the wide photos show well; from md the tall hero (min-h 78vh) with the full editorial sizes. Several photos play on their own in an endless loop (6 s per photo, 1.2 s crossfade, slow 7 s zoom) with dots, no arrows and no pause button; it pauses on hover/focus and in background tabs and doesn't play under reduced motion. Without photos: a compact text hero.
-2. Collections (heading "Collections", no eyebrow): category tiles (mobile: horizontal scroll-snap row with partial next-tile peek; desktop: grid of 4 + 3 or 7-across).
+1. Hero (ADR-048, ADR-049): phones show the photos as a short 16:9 band (about 220 px tall at 390 px wide) with the dots centred at its bottom; the eyebrow, heading (h2 size), small subheading and two compact buttons side by side sit below the photo on ivory in ink colours. From md the photos fill the hero (min-h 78vh) with white text over a solid scrim and the full editorial sizes; dots centred at the bottom of the photo. Several photos play on their own in an endless loop (6 s per photo, 1.2 s crossfade, slow 7 s zoom by transition that doesn't snap back) with no arrows and no pause button; it pauses on hover/focus and in background tabs and doesn't play or zoom under reduced motion. Without photos: a compact text hero.
+2. Collections (heading "Collections", no eyebrow): category tiles in a 3-column grid on phones and tablets (square tiles, small names), 6 across from lg (4:5 tiles). Categories without a photo show their line icon (`CategoryIcon`).
 3. New arrivals (heading only, no eyebrow): rail of 8 cards (mobile horizontal scroll; desktop 4-col grid).
 4. Brand introduction: split image/text, with "Our story →".
 5. Promo banner(s): 1–2 wide banners (active and in date range).

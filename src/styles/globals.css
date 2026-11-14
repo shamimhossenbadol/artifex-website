@@ -76,6 +76,17 @@
     line-height: 2.875rem;
   }
 }
+/* Section titles ("Collections", "New arrivals", "Journal"…): quieter than text-h2. */
+@utility text-section {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: 1.5rem;
+  line-height: 1.875rem;
+  @media (width >= 48rem) {
+    font-size: 2rem;
+    line-height: 2.5rem;
+  }
+}
 @utility text-h3 {
   font-family: var(--font-serif);
   font-weight: 600;
@@ -190,22 +201,6 @@
     animation: none;
   }
 }
-/* Hero slider (ADR-048): a slow zoom on the photo being shown. Transform only (never delays LCP). */
-@keyframes hero-zoom {
-  from {
-    transform: scale(1);
-  }
-  to {
-    transform: scale(1.06);
-  }
-}
-@utility animate-hero-zoom {
-  animation: hero-zoom 7s ease-out both;
-  @media (prefers-reduced-motion: reduce) {
-    animation: none;
-  }
-}
-
 /* Stagger steps for entrance animations (Tailwind's delay-* only affects transitions). */
 @utility stagger-1 {
   animation-delay: 100ms;

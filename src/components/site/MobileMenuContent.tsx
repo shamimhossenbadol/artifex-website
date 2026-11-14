@@ -6,6 +6,7 @@ import Link from "next/link";
 import { COMPANY_LINKS, HEADER_HIDDEN_CATEGORIES } from "@/config/site";
 import { getNavCategories } from "@/server/services/catalog.service";
 import { getSiteSettings } from "@/server/services/settings.service";
+import { CategoryIcon } from "./category-icons";
 import { getContactLinks } from "./contact-links";
 import { FacebookIcon } from "./SocialIcons";
 import { WhatsAppIcon } from "./WhatsAppIcon";
@@ -13,7 +14,7 @@ import { WhatsAppIcon } from "./WhatsAppIcon";
 const ROW = "flex min-h-11 items-center gap-3 py-2 text-ink";
 
 type MobileMenuLinksProps = {
-  categories: { name: string; href: string; imagePath: string | null }[];
+  categories: { name: string; slug: string; href: string; imagePath: string | null }[];
   phone: string | null;
   telHref: string | null;
   whatsappHref: string | null;
@@ -35,14 +36,22 @@ export function MobileMenuLinks({
             {categories.map((category) => (
               <li key={category.href}>
                 <Link href={category.href} className={ROW}>
-                  <span className="bg-sand relative size-12 shrink-0 overflow-hidden">
-                    {category.imagePath && (
+                  <span className="bg-sand relative flex size-12 shrink-0 items-center justify-center overflow-hidden">
+                    {category.imagePath ? (
                       <Image
                         src={category.imagePath}
                         alt=""
                         fill
                         sizes="48px"
                         className="object-cover"
+                      />
+                    ) : (
+                      // No photo yet: the category's line icon, as on the homepage tiles (ADR-029).
+                      <CategoryIcon
+                        slug={category.slug}
+                        aria-hidden
+                        strokeWidth={1.25}
+                        className="text-walnut size-6"
                       />
                     )}
                   </span>

@@ -11,29 +11,31 @@ import { HeroSlider } from "./HeroSlider";
 export function Hero({ hero }: { hero: HomeHeroVM }) {
   const withImage = hero.slides.length > 0;
   const frame = withImage
-    ? // Phones: a shorter frame (5:4, 16:9 from sm) so the wide photos show well; md+: tall hero.
-      "relative isolate flex aspect-[5/4] items-end overflow-hidden bg-ink sm:aspect-[16/9] md:aspect-auto md:min-h-[78vh] md:items-center"
+    ? // Phones: photo band, then the compact text on ivory. md+: tall hero, text over the photo.
+      "relative isolate overflow-hidden bg-bg md:flex md:min-h-[78vh] md:items-center md:bg-ink"
     : "relative isolate flex items-center overflow-hidden bg-bg md:min-h-[68vh]";
   const content = withImage ? (
-    // Over the photos: compact on phones (shorter frame), the full editorial size from md.
-    <Container className="pt-6 pb-11 md:py-24">
+    // Phones: compact, below the photo band, ink on ivory. md+: over the photo, editorial sizes.
+    <Container className="pt-5 pb-9 md:py-24">
       <div className="md:max-w-3xl">
-        {hero.eyebrow && <p className="animate-rise text-eyebrow text-bg/90">{hero.eyebrow}</p>}
+        {hero.eyebrow && (
+          <p className="animate-rise text-eyebrow text-walnut md:text-bg/90">{hero.eyebrow}</p>
+        )}
         <h1
           id="hero-heading"
-          className="animate-settle text-h2 md:text-display text-bg mt-2 max-w-[17rem] sm:max-w-md md:mt-4 md:max-w-none"
+          className="animate-settle text-h2 md:text-display text-ink md:text-bg mt-2 md:mt-4"
         >
           {hero.heading}
         </h1>
         {hero.subheading && (
-          <p className="animate-rise stagger-1 text-small md:text-body-lg text-bg/90 mt-2 max-w-[17rem] sm:max-w-md md:mt-5 md:max-w-xl">
+          <p className="animate-rise stagger-1 text-small md:text-body-lg text-ink-soft md:text-bg/90 mt-2 max-w-xl md:mt-5">
             {hero.subheading}
           </p>
         )}
         <div className="animate-rise stagger-2 mt-4 flex flex-wrap gap-2 md:mt-8 md:gap-3">
           <ButtonLink
             href={hero.cta.href}
-            className="bg-bg text-ink hover:bg-sand h-10 px-4 md:h-13 md:px-8"
+            className="md:bg-bg md:text-ink md:hover:bg-sand h-10 px-4 md:h-13 md:px-8"
           >
             {hero.cta.label}
           </ButtonLink>
@@ -41,7 +43,7 @@ export function Hero({ hero }: { hero: HomeHeroVM }) {
             <ButtonLink
               href={hero.secondary.href}
               variant="secondary"
-              className="border-bg text-bg hover:bg-bg hover:text-ink h-10 px-4 md:h-13 md:px-8"
+              className="md:border-bg md:text-bg md:hover:bg-bg md:hover:text-ink h-10 px-4 md:h-13 md:px-8"
             >
               {hero.secondary.label}
             </ButtonLink>

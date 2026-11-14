@@ -46,7 +46,8 @@ Fallbacks: `Georgia, serif` and `system-ui, sans-serif`. If Bangla is added late
 |---|---|---|---|---|
 | `display` | 40/44 | 72/76 | Cormorant 500 | Hero heading |
 | `h1` | 34/40 | 52/58 | Cormorant 500 | Page titles, product title |
-| `h2` | 28/34 | 40/46 | Cormorant 500 | Section titles |
+| `h2` | 28/34 | 40/46 | Cormorant 500 | Feature headings (brand intro, WhatsApp band, product description, phone hero) |
+| `section` | 24/30 | 32/40 | Cormorant 500 | Section titles (SectionHeading) |
 | `h3` | 22/28 | 26/32 | Cormorant 600 | Card group titles, blog card |
 | `eyebrow` | 12/16, tracking 0.16em, uppercase | same | Inter 500 | Labels above headings ("NEW ARRIVALS") |
 | `body-lg` | 17/28 | 18/30 | Inter 400 | Intros, product description |
@@ -68,7 +69,7 @@ Rules: headings are serif, while everything functional (nav, buttons, prices, fo
 
 - **Radius:** `--radius-sm: 2px` (inputs, badges) and `--radius-md: 4px` (buttons, cards). Images have **no radius** (crisp editorial look). Pills only for colour swatches (full circle).
 - **Shadows:** none on the public site. Use borders (`--color-line`) instead. Admin may use `shadow-sm` on popovers.
-- **Motion (ADR-021, CSS only):** hover/colour transitions 150–250 ms `ease-out`; image `scale-[1.03]` on card hover (desktop only); menu slide-in. Entrance animations `animate-rise` (fade + rise, staggered with `stagger-1..3`) and `animate-settle` (transform only, for the LCP heading/image); scroll reveal `reveal` (CSS scroll timeline, progressive enhancement). All defined in `globals.css` and disabled under `prefers-reduced-motion`. **No** animation libraries, parallax, looping animations, or autoplay sliders, and never fade the LCP element in. **Exception (ADR-048):** the homepage hero slider autoplays with a 1.2 s crossfade and a slow zoom (`animate-hero-zoom`, transform only, off under reduced motion).
+- **Motion (ADR-021, CSS only):** hover/colour transitions 150–250 ms `ease-out`; image `scale-[1.03]` on card hover (desktop only); menu slide-in. Entrance animations `animate-rise` (fade + rise, staggered with `stagger-1..3`) and `animate-settle` (transform only, for the LCP heading/image); scroll reveal `reveal` (CSS scroll timeline, progressive enhancement). All defined in `globals.css` and disabled under `prefers-reduced-motion`. **No** animation libraries, parallax, looping animations, or autoplay sliders, and never fade the LCP element in. **Exception (ADR-048):** the homepage hero slider autoplays with a 1.2 s crossfade and a slow zoom by transition (transform only, the outgoing photo keeps its zoom until it has faded out; off under reduced motion).
 
 ## 5. Core components (in `src/components/ui` unless noted)
 

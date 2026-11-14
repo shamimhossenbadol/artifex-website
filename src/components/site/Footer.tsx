@@ -8,14 +8,14 @@ import { FacebookIcon, InstagramIcon, YoutubeIcon } from "./SocialIcons";
 import { WhatsAppIcon } from "./WhatsAppIcon";
 import { Logo } from "./Logo";
 
-const ROW = "text-ink-soft flex items-start gap-3";
-const LINK_ROW = `${ROW} min-h-11 items-center transition-colors hover:text-ink md:min-h-9`;
-const ICON = "text-walnut mt-0.5 size-5 shrink-0";
+/** Rounded contact buttons: compact, still 44 px tall for touch. */
+const PILL =
+  "border-line bg-surface text-ink hover:border-ink text-small inline-flex min-h-11 items-center gap-2 rounded-full border px-4 transition-colors";
 
 /**
- * Compact footer (ADR-035): brand, short description and social icons on one side; address,
- * phone and WhatsApp on the other; a quiet © line with the developer credit. Navigation lives in
- * the header.
+ * Compact footer (ADR-035, ADR-049): brand (logo, two-line description, social icons) and contact
+ * (one-line address, phone and WhatsApp as rounded buttons, email); centred on phones, two columns
+ * from md; a quiet line with the developer credit and ©. Navigation lives in the header.
  */
 export async function Footer() {
   const settings = await getSiteSettings();
@@ -30,12 +30,14 @@ export async function Footer() {
 
   return (
     <footer className="border-line bg-sand border-t">
-      <Container className="grid gap-8 py-10 md:grid-cols-[1.3fr_1fr] md:items-start md:gap-16 md:py-12">
-        <div className="flex flex-col items-start gap-4">
-          <Logo variant="full" className="h-14" />
-          {description && <p className="text-ink-soft text-small max-w-md">{description}</p>}
+      <Container className="flex flex-col items-center gap-6 py-8 text-center md:grid md:grid-cols-[1.2fr_1fr] md:items-start md:gap-12 md:py-10 md:text-left">
+        <div className="flex flex-col items-center gap-3 md:items-start">
+          <Logo variant="full" className="h-11" />
+          {description && (
+            <p className="text-ink-soft text-small line-clamp-2 max-w-sm">{description}</p>
+          )}
           {socials.length > 0 && (
-            <ul className="-ml-2.5 flex items-center">
+            <ul className="-my-1 flex items-center md:-ml-2.5">
               {socials.map(({ href, label, Icon }) => (
                 <li key={label}>
                   <a
@@ -55,27 +57,36 @@ export async function Footer() {
           )}
         </div>
 
-        <address className="flex flex-col gap-1 not-italic md:pt-2">
+        <address className="flex flex-col items-center gap-3 not-italic md:items-start">
           {address && (
-            <p className={`${ROW} py-1.5`}>
-              <MapPin aria-hidden strokeWidth={1.5} className={ICON} />
+            <p className="text-ink-soft text-small inline-flex items-start gap-2">
+              <MapPin
+                aria-hidden
+                strokeWidth={1.5}
+                className="text-walnut mt-0.5 size-4 shrink-0"
+              />
               {address}
             </p>
           )}
-          {phone && telHref && (
-            <a href={telHref} className={`${LINK_ROW} tabular-nums`}>
-              <Phone aria-hidden strokeWidth={1.5} className="text-walnut size-5 shrink-0" />
-              {phone}
-            </a>
-          )}
-          {whatsappHref && (
-            <a href={whatsappHref} target="_blank" rel="noopener noreferrer" className={LINK_ROW}>
-              <WhatsAppIcon className="text-whatsapp-dark size-5 shrink-0" />
-              WhatsApp us
-            </a>
-          )}
+          <div className="flex flex-wrap justify-center gap-2 md:justify-start">
+            {phone && telHref && (
+              <a href={telHref} className={`${PILL} tabular-nums`}>
+                <Phone aria-hidden strokeWidth={1.5} className="text-walnut size-4 shrink-0" />
+                {phone}
+              </a>
+            )}
+            {whatsappHref && (
+              <a href={whatsappHref} target="_blank" rel="noopener noreferrer" className={PILL}>
+                <WhatsAppIcon className="text-whatsapp-dark size-4 shrink-0" />
+                WhatsApp
+              </a>
+            )}
+          </div>
           {settings.email && (
-            <a href={`mailto:${settings.email}`} className={LINK_ROW}>
+            <a
+              href={`mailto:${settings.email}`}
+              className="text-ink-soft hover:text-ink text-small inline-flex min-h-11 items-center underline-offset-4 hover:underline md:min-h-0"
+            >
               {settings.email}
             </a>
           )}
@@ -84,7 +95,7 @@ export async function Footer() {
 
       <div className="border-line border-t">
         {/* Credit first: left on desktop, top line on phones. */}
-        <Container className="text-small text-muted flex flex-col gap-1 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+        <Container className="text-small text-muted flex flex-col items-center gap-0 py-3 text-center sm:flex-row sm:justify-between sm:gap-4 sm:text-left">
           <p>
             Developed by{" "}
             <a
@@ -110,9 +121,9 @@ export async function Footer() {
 export function FooterFallback() {
   return (
     <footer aria-hidden className="border-line bg-sand border-t">
-      <Container className="grid gap-8 py-10 md:grid-cols-[1.3fr_1fr] md:gap-16 md:py-12">
+      <Container className="grid gap-6 py-8 md:grid-cols-[1.2fr_1fr] md:gap-12 md:py-10">
         <div className="flex flex-col gap-3">
-          <Skeleton className="bg-line h-14 w-36" />
+          <Skeleton className="bg-line h-11 w-32" />
           <Skeleton className="bg-line h-4 w-72" />
         </div>
         <div className="flex flex-col gap-3">

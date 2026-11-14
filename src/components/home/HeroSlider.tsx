@@ -4,8 +4,8 @@
 // It pauses while hovered or focused and while the tab is hidden, and doesn't play at all for
 // people who ask for reduced motion (no pause button, owner's choice).
 //
-// The photos sit behind the heading and buttons on every screen size; Hero sets a shorter frame on
-// phones. The first photo is the LCP image: preloaded and never faded in; other photos load when
+// Phones: the photos as a short 16:9 band with the dots centred on it, and the heading and buttons
+// below (Hero). From md the photos fill the hero behind the text. The first photo is the LCP image: preloaded and never faded in; other photos load when
 // they're shown or next in line.
 import Image from "next/image";
 import {
@@ -106,8 +106,8 @@ export function HeroSlider({
         else if (start - end > SWIPE_PX) pick(current + 1);
       }}
     >
-      {/* Photos: a wide band on phones; behind the text from md. */}
-      <div className="absolute inset-0 -z-10 overflow-hidden">
+      {/* Photos: a short 16:9 band on phones (text below); behind the text from md. */}
+      <div className="relative aspect-[16/9] overflow-hidden md:absolute md:inset-0 md:-z-10 md:aspect-auto">
         {slides.map((slide, index) => {
           const active = index === current;
           return (
@@ -127,9 +127,12 @@ export function HeroSlider({
                   preload={index === 0}
                   sizes="100vw"
                   className={cn(
-                    // Phones crop the sides: keep the furniture (usually right of centre) in view.
-                    "object-cover object-[70%_50%] md:object-center",
-                    active && playing && "animate-hero-zoom",
+                    // Slow zoom by transition, not keyframes: the outgoing photo keeps its zoom
+                    // while it fades out and only resets once hidden (after the 1.2 s fade).
+                    "object-cover motion-reduce:scale-100 motion-reduce:transition-none",
+                    active && !reducedMotion && count > 1
+                      ? "scale-[1.06] transition-transform delay-0 duration-[7000ms] ease-out"
+                      : "scale-100 transition-transform delay-[1300ms] duration-0",
                   )}
                 />
               )}
@@ -137,37 +140,37 @@ export function HeroSlider({
           );
         })}
         {/* Solid scrim (no gradient outside category tiles, 03 §6) for legible text. */}
-        <div aria-hidden className="bg-ink/40 md:bg-ink/35 absolute inset-0" />
+        <div aria-hidden className="bg-ink/35 absolute inset-0 hidden md:block" />
+        {count > 1 && (
+          <div
+            role="group"
+            aria-label="Hero photos"
+            className="absolute inset-x-0 bottom-0 z-10 flex items-center justify-center md:bottom-4"
+          >
+            <ol className="flex items-center">
+              {slides.map((slide, index) => (
+                <li key={slide.path}>
+                  <button
+                    type="button"
+                    onClick={() => pick(index)}
+                    aria-current={index === current ? "true" : undefined}
+                    className="group inline-flex size-11 items-center justify-center"
+                  >
+                    <span
+                      aria-hidden
+                      className={cn(
+                        "block h-1.5 rounded-full transition-all duration-500 ease-out",
+                        index === current ? "bg-bg w-6" : "bg-bg/55 group-hover:bg-bg/85 w-1.5",
+                      )}
+                    />
+                    <span className="sr-only">Show photo {index + 1}</span>
+                  </button>
+                </li>
+              ))}
+            </ol>
+          </div>
+        )}
       </div>
-      {count > 1 && (
-        <div
-          role="group"
-          aria-label="Hero photos"
-          className="absolute inset-x-0 bottom-1 z-10 flex items-center justify-center md:inset-x-auto md:right-8 md:bottom-8"
-        >
-          <ol className="flex items-center">
-            {slides.map((slide, index) => (
-              <li key={slide.path}>
-                <button
-                  type="button"
-                  onClick={() => pick(index)}
-                  aria-current={index === current ? "true" : undefined}
-                  className="group inline-flex size-11 items-center justify-center"
-                >
-                  <span
-                    aria-hidden
-                    className={cn(
-                      "block h-1.5 rounded-full transition-all duration-500 ease-out",
-                      index === current ? "bg-bg w-6" : "bg-bg/55 group-hover:bg-bg/85 w-1.5",
-                    )}
-                  />
-                  <span className="sr-only">Show photo {index + 1}</span>
-                </button>
-              </li>
-            ))}
-          </ol>
-        </div>
-      )}
 
       {children}
     </section>

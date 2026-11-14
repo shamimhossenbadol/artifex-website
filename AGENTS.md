@@ -73,7 +73,7 @@ Feature-level detail docs go in `docs/features/<feature>.md` and are created whe
 
 ## 5. Out of scope — do NOT build
 
-Cart · checkout · payment gateway · customer registration or login · wishlist accounts · order management · reviews and ratings · live chat widgets (other than the WhatsApp link) · newsletters · multi-language (it's on the future list, not now) · animation libraries · CMS page builders · carousels with autoplay.
+Cart · checkout · payment gateway · customer registration or login · wishlist accounts · order management · reviews and ratings · live chat widgets (other than the WhatsApp link) · newsletters · multi-language (it's on the future list, not now) · animation libraries · CMS page builders · carousels with autoplay (one owner-approved exception: the homepage hero slider, ADR-048).
 
 ## 6. Dependency policy
 

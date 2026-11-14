@@ -11,13 +11,12 @@ import { HeroSlider } from "./HeroSlider";
  */
 export function Hero({ hero }: { hero: HomeHeroVM }) {
   const withImage = hero.slides.length > 0;
-  const frame = cn(
-    "relative isolate flex overflow-hidden md:min-h-[68vh] md:items-center",
-    // With photos the image needs room; the text-only hero doesn't need empty space on phones.
-    withImage ? "bg-ink min-h-[60svh] items-end" : "bg-bg items-center",
-  );
+  const frame = withImage
+    ? // Phones: photo band, then the text on ivory. md+: full-bleed photo with the text on top.
+      "relative isolate overflow-hidden bg-bg md:flex md:min-h-[68vh] md:items-center md:bg-ink"
+    : "relative isolate flex items-center overflow-hidden bg-bg md:min-h-[68vh]";
   const content = (
-    <Container className={cn("md:py-24", withImage ? "py-16" : "py-12")}>
+    <Container className={cn("md:py-24", withImage ? "pt-2 pb-12" : "py-12")}>
       <div
         className={cn(
           "max-w-3xl",
@@ -25,13 +24,13 @@ export function Hero({ hero }: { hero: HomeHeroVM }) {
         )}
       >
         {hero.eyebrow && (
-          <p className={cn("animate-rise text-eyebrow", withImage ? "text-bg" : "text-walnut")}>
+          <p className={cn("animate-rise text-eyebrow text-walnut", withImage && "md:text-bg")}>
             {hero.eyebrow}
           </p>
         )}
         <h1
           id="hero-heading"
-          className={cn("animate-settle text-display mt-4", withImage ? "text-bg" : "text-ink")}
+          className={cn("animate-settle text-display text-ink mt-4", withImage && "md:text-bg")}
         >
           {hero.heading}
         </h1>
@@ -39,7 +38,7 @@ export function Hero({ hero }: { hero: HomeHeroVM }) {
           <p
             className={cn(
               "animate-rise stagger-1 text-body-lg mt-5 max-w-xl",
-              withImage ? "text-bg/90" : "md:mx-auto",
+              withImage ? "md:text-bg/90" : "md:mx-auto",
             )}
           >
             {hero.subheading}
@@ -54,7 +53,7 @@ export function Hero({ hero }: { hero: HomeHeroVM }) {
           <ButtonLink
             href={hero.cta.href}
             size="lg"
-            className={cn("w-full sm:w-auto", withImage && "bg-bg text-ink hover:bg-sand")}
+            className={cn("w-full sm:w-auto", withImage && "md:bg-bg md:text-ink md:hover:bg-sand")}
           >
             {hero.cta.label}
           </ButtonLink>
@@ -65,7 +64,7 @@ export function Hero({ hero }: { hero: HomeHeroVM }) {
               size="lg"
               className={cn(
                 "w-full sm:w-auto",
-                withImage && "border-bg text-bg hover:bg-bg hover:text-ink",
+                withImage && "md:border-bg md:text-bg md:hover:bg-bg md:hover:text-ink",
               )}
             >
               {hero.secondary.label}

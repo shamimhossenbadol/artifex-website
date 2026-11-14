@@ -5,7 +5,7 @@
 1. **Photography first.** Images take up the majority of the viewport on product and category pages.
 2. **One primary action per screen.** On product pages that's *Message on WhatsApp*; elsewhere it's discovery ("Explore sofas").
 3. **Mobile first.** Design at 360 px, then enhance. Most visitors arrive from Facebook on phones.
-4. **Calm.** No pop-ups, no autoplay, no cookie walls (our own visit counts use no cookies; the optional Meta Pixel sets Meta's `_fbp` cookie, ADR-040).
+4. **Calm.** No pop-ups, no autoplay (exception: the homepage hero slider, ADR-048), no cookie walls (our own visit counts use no cookies; the optional Meta Pixel sets Meta's `_fbp` cookie, ADR-040).
 5. **Fast feedback.** Every action shows a state (loading, success, error) within 100 ms.
 
 ## 2. Global navigation
@@ -27,7 +27,7 @@
 ## 3. Page layouts
 
 ### Home
-1. Hero: full-bleed image (min-h 60svh mobile / 68vh desktop; without photos a compact text hero on phones, buttons full width), heading, subheading, and two CTAs ("Explore collection", "Visit showroom"). With several photos the background is a slider the visitor controls (arrows, dots, swipe; never autoplay); the text stays put (ADR-039).
+1. Hero (ADR-048): phones show the photo as a wide band (4:3, 16:9 from sm) with the slider dots under it and the heading and full-width buttons below on ivory; from md the photo fills the hero (min-h 68vh) with the text on top over a scrim. Several photos play on their own in an endless loop (6 s per photo, 1.2 s crossfade, slow 7 s zoom), with dots and a pause button, no arrows; it pauses on hover/focus and in background tabs and doesn't play under reduced motion. Without photos: a compact text hero.
 2. Collections (heading "Collections", no eyebrow): category tiles (mobile: horizontal scroll-snap row with partial next-tile peek; desktop: grid of 4 + 3 or 7-across).
 3. New arrivals (heading only, no eyebrow): rail of 8 cards (mobile horizontal scroll; desktop 4-col grid).
 4. Brand introduction: split image/text, with "Our story →".

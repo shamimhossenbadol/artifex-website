@@ -190,6 +190,22 @@
     animation: none;
   }
 }
+/* Hero slider (ADR-048): a slow zoom on the photo being shown. Transform only (never delays LCP). */
+@keyframes hero-zoom {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.06);
+  }
+}
+@utility animate-hero-zoom {
+  animation: hero-zoom 7s ease-out both;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
 /* Stagger steps for entrance animations (Tailwind's delay-* only affects transitions). */
 @utility stagger-1 {
   animation-delay: 100ms;

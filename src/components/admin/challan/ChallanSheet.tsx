@@ -90,7 +90,7 @@ export function ChallanSheet({
       {/* Title with a brand-red accent; salesman and date as labelled blocks with a hairline. */}
       <div className="mt-7 flex items-end justify-between gap-8">
         <div>
-          <h1 className="text-h2 leading-none">Delivery Challan</h1>
+          <h2 className="text-h2 leading-none">Delivery Challan</h2>
           <div aria-hidden className="bg-brand mt-3 h-[0.7mm] w-[14mm]" />
         </div>
         <dl className="flex items-stretch">

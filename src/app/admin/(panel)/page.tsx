@@ -1,6 +1,7 @@
 import { AlertTriangle, FilePlus2, House, PackagePlus } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { connection } from "next/server";
 import { AdminPageHeader, AdminPanel } from "@/components/admin/AdminPageHeader";
 import { AnalyticsPanel } from "@/components/admin/dashboard/AnalyticsPanel";
 import { Badge } from "@/components/ui/Badge";
@@ -20,6 +21,9 @@ const QUICK_LINKS = [
 
 /** Analytics shouldn't take the dashboard down (e.g. before the migration has run). */
 async function loadAnalytics(range: unknown) {
+  // Outside the try: during prerendering connection() rejects on purpose and must reach Next.js
+  // (catching it only logged a misleading error).
+  await connection();
   try {
     return await getAnalyticsSummary(analyticsRangeSchema.parse(range));
   } catch (err) {

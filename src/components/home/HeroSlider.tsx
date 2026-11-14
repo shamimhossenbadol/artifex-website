@@ -1,14 +1,12 @@
 "use client";
 // Homepage hero slider (ADR-039, ADR-048). Plays on its own in an endless loop: a slow crossfade
-// with a gentle zoom on the photo being shown. Visitors can swipe, pick a photo with the dots, or
-// pause (WCAG 2.2.2). It pauses while hovered or focused, while the tab is hidden, and doesn't play
-// at all for people who ask for reduced motion.
+// with a gentle zoom on the photo being shown. Visitors can swipe or pick a photo with the dots.
+// It pauses while hovered or focused and while the tab is hidden, and doesn't play at all for
+// people who ask for reduced motion (no pause button, owner's choice).
 //
-// Layout: phones show the photo as a wide band, the dots under it, then the heading and buttons (a tall crop
-// of a landscape photo hides the furniture); from md the photo fills the hero with the text on top.
-// The first photo is the LCP image: preloaded and never faded in; other photos load when they're
-// shown or next in line.
-import { Pause, Play } from "lucide-react";
+// The photos sit behind the heading and buttons on every screen size; Hero sets a shorter frame on
+// phones. The first photo is the LCP image: preloaded and never faded in; other photos load when
+// they're shown or next in line.
 import Image from "next/image";
 import {
   useCallback,
@@ -47,7 +45,6 @@ export function HeroSlider({
   const count = slides.length;
   const [current, setCurrent] = useState(0);
   const [seen, setSeen] = useState<ReadonlySet<number>>(() => new Set([0]));
-  const [paused, setPaused] = useState(false); // the visitor pressed pause
   const [held, setHeld] = useState(false); // hovered or focused
   const [cycle, setCycle] = useState(0); // restarts the timer after a manual change
   const touchX = useRef<number | null>(null);
@@ -67,7 +64,7 @@ export function HeroSlider({
     [count],
   );
 
-  const playing = count > 1 && !paused && !held && !reducedMotion;
+  const playing = count > 1 && !held && !reducedMotion;
 
   useEffect(() => {
     if (!playing) return;
@@ -110,7 +107,7 @@ export function HeroSlider({
       }}
     >
       {/* Photos: a wide band on phones; behind the text from md. */}
-      <div className="bg-sand relative aspect-[4/3] overflow-hidden sm:aspect-[16/9] md:absolute md:inset-0 md:-z-10 md:aspect-auto">
+      <div className="absolute inset-0 -z-10 overflow-hidden">
         {slides.map((slide, index) => {
           const active = index === current;
           return (
@@ -129,20 +126,24 @@ export function HeroSlider({
                   fill
                   preload={index === 0}
                   sizes="100vw"
-                  className={cn("object-cover", active && playing && "animate-hero-zoom")}
+                  className={cn(
+                    // Phones crop the sides: keep the furniture (usually right of centre) in view.
+                    "object-cover object-[70%_50%] md:object-center",
+                    active && playing && "animate-hero-zoom",
+                  )}
                 />
               )}
             </div>
           );
         })}
-        {/* Solid scrim for legible text, only where the text sits on the photo (md+). */}
-        <div aria-hidden className="bg-ink/35 absolute inset-0 hidden md:block" />
+        {/* Solid scrim (no gradient outside category tiles, 03 §6) for legible text. */}
+        <div aria-hidden className="bg-ink/40 md:bg-ink/35 absolute inset-0" />
       </div>
       {count > 1 && (
         <div
           role="group"
           aria-label="Hero photos"
-          className="flex items-center justify-center md:absolute md:right-8 md:bottom-8"
+          className="absolute inset-x-0 bottom-1 z-10 flex items-center justify-center md:inset-x-auto md:right-8 md:bottom-8"
         >
           <ol className="flex items-center">
             {slides.map((slide, index) => (
@@ -157,9 +158,7 @@ export function HeroSlider({
                     aria-hidden
                     className={cn(
                       "block h-1.5 rounded-full transition-all duration-500 ease-out",
-                      index === current
-                        ? "bg-ink md:bg-bg w-6"
-                        : "bg-ink/25 group-hover:bg-ink/50 md:bg-bg/55 md:group-hover:bg-bg/85 w-1.5",
+                      index === current ? "bg-bg w-6" : "bg-bg/55 group-hover:bg-bg/85 w-1.5",
                     )}
                   />
                   <span className="sr-only">Show photo {index + 1}</span>
@@ -167,21 +166,6 @@ export function HeroSlider({
               </li>
             ))}
           </ol>
-          {!reducedMotion && (
-            <button
-              type="button"
-              onClick={() => setPaused((p) => !p)}
-              aria-pressed={paused}
-              className="text-ink-soft hover:text-ink md:text-bg/90 md:hover:text-bg inline-flex size-11 items-center justify-center"
-            >
-              {paused ? (
-                <Play aria-hidden strokeWidth={1.5} className="size-4" />
-              ) : (
-                <Pause aria-hidden strokeWidth={1.5} className="size-4" />
-              )}
-              <span className="sr-only">{paused ? "Play slideshow" : "Pause slideshow"}</span>
-            </button>
-          )}
         </div>
       )}
 

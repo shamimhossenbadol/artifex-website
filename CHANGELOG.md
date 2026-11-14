@@ -16,6 +16,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 - 2026-11-12 — Test site showed a blank white page after the Phase 2 deploy: the deploy bundle was missing Turbopack's Prisma alias. Packaging now recreates and verifies it, CI boots the real bundle, and the deploy health check requires a complete page (ADR-023).
 
 ### Changed
+- 2026-11-15 — Hero on phones: the photo is behind the text again, in a shorter frame, with a compact heading, subheading and two small buttons side by side; the pause button is removed. On desktop the hero is a little taller (78% of the screen height).
 - 2026-11-15 — Homepage hero slider: plays on its own in an endless loop with a smooth crossfade and slow zoom; arrows removed (dots and a pause button remain). On phones the photo shows as a wide band with the heading and buttons below it instead of being cropped behind the text (ADR-048).
 - 2026-11-14 — Production launch prepared for **artifexfurniturebd.com** (new hosting, new Cloudflare R2, fresh database): step-by-step checklist in `docs/PRODUCTION-LAUNCH.md`; the seeded contact email is now artifexdecoryourdreams@gmail.com (ADR-047).
 - 2026-11-14 — Product page on phones: the photo starts right under the header (no gap); the separate category label above the title is gone (the breadcrumbs already show it); "Made to order" sits on its own line with its note below.

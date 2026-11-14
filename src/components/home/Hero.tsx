@@ -1,6 +1,5 @@
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Container } from "@/components/ui/Container";
-import { cn } from "@/lib/utils";
 import type { HomeHeroVM } from "@/server/services/home.service";
 import { HeroSlider } from "./HeroSlider";
 
@@ -12,48 +11,29 @@ import { HeroSlider } from "./HeroSlider";
 export function Hero({ hero }: { hero: HomeHeroVM }) {
   const withImage = hero.slides.length > 0;
   const frame = withImage
-    ? // Phones: photo band, then the text on ivory. md+: full-bleed photo with the text on top.
-      "relative isolate overflow-hidden bg-bg md:flex md:min-h-[68vh] md:items-center md:bg-ink"
+    ? // Phones: a shorter frame (5:4, 16:9 from sm) so the wide photos show well; md+: tall hero.
+      "relative isolate flex aspect-[5/4] items-end overflow-hidden bg-ink sm:aspect-[16/9] md:aspect-auto md:min-h-[78vh] md:items-center"
     : "relative isolate flex items-center overflow-hidden bg-bg md:min-h-[68vh]";
-  const content = (
-    <Container className={cn("md:py-24", withImage ? "pt-2 pb-12" : "py-12")}>
-      <div
-        className={cn(
-          "max-w-3xl",
-          !withImage && "bg-bg md:mx-auto md:px-10 md:py-8 md:text-center",
-        )}
-      >
-        {hero.eyebrow && (
-          <p className={cn("animate-rise text-eyebrow text-walnut", withImage && "md:text-bg")}>
-            {hero.eyebrow}
-          </p>
-        )}
+  const content = withImage ? (
+    // Over the photos: compact on phones (shorter frame), the full editorial size from md.
+    <Container className="pt-6 pb-11 md:py-24">
+      <div className="md:max-w-3xl">
+        {hero.eyebrow && <p className="animate-rise text-eyebrow text-bg/90">{hero.eyebrow}</p>}
         <h1
           id="hero-heading"
-          className={cn("animate-settle text-display text-ink mt-4", withImage && "md:text-bg")}
+          className="animate-settle text-h2 md:text-display text-bg mt-2 max-w-[17rem] sm:max-w-md md:mt-4 md:max-w-none"
         >
           {hero.heading}
         </h1>
         {hero.subheading && (
-          <p
-            className={cn(
-              "animate-rise stagger-1 text-body-lg mt-5 max-w-xl",
-              withImage ? "md:text-bg/90" : "md:mx-auto",
-            )}
-          >
+          <p className="animate-rise stagger-1 text-small md:text-body-lg text-bg/90 mt-2 max-w-[17rem] sm:max-w-md md:mt-5 md:max-w-xl">
             {hero.subheading}
           </p>
         )}
-        <div
-          className={cn(
-            "animate-rise stagger-2 mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap",
-            !withImage && "md:justify-center",
-          )}
-        >
+        <div className="animate-rise stagger-2 mt-4 flex flex-wrap gap-2 md:mt-8 md:gap-3">
           <ButtonLink
             href={hero.cta.href}
-            size="lg"
-            className={cn("w-full sm:w-auto", withImage && "md:bg-bg md:text-ink md:hover:bg-sand")}
+            className="bg-bg text-ink hover:bg-sand h-10 px-4 md:h-13 md:px-8"
           >
             {hero.cta.label}
           </ButtonLink>
@@ -61,11 +41,36 @@ export function Hero({ hero }: { hero: HomeHeroVM }) {
             <ButtonLink
               href={hero.secondary.href}
               variant="secondary"
+              className="border-bg text-bg hover:bg-bg hover:text-ink h-10 px-4 md:h-13 md:px-8"
+            >
+              {hero.secondary.label}
+            </ButtonLink>
+          )}
+        </div>
+      </div>
+    </Container>
+  ) : (
+    <Container className="py-12 md:py-24">
+      <div className="bg-bg max-w-3xl md:mx-auto md:px-10 md:py-8 md:text-center">
+        {hero.eyebrow && <p className="animate-rise text-eyebrow text-walnut">{hero.eyebrow}</p>}
+        <h1 id="hero-heading" className="animate-settle text-display text-ink mt-4">
+          {hero.heading}
+        </h1>
+        {hero.subheading && (
+          <p className="animate-rise stagger-1 text-body-lg mt-5 max-w-xl md:mx-auto">
+            {hero.subheading}
+          </p>
+        )}
+        <div className="animate-rise stagger-2 mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap md:justify-center">
+          <ButtonLink href={hero.cta.href} size="lg" className="w-full sm:w-auto">
+            {hero.cta.label}
+          </ButtonLink>
+          {hero.secondary && (
+            <ButtonLink
+              href={hero.secondary.href}
+              variant="secondary"
               size="lg"
-              className={cn(
-                "w-full sm:w-auto",
-                withImage && "md:border-bg md:text-bg md:hover:bg-bg md:hover:text-ink",
-              )}
+              className="w-full sm:w-auto"
             >
               {hero.secondary.label}
             </ButtonLink>

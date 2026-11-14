@@ -27,7 +27,7 @@
 ## 3. Page layouts
 
 ### Home
-1. Hero (ADR-048): phones show the photo as a wide band (4:3, 16:9 from sm) with the slider dots under it and the heading and full-width buttons below on ivory; from md the photo fills the hero (min-h 68vh) with the text on top over a scrim. Several photos play on their own in an endless loop (6 s per photo, 1.2 s crossfade, slow 7 s zoom), with dots and a pause button, no arrows; it pauses on hover/focus and in background tabs and doesn't play under reduced motion. Without photos: a compact text hero.
+1. Hero (ADR-048): the photos sit behind the text on every screen size. Phones: a shorter 5:4 frame (16:9 from sm) with compact text (h2-size heading, small subheading, two small buttons side by side) so the wide photos show well; from md the tall hero (min-h 78vh) with the full editorial sizes. Several photos play on their own in an endless loop (6 s per photo, 1.2 s crossfade, slow 7 s zoom) with dots, no arrows and no pause button; it pauses on hover/focus and in background tabs and doesn't play under reduced motion. Without photos: a compact text hero.
 2. Collections (heading "Collections", no eyebrow): category tiles (mobile: horizontal scroll-snap row with partial next-tile peek; desktop: grid of 4 + 3 or 7-across).
 3. New arrivals (heading only, no eyebrow): rail of 8 cards (mobile horizontal scroll; desktop 4-col grid).
 4. Brand introduction: split image/text, with "Our story →".

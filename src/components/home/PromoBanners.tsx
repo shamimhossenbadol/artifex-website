@@ -33,7 +33,7 @@ export function PromoBanners({ banners }: { banners: PromoBannerVM[] }) {
             </>
           );
           const classes =
-            "group bg-sand relative block aspect-[16/9] overflow-hidden md:aspect-[21/9]";
+            "group bg-sand relative block aspect-[16/9] overflow-hidden md:aspect-[2/1]";
           return banner.linkHref ? (
             <Link key={banner.id} href={banner.linkHref} className={classes}>
               {content}

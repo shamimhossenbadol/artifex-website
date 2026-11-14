@@ -204,6 +204,8 @@ test("categories: create, show on the site, guard delete, then delete", async ({
 
   await page.goto("/admin/categories/new");
   await page.getByLabel("Name", { exact: true }).fill("E2E Lounge Chairs");
+  // Keep it off the homepage: home.spec counts the tiles in a parallel worker.
+  await page.getByLabel("Show on the homepage").uncheck();
   await page.getByRole("button", { name: "Create category" }).click();
   await expect(page).toHaveURL(/\/admin\/categories$/);
   await expect(page.getByText("/categories/e2e-lounge-chairs")).toBeVisible();
@@ -384,4 +386,50 @@ test("dashboard shows visitor KPIs; the Pixel ID is validated and loads the pixe
   await page.getByLabel("Pixel ID").fill("");
   await page.getByRole("button", { name: /save/i }).click();
   await expect(page.getByText("Settings saved. The website is updated.").first()).toBeVisible();
+});
+
+// --- ADR-046: delivery challan. Built in the browser, printed, then cleared; nothing is stored. ---
+
+test("challan: fill, preview, print only the sheet, then the form clears", async ({ page }) => {
+  await signIn(page, EMAIL!, NEW_PASSWORD);
+  await expect(page).toHaveURL(/\/admin$/);
+  await page.goto("/admin/challan");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Delivery challan");
+  await page.waitForLoadState("networkidle");
+
+  // Printing with an empty form explains what's missing instead.
+  await page.evaluate(() => {
+    (window as unknown as { printed: number }).printed = 0;
+    window.print = () => {
+      (window as unknown as { printed: number }).printed++;
+    };
+  });
+  await page.getByRole("button", { name: "Print challan" }).click();
+  await expect(page.getByText("Add the customer's name.")).toBeVisible();
+
+  await page.getByLabel("Name", { exact: true }).fill("E2E Customer");
+  await page.getByLabel("Phone").fill("01711-223344");
+  await page.getByLabel("Delivery address").fill("House 12, Uttara, Dhaka");
+  await page.getByLabel("Item 1").fill("Signature L-Shape Sofa");
+  await page.getByLabel("Qty").fill("2");
+  await page.getByLabel("Salesman").fill("E2E Salesman");
+
+  const preview = page.getByRole("region", { name: "Preview" });
+  await expect(preview.getByText("E2E Customer")).toBeVisible();
+  await expect(preview.getByText("Signature L-Shape Sofa")).toBeVisible();
+  await expect(preview.getByText(/^Email: /)).toBeVisible();
+
+  // In print, only the portalled sheet is shown (the admin chrome is hidden).
+  await page.emulateMedia({ media: "print" });
+  await expect(page.locator("#challan-print-root")).toBeVisible();
+  await expect(page.locator("#challan-print-root").getByText("E2E Customer")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Print challan" })).toBeHidden();
+  await page.emulateMedia({ media: "screen" });
+
+  await page.getByRole("button", { name: "Print challan" }).click();
+  expect(await page.evaluate(() => (window as unknown as { printed: number }).printed)).toBe(1);
+  // "Print and vanish": the browser fires afterprint when the dialog closes.
+  await page.evaluate(() => window.dispatchEvent(new Event("afterprint")));
+  await expect(page.getByLabel("Name", { exact: true })).toHaveValue("");
+  await expect(preview.getByText("E2E Customer")).toHaveCount(0);
 });

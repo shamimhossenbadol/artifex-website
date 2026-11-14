@@ -70,7 +70,7 @@ async function seedSettings(): Promise<void> {
       whatsappDefaultMessage:
         "Hello Artifex Furniture, I'd like to know more about your furniture.",
       whatsappProductTemplate: "Hello {business}, I'm interested in {product}{color}. {url}",
-      email: null,
+      email: "artifexdecoryourdreams@gmail.com",
       addressLine: "House 02, Road 05, Sector 01, Uttara",
       city: "Dhaka 1230",
       // Directions to the showroom's Google Maps place (owner-supplied 2026-11-13), not just the address.

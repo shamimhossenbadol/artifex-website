@@ -53,7 +53,7 @@ const SAMPLE = {
   product: "Signature L-Shape Sofa",
   color: "Walnut Brown",
   price: "৳ 85,000",
-  url: "https://artifexfurniture.com/products/signature-l-shape-sofa",
+  url: "https://artifexfurniturebd.com/products/signature-l-shape-sofa",
 };
 
 export function ProductTemplateField({

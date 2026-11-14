@@ -1,6 +1,7 @@
 "use client";
 // Admin navigation links with the active section highlighted (07 §2).
 import {
+  ClipboardList,
   ExternalLink,
   FolderTree,
   House,
@@ -21,6 +22,7 @@ export const ADMIN_NAV: { href: string; label: string; Icon: LucideIcon }[] = [
   { href: "/admin/categories", label: "Categories", Icon: FolderTree },
   { href: "/admin/blog", label: "Journal", Icon: Newspaper },
   { href: "/admin/homepage", label: "Homepage", Icon: House },
+  { href: "/admin/challan", label: "Challan", Icon: ClipboardList },
   { href: "/admin/settings", label: "Settings", Icon: Settings },
   { href: "/admin/account", label: "Account", Icon: UserRound },
 ];

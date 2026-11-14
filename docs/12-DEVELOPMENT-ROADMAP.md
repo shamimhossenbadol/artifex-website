@@ -90,6 +90,8 @@ Each phase ends with a short manual review of the phase's acceptance checks.
 
 **Exit check:** the owner can do every workflow in 07 on a phone, and the auth tests pass.
 
+- [x] Delivery challan maker (Admin → Challan, print-only, nothing stored; ADR-046)
+
 ## Phase 8 — SEO, security & performance hardening
 - [x] `sitemap.ts`, `robots.ts`, canonical audit (ADR-037) — [ ] OG image check in the Facebook Sharing Debugger (owner, after the domain is final)
 - [x] CSP + headers verified on the test site with curl 2026-11-13 (HSTS, nosniff, SAMEORIGIN, referrer, permissions, CSP). `script-src 'unsafe-inline'` remains (Next inline bootstrap); run securityheaders.com on the production domain

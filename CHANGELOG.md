@@ -16,6 +16,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 - 2026-11-12 — Test site showed a blank white page after the Phase 2 deploy: the deploy bundle was missing Turbopack's Prisma alias. Packaging now recreates and verifies it, CI boots the real bundle, and the deploy health check requires a complete page (ADR-023).
 
 ### Changed
+- 2026-11-14 — Production launch prepared for **artifexfurniturebd.com** (new hosting, new Cloudflare R2, fresh database): step-by-step checklist in `docs/PRODUCTION-LAUNCH.md`; the seeded contact email is now artifexdecoryourdreams@gmail.com (ADR-047).
 - 2026-11-14 — Product page on phones: the photo starts right under the header (no gap); the separate category label above the title is gone (the breadcrumbs already show it); "Made to order" sits on its own line with its note below.
 - 2026-11-14 — Mobile header logo: the F of FURNITURE is enlarged like the A of ARTIFEX (ADR-045).
 - 2026-11-13 — Mobile header logo now reads "ARTIFEX FURNITURE" on one line, with "Furniture" matched to the logo's lettering (ADR-045).
@@ -35,6 +36,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 - 2026-11-10 — Image storage moved from local disk to **Cloudflare R2** served at `media.<domain>` (ADR-014). Docs updated: architecture, database, SEO, security, deployment, roadmap, and testing.
 
 ### Added
+- 2026-11-14 — Admin → Challan: make and print a delivery challan (customer, products and quantities, salesman and date, signatures, the website on a red band) on exactly one A4 page in the style of the shop's letterhead, with a live A4 preview. Nothing is saved; the form clears after printing (ADR-046).
 - 2026-11-13 — Admin dashboard "Visitors & inquiries": visitors, page and product views, WhatsApp/Messenger/call taps, inquiry rate, most viewed and most inquired products and top pages for the last 7, 30 or 90 days, compared with the period before. Counted by the website itself without cookies; the owner's own visits aren't counted (ADR-040).
 - 2026-11-13 — Facebook (Meta) Pixel: enter the Pixel ID under Settings → Tracking and the site sends PageView, ViewContent (products), Search and Contact (WhatsApp/Messenger/call taps) to Meta for ads (ADR-040).
 - 2026-11-13 — Phase 8: draft preview for admins ("Preview" on the edit page of a draft product or post), `sitemap.xml` and `robots.txt`; upload hardening tests; header, dependency and bundle checks recorded.

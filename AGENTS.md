@@ -47,6 +47,7 @@ Images: **Cloudflare R2**, served from `https://media.<domain>` (ADR-014). Image
 | Handle metadata, sitemap, caching, or images | `docs/08-SEO-PERFORMANCE.md` |
 | Handle auth, validation, uploads, or headers | `docs/09-SECURITY-GUIDELINES.md` |
 | Build, package, or deploy | `docs/10-DEPLOYMENT-GUIDE.md` |
+| Launch on artifexfurniturebd.com (new hosting + R2) | `docs/PRODUCTION-LAUNCH.md` |
 | Write code | `docs/11-CODING-STANDARDS.md` |
 | Know what to do next | `docs/12-DEVELOPMENT-ROADMAP.md` + `PROGRESS.md` |
 | Test | `docs/TESTING-GUIDELINES.md` |

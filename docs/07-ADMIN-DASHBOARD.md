@@ -18,7 +18,7 @@ Session and security mechanics are in `09-SECURITY-GUIDELINES.md` §2.
 
 ## 2. Layout
 
-- Left sidebar (collapsible to a drawer on mobile): Dashboard · Products · Categories · Blog · Homepage · Settings · Account · "View site ↗" · Logout.
+- Left sidebar (collapsible to a drawer on mobile): Dashboard · Products · Categories · Blog · Homepage · Challan · Settings · Account · "View site ↗" · Logout.
 - Top bar: page title, primary action button (e.g. "New product").
 - It uses the same tokens as the public site, with a denser layout (Inter 14 px, `bg-surface` panels on `bg-bg`).
 - Must be usable on a phone (the owner may update products from mobile). Tables become stacked cards below md.
@@ -76,6 +76,14 @@ Session and security mechanics are in `09-SECURITY-GUIDELINES.md` §2.
 
 ### 3.7 Account
 - Profile (name, email) and change password (see §1). Logout everywhere (bumps `sessionVersion`).
+
+### 3.8 Delivery challan (ADR-046)
+- **Route:** `/admin/challan` ("Challan" in the sidebar). Requires admin like every admin page.
+- **Form:** customer name, phone, delivery address; items (product picked from a type-ahead list of all products, or any free text; optional note such as colour; quantity 1–999; up to 10 rows); date (pre-filled from the request time in Dhaka, editable); salesman name. No challan number and no general notes section.
+- **Preview:** a live sheet of exactly one A4 page (210 × 297 mm) in the letterhead style of the shop's printed paper: logo with tagline left; address, "Cell: 01757758388, 01716498858" and "Email: artifexdecoryourdreams@gmail.com" right (`CHALLAN_LETTERHEAD`); brand-red rule; faint logo watermark; "Delivery Challan" (serif, short brand-red accent bar) with Salesman and Date beside it as labelled blocks split by a hairline; "Delivered to" rows with the label left, the value right and a dotted leader between (Customer Name, Phone Number, Customer Address); items table (item · note) with total quantity; customer and salesman signature lines (salesman name under the line); the website on a brand-red band across the foot of the page.
+- **One page only:** the form measures the preview; if the content would run past the page (long address, long item notes or many items) it says "Too much for one A4 page…" and printing is blocked. About 8–10 items fit, depending on the text.
+- **Print:** "Print challan" checks the required fields (name, phone, address, ≥ 1 item, valid quantities, date) and calls `window.print()`. Only the sheet prints (a copy portalled under `<body>`; print CSS hides everything else; named `@page challan`: A4, no margins, background colours kept). Long challans continue on a second page.
+- **Nothing is stored:** no server action, no table, no browser storage. The form clears after printing (`afterprint`) and with "Clear".
 
 ## 4. Behaviour rules
 

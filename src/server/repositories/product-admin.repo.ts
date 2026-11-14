@@ -290,3 +290,12 @@ export async function removeProductImage(id: number, productId: number, wasPrima
 export async function touchProduct(id: number): Promise<void> {
   await db.product.update({ where: { id }, data: { updatedAt: new Date() } });
 }
+
+/** Product names for the challan item picker (07 §3.8): every product, A–Z, names and SKUs only. */
+export async function findProductNamesForChallan() {
+  return db.product.findMany({
+    orderBy: { title: "asc" },
+    take: 2000,
+    select: { id: true, title: true, sku: true },
+  });
+}

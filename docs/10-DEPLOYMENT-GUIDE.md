@@ -1,6 +1,8 @@
 # 10 — Deployment Guide (Namecheap Shared Hosting / cPanel)
 
 > **Golden rule:** build elsewhere, upload a ready-to-run bundle. Shared hosting doesn't have the RAM/CPU to run `next build`.
+>
+> **Launching on the official domain artifexfurniturebd.com:** follow the checklist in [PRODUCTION-LAUNCH.md](PRODUCTION-LAUNCH.md) (ADR-047). This guide has the details behind each step.
 
 ## 1. Phase 0 — Verify the hosting environment (do this first)
 

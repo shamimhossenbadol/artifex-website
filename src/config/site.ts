@@ -31,3 +31,10 @@ export const DEVELOPER = {
   name: "Shamim Hossen Badol",
   href: "https://wa.me/8801630133873",
 } as const;
+
+/** Delivery challan letterhead (ADR-046): the shop's numbers, email and website as printed. */
+export const CHALLAN_LETTERHEAD = {
+  phones: ["01757758388", "01716498858"],
+  email: "artifexdecoryourdreams@gmail.com",
+  website: "www.artifexfurniturebd.com",
+} as const;

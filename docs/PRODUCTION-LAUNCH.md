@@ -109,7 +109,7 @@ GitHub → repository **Settings → Environments → production** → update th
 | `ADMIN_EMAIL` | the admin's email for the official site |
 | `ADMIN_INITIAL_PASSWORD` | a temporary password (12+ characters); deleted after Step 8 |
 
-**Settings → Secrets and variables → Actions → Variables** (repository variables):
+**Settings → Secrets and variables → Actions → Variables** (repository variables). Make sure the **production environment** has no variables of the same names: environment variables override repository ones (the test site's old values caused a rollback on 2026-11-15):
 
 | Variable | Value |
 |---|---|

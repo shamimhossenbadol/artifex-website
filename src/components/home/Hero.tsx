@@ -36,7 +36,7 @@ export function Hero({ hero }: { hero: HomeHeroVM }) {
   );
   // Phones: below the band, sharing the full width, ink on ivory. md+: white buttons over the photo.
   const photoActions = (
-    <Container className="pt-4 pb-8 md:pt-8 md:pb-24">
+    <Container className="pt-4 md:pt-8 md:pb-24">
       <div className="animate-rise stagger-2 flex gap-2 md:flex-wrap md:gap-3">
         <ButtonLink
           href={hero.cta.href}

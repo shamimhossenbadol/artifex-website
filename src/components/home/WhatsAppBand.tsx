@@ -5,7 +5,7 @@ import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Container } from "@/components/ui/Container";
 
 /**
- * Help band (05 §3): sand background with WhatsApp, Messenger (the sales team's two channels,
+ * Help band (05 §3): sand background (an inset card on phones) with WhatsApp, Messenger (the sales team's two channels,
  * ADR-044) and the phone number. Buttons stack full width on phones.
  */
 export function WhatsAppBand({
@@ -21,45 +21,48 @@ export function WhatsAppBand({
 }) {
   if (!whatsappHref && !messengerHref && !telHref) return null;
   return (
-    <section aria-labelledby="help-heading" className="reveal bg-sand py-12 md:py-20">
-      <Container className="flex flex-col items-center gap-5 text-center md:gap-6">
-        <h2 id="help-heading" className="text-h2 max-w-4xl text-balance">
-          Not sure what fits your space? Talk to us.
-        </h2>
-        <p className="text-body-lg max-w-xl">
-          Send a photo of your room and we&apos;ll help with sizes, fabrics and finishes.
-        </p>
-        <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:justify-center">
-          {whatsappHref && (
-            <ButtonLink
-              href={whatsappHref}
-              external
-              variant="whatsapp"
-              size="lg"
-              className="w-full sm:w-auto"
-            >
-              <WhatsAppIcon className="size-5" />
-              WhatsApp
-            </ButtonLink>
-          )}
-          {messengerHref && (
-            <ButtonLink
-              href={messengerHref}
-              external
-              variant="messenger"
-              size="lg"
-              className="w-full sm:w-auto"
-            >
-              <MessengerIcon className="size-5" />
-              Messenger
-            </ButtonLink>
-          )}
-          {phone && telHref && (
-            <ButtonLink href={telHref} variant="secondary" size="lg" className="w-full sm:w-auto">
-              <Phone aria-hidden strokeWidth={1.5} className="size-4" />
-              {phone}
-            </ButtonLink>
-          )}
+    <section aria-labelledby="help-heading" className="reveal md:bg-sand py-8 md:py-20">
+      <Container>
+        {/* Phones: an inset sand card like the story section (ADR-052); md+: a full-width band. */}
+        <div className="bg-sand flex flex-col items-center gap-4 px-6 py-10 text-center md:gap-6 md:bg-transparent md:p-0">
+          <h2 id="help-heading" className="text-section md:text-h2 max-w-4xl text-balance">
+            Not sure what fits your space? Talk to us.
+          </h2>
+          <p className="text-body md:text-body-lg max-w-xl">
+            Send a photo of your room and we&apos;ll help with sizes, fabrics and finishes.
+          </p>
+          <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:justify-center">
+            {whatsappHref && (
+              <ButtonLink
+                href={whatsappHref}
+                external
+                variant="whatsapp"
+                size="lg"
+                className="w-full sm:w-auto"
+              >
+                <WhatsAppIcon className="size-5" />
+                WhatsApp
+              </ButtonLink>
+            )}
+            {messengerHref && (
+              <ButtonLink
+                href={messengerHref}
+                external
+                variant="messenger"
+                size="lg"
+                className="w-full sm:w-auto"
+              >
+                <MessengerIcon className="size-5" />
+                Messenger
+              </ButtonLink>
+            )}
+            {phone && telHref && (
+              <ButtonLink href={telHref} variant="secondary" size="lg" className="w-full sm:w-auto">
+                <Phone aria-hidden strokeWidth={1.5} className="size-4" />
+                {phone}
+              </ButtonLink>
+            )}
+          </div>
         </div>
       </Container>
     </section>

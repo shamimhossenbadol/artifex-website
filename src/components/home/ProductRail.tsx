@@ -28,7 +28,7 @@ export function ProductRail({
   return (
     <section
       aria-labelledby={id}
-      className={cn("reveal py-12 md:py-24", tinted && "rail-tinted bg-sand")}
+      className={cn("reveal py-8 md:py-24", tinted && "rail-tinted bg-sand")}
     >
       <Container>
         <SectionHeading id={id} eyebrow={eyebrow} title={title} link={link} />

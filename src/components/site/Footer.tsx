@@ -66,7 +66,7 @@ export async function Footer() {
               <MapPin
                 aria-hidden
                 strokeWidth={1.5}
-                className="text-walnut mt-0.5 size-4 shrink-0"
+                className="text-walnut mt-0.5 hidden size-4 shrink-0 md:block"
               />
               {address}
             </p>

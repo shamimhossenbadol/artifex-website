@@ -32,7 +32,8 @@
 3. New arrivals (heading only, no eyebrow): rail of 8 cards (mobile horizontal scroll; desktop 4-col grid).
 4. Brand introduction: split image/text, with "Our story →". On phones, one centred sand card (logo, walnut rule, eyebrow, heading, text, outlined "Our story" pill), ADR-050.
 5. Promo banner(s): 1–2 wide banners (active and in date range).
-6. WhatsApp CTA band: sand background, "Not sure what fits your space? Talk to us." with a WhatsApp button and the phone number.
+6. WhatsApp CTA band: sand background, "Not sure what fits your space? Talk to us." with a WhatsApp button and the phone number. On phones it is an inset sand card inside the container, like the story card (ADR-052).
+   Phone spacing (ADR-052): every section below the hero uses 32 px top and bottom padding (`py-8`); md+ keeps the larger desktop spacing.
 7. Latest from the journal: 3 blog cards.
 
 The Featured and Most loved rails were removed from the homepage (ADR-035); the Featured flag was then dropped (ADR-042). Popular remains: it ranks search results and related products.

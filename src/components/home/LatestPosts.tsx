@@ -10,7 +10,7 @@ import type { PostCardVM } from "@/server/services/blog.service";
 export function LatestPosts({ posts }: { posts: PostCardVM[] }) {
   if (posts.length === 0) return null;
   return (
-    <section aria-labelledby="journal-heading" className="reveal py-12 md:py-24">
+    <section aria-labelledby="journal-heading" className="reveal py-8 md:py-24">
       <Container>
         <SectionHeading
           id="journal-heading"

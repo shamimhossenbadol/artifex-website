@@ -21,7 +21,7 @@ export function WhatsAppBand({
 }) {
   if (!whatsappHref && !messengerHref && !telHref) return null;
   return (
-    <section aria-labelledby="help-heading" className="reveal md:bg-sand py-8 md:py-20">
+    <section aria-labelledby="help-heading" className="reveal md:bg-sand pt-8 md:py-20">
       <Container>
         {/* Phones: an inset sand card like the story section (ADR-052); md+: a full-width band. */}
         <div className="bg-sand flex flex-col items-center gap-4 px-6 py-10 text-center md:gap-6 md:bg-transparent md:p-0">

@@ -137,9 +137,15 @@ export default function HomePage() {
       <Suspense fallback={<HeroSkeleton />}>
         <HeroSection />
       </Suspense>
-      <Suspense fallback={<SectionsSkeleton />}>
-        <HomeSections />
-      </Suspense>
+      {/* Phones: one 32 px gap between sections (each adds only top padding, ADR-053); this
+          closes the last one before the footer. */}
+      <div className="pb-8 md:pb-0">
+        <Suspense fallback={<SectionsSkeleton />}>
+          <HomeSections />
+        </Suspense>
+      </div>
+      {/* The homepage has the help card and contact buttons, so the floating buttons hide on phones. */}
+      <span hidden data-hide-whatsapp-fab />
     </>
   );
 }

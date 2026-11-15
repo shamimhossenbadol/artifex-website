@@ -28,7 +28,12 @@ export function ProductRail({
   return (
     <section
       aria-labelledby={id}
-      className={cn("reveal py-8 md:py-24", tinted && "rail-tinted bg-sand")}
+      className={cn(
+        // Phones: plain rails add only top padding (ADR-053); a tinted rail keeps its padding
+        // inside the sand and sits 32 px below the previous section.
+        "reveal md:py-24",
+        tinted ? "rail-tinted bg-sand mt-8 py-8 md:mt-0" : "pt-8",
+      )}
     >
       <Container>
         <SectionHeading id={id} eyebrow={eyebrow} title={title} link={link} />

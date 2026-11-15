@@ -8,7 +8,7 @@ import type { PromoBannerVM } from "@/server/services/home.service";
 export function PromoBanners({ banners }: { banners: PromoBannerVM[] }) {
   if (banners.length === 0) return null;
   return (
-    <section aria-label="Offers" className="reveal py-8 md:py-12">
+    <section aria-label="Offers" className="reveal pt-8 md:py-12">
       <Container className={cn("grid gap-4 md:gap-6", banners.length > 1 && "md:grid-cols-2")}>
         {banners.map((banner) => {
           const content = (

@@ -17,6 +17,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 - 2026-11-12 — Test site showed a blank white page after the Phase 2 deploy: the deploy bundle was missing Turbopack's Prisma alias. Packaging now recreates and verifies it, CI boots the real bundle, and the deploy health check requires a complete page (ADR-023).
 
 ### Changed
+- 2026-11-15 — Phones: homepage sections are 32 px apart instead of 64 px, and the floating Messenger/WhatsApp buttons no longer show on the homepage (ADR-053).
 - 2026-11-15 — Phones: the same space between all homepage sections; the "Not sure what fits your space?" section is now an inset card like the story; no location icon in the footer (ADR-052).
 - 2026-11-15 — Phones: the hero title and description sit over the photo again, with the buttons below it; the slider dots are closer together and lower (ADR-051).
 - 2026-11-15 — Homepage: the Collections heading is gone (the hero button already leads to all furniture); on phones the hero buttons fill the width, the story section is a centred card, and the footer drops the phone and WhatsApp buttons (the floating buttons cover them). Footer bottom line: © on the left, developer credit on the right (below © on phones) (ADR-050).

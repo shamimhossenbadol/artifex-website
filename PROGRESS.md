@@ -86,6 +86,7 @@ Answer these by editing this list. Agents: use the **default** until an answer i
 
 Add one line per session, newest first: `YYYY-MM-DD — summary — files touched`.
 
+- 2026-11-15 — Phone homepage (ADR-053): top-only section padding (single 32 px gap), floating buttons hidden via a data-hide-whatsapp-fab marker, new e2e test — src/app/(site)/page.tsx, src/components/home/*, tests/e2e/home.spec.ts
 - 2026-11-15 — Phone spacing (ADR-052): py-8 on every homepage section, help band as inset sand card, footer pin hidden on phones — src/components/home/{Hero,CategoryTiles,ProductRail,BrandIntro,WhatsAppBand,LatestPosts}.tsx, src/components/site/Footer.tsx
 - 2026-11-15 — Deploy of 388d384 failed at Seed (deleted `ADMIN_INITIAL_PASSWORD` arrived as "" and failed min 12); re-ran with run_seed=false (live, HTTP 200). Fix: seed maps empty env values to unset; `run_seed` defaults to false — prisma/seed.ts, .github/workflows/deploy.yml, docs/10
 - 2026-11-15 — Phone hero (ADR-051): text over the photo band, buttons below via `HeroSlider` `actions`, tighter and lower dots on phones — src/components/home/{Hero,HeroSlider}.tsx

@@ -12,7 +12,7 @@ import type { HomeCategoryVM } from "@/server/services/home.service";
 export function CategoryTiles({ categories }: { categories: HomeCategoryVM[] }) {
   if (categories.length === 0) return null;
   return (
-    <section aria-labelledby="categories-heading" className="reveal py-8 md:pt-10 md:pb-24">
+    <section aria-labelledby="categories-heading" className="reveal pt-8 md:pt-10 md:pb-24">
       <Container>
         {/* No visible heading: the hero's buttons already lead to all furniture (ADR-050). */}
         <h2 id="categories-heading" className="sr-only">

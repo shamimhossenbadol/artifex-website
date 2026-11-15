@@ -12,7 +12,7 @@ import fullLogo from "@/assets/brand/artifex-logo.svg";
 export function BrandIntro({ text }: { text: string | null }) {
   if (!text) return null;
   return (
-    <section aria-labelledby="brand-heading" className="reveal py-8 md:py-20">
+    <section aria-labelledby="brand-heading" className="reveal pt-8 md:py-20">
       <Container>
         <div className="bg-sand grid items-center px-6 py-10 text-center md:grid-cols-[2fr_3fr] md:gap-16 md:bg-transparent md:p-0 md:text-left">
           {/* The full logo on sand is the visual: a compact panel, so the text sets the height. */}

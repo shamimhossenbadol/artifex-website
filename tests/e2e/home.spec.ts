@@ -68,3 +68,15 @@ test("has Organization, WebSite (search) and FurnitureStore JSON-LD", async ({ p
   const site = ld.find((x: { "@type": string }) => x["@type"] === "WebSite");
   expect(site.potentialAction.target.urlTemplate).toMatch(/\/search\?q=\{search_term_string\}$/);
 });
+
+test("phones: no floating contact buttons on the homepage, still on other pages", async ({
+  page,
+  isMobile,
+}) => {
+  test.skip(!isMobile, "mobile only");
+  await page.goto("/");
+  await expect(page.getByRole("link", { name: /Chat with .* on WhatsApp/ })).toBeHidden();
+  await expect(page.getByRole("link", { name: /on Facebook Messenger/ })).toBeHidden();
+  await page.goto("/about");
+  await expect(page.getByRole("link", { name: /Chat with .* on WhatsApp/ })).toBeVisible();
+});

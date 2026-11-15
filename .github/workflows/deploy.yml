@@ -9,7 +9,7 @@ on:
       run_seed:
         description: "Run the idempotent seed (creates missing categories/settings/admin)"
         type: boolean
-        default: true
+        default: false
 
 concurrency:
   group: deploy-production

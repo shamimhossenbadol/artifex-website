@@ -6,6 +6,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 ## [Unreleased]
 
 ### Fixed
+- 2026-11-15 — Deploys no longer fail at the seed step after the temporary admin password secret is deleted: the seed treats an empty secret as not set, and the deploy's "Run the seed" option is now off by default (tick it only when new categories or settings must be created).
 - 2026-11-13 — Phones: the homepage was wider than the screen (it could slide sideways); "not found" pages for missing products or posts showed the header and footer twice; the header logo appeared late on every page (ADR-044).
 - 2026-11-13 — Mobile menu and search overlay could vanish if opened in the first moment after a page started loading (when the full header streamed in, it replaced them). They now stay open (ADR-043); this also fixes the flaky mobile tests in CI.
 - 2026-11-13 — Admin: opening a product edit page right after creating it (and other in-admin navigation to forms) could show "Something went wrong"; form labels now always reach their fields, including the Category and Status dropdowns (ADR-038). CI is green again.

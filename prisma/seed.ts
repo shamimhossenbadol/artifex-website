@@ -6,11 +6,15 @@ import { createPrismaClient } from "../src/lib/prisma";
 import { seedDemoCatalogue } from "./seed-demo";
 import { seedDemoPosts } from "./seed-demo-posts";
 
+// A deleted GitHub secret arrives as an empty string: treat it as not set.
+const optional = <T extends z.ZodType>(schema: T) =>
+  z.preprocess((v) => (v === "" ? undefined : v), schema.optional());
+
 const env = z
   .object({
     DATABASE_URL: z.string().min(1),
-    ADMIN_EMAIL: z.email().optional(),
-    ADMIN_INITIAL_PASSWORD: z.string().min(12).optional(),
+    ADMIN_EMAIL: optional(z.email()),
+    ADMIN_INITIAL_PASSWORD: optional(z.string().min(12)),
     SEED_DEMO: z.enum(["true", "false"]).optional(),
   })
   .parse(process.env);

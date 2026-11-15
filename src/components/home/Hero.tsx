@@ -11,47 +11,52 @@ import { HeroSlider } from "./HeroSlider";
 export function Hero({ hero }: { hero: HomeHeroVM }) {
   const withImage = hero.slides.length > 0;
   const frame = withImage
-    ? // Phones: photo band, then the compact text on ivory. md+: tall hero, text over the photo.
-      "relative isolate overflow-hidden bg-bg md:flex md:min-h-[78vh] md:items-center md:bg-ink"
+    ? // Phones: photo band with the text over it, buttons below on ivory. md+: tall hero, all over
+      // the photo, centred vertically.
+      "relative isolate overflow-hidden bg-bg md:flex md:min-h-[78vh] md:flex-col md:justify-center md:bg-ink"
     : "relative isolate flex items-center overflow-hidden bg-bg md:min-h-[68vh]";
-  const content = withImage ? (
-    // Phones: compact, below the photo band, ink on ivory. md+: over the photo, editorial sizes.
-    <Container className="pt-5 pb-9 md:py-24">
+  // Over the photo on every size: compact on phones (room left at the foot for the dots).
+  const photoText = (
+    <Container className="pt-10 pb-10 md:pt-24 md:pb-0">
       <div className="md:max-w-3xl">
-        {hero.eyebrow && (
-          <p className="animate-rise text-eyebrow text-walnut md:text-bg/90">{hero.eyebrow}</p>
-        )}
+        {hero.eyebrow && <p className="animate-rise text-eyebrow text-bg/90">{hero.eyebrow}</p>}
         <h1
           id="hero-heading"
-          className="animate-settle text-h2 md:text-display text-ink md:text-bg mt-2 md:mt-4"
+          className="animate-settle text-h2 md:text-display text-bg mt-1.5 md:mt-4"
         >
           {hero.heading}
         </h1>
         {hero.subheading && (
-          <p className="animate-rise stagger-1 text-small md:text-body-lg text-ink-soft md:text-bg/90 mt-2 max-w-xl md:mt-5">
+          <p className="animate-rise stagger-1 text-small md:text-body-lg text-bg/90 mt-1.5 max-w-xl md:mt-5">
             {hero.subheading}
           </p>
         )}
-        <div className="animate-rise stagger-2 mt-4 flex flex-wrap gap-2 md:mt-8 md:gap-3">
-          <ButtonLink
-            href={hero.cta.href}
-            className="md:bg-bg md:text-ink md:hover:bg-sand h-10 px-4 md:h-13 md:px-8"
-          >
-            {hero.cta.label}
-          </ButtonLink>
-          {hero.secondary && (
-            <ButtonLink
-              href={hero.secondary.href}
-              variant="secondary"
-              className="md:border-bg md:text-bg md:hover:bg-bg md:hover:text-ink h-10 px-4 md:h-13 md:px-8"
-            >
-              {hero.secondary.label}
-            </ButtonLink>
-          )}
-        </div>
       </div>
     </Container>
-  ) : (
+  );
+  // Phones: below the band, sharing the full width, ink on ivory. md+: white buttons over the photo.
+  const photoActions = (
+    <Container className="pt-4 pb-8 md:pt-8 md:pb-24">
+      <div className="animate-rise stagger-2 flex gap-2 md:flex-wrap md:gap-3">
+        <ButtonLink
+          href={hero.cta.href}
+          className="md:bg-bg md:text-ink md:hover:bg-sand h-11 flex-1 px-3 md:h-13 md:flex-none md:px-8"
+        >
+          {hero.cta.label}
+        </ButtonLink>
+        {hero.secondary && (
+          <ButtonLink
+            href={hero.secondary.href}
+            variant="secondary"
+            className="md:border-bg md:text-bg md:hover:bg-bg md:hover:text-ink h-11 flex-1 px-3 md:h-13 md:flex-none md:px-8"
+          >
+            {hero.secondary.label}
+          </ButtonLink>
+        )}
+      </div>
+    </Container>
+  );
+  const content = (
     <Container className="py-12 md:py-24">
       <div className="bg-bg max-w-3xl md:mx-auto md:px-10 md:py-8 md:text-center">
         {hero.eyebrow && <p className="animate-rise text-eyebrow text-walnut">{hero.eyebrow}</p>}
@@ -84,8 +89,13 @@ export function Hero({ hero }: { hero: HomeHeroVM }) {
 
   if (withImage) {
     return (
-      <HeroSlider slides={hero.slides} className={frame} labelledBy="hero-heading">
-        {content}
+      <HeroSlider
+        slides={hero.slides}
+        className={frame}
+        labelledBy="hero-heading"
+        actions={photoActions}
+      >
+        {photoText}
       </HeroSlider>
     );
   }

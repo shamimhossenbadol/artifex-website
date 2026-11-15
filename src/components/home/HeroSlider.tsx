@@ -4,9 +4,10 @@
 // It pauses while hovered or focused and while the tab is hidden, and doesn't play at all for
 // people who ask for reduced motion (no pause button, owner's choice).
 //
-// Phones: the photos as a short 16:9 band with the dots centred on it, and the heading and buttons
-// below (Hero). From md the photos fill the hero behind the text. The first photo is the LCP image: preloaded and never faded in; other photos load when
-// they're shown or next in line.
+// Phones (ADR-051): a short photo band with the heading and description over it and the dots at
+// its foot; the buttons (`actions`) sit below it on ivory. From md the photos fill the whole hero
+// behind the text and buttons. The first photo is the LCP image: preloaded and never faded in;
+// other photos load when they're shown or next in line.
 import Image from "next/image";
 import {
   useCallback,
@@ -36,11 +37,15 @@ export function HeroSlider({
   className,
   labelledBy,
   children,
+  actions,
 }: {
   slides: Slide[];
   className: string;
   labelledBy: string;
+  /** Heading and description: over the photo on every size. */
   children: ReactNode;
+  /** Buttons: below the photo band on phones, under the text over the photo from md. */
+  actions?: ReactNode;
 }) {
   const count = slides.length;
   const [current, setCurrent] = useState(0);
@@ -106,73 +111,77 @@ export function HeroSlider({
         else if (start - end > SWIPE_PX) pick(current + 1);
       }}
     >
-      {/* Photos: a short 16:9 band on phones (text below); behind the text from md. */}
-      <div className="relative aspect-[16/9] overflow-hidden md:absolute md:inset-0 md:-z-10 md:aspect-auto">
-        {slides.map((slide, index) => {
-          const active = index === current;
-          return (
+      {/* Phones: the band, photos behind the text. md+: static, so the photos cover the hero. */}
+      <div className="relative isolate flex min-h-[60vw] flex-col justify-end md:static md:isolation-auto md:block md:min-h-0">
+        <div className="absolute inset-0 -z-10 overflow-hidden">
+          {slides.map((slide, index) => {
+            const active = index === current;
+            return (
+              <div
+                key={slide.path}
+                aria-hidden={!active}
+                className={cn(
+                  "absolute inset-0 transition-opacity duration-[1200ms] ease-in-out motion-reduce:transition-none",
+                  active ? "opacity-100" : "opacity-0",
+                )}
+              >
+                {(seen.has(index) || index === upNext) && (
+                  <Image
+                    src={slide.path}
+                    alt={active ? slide.alt : ""}
+                    fill
+                    preload={index === 0}
+                    sizes="100vw"
+                    className={cn(
+                      // Slow zoom by transition, not keyframes: the outgoing photo keeps its zoom
+                      // while it fades out and only resets once hidden (after the 1.2 s fade).
+                      "object-cover motion-reduce:scale-100 motion-reduce:transition-none",
+                      active && !reducedMotion && count > 1
+                        ? "scale-[1.06] transition-transform delay-0 duration-[7000ms] ease-out"
+                        : "scale-100 transition-transform delay-[1300ms] duration-0",
+                    )}
+                  />
+                )}
+              </div>
+            );
+          })}
+          {/* Solid scrim (no gradient outside category tiles, 03 §6) for legible text. */}
+          <div aria-hidden className="bg-ink/45 md:bg-ink/35 absolute inset-0" />
+          {count > 1 && (
             <div
-              key={slide.path}
-              aria-hidden={!active}
-              className={cn(
-                "absolute inset-0 transition-opacity duration-[1200ms] ease-in-out motion-reduce:transition-none",
-                active ? "opacity-100" : "opacity-0",
-              )}
+              role="group"
+              aria-label="Hero photos"
+              className="absolute inset-x-0 bottom-0 z-10 flex items-center justify-center md:bottom-4"
             >
-              {(seen.has(index) || index === upNext) && (
-                <Image
-                  src={slide.path}
-                  alt={active ? slide.alt : ""}
-                  fill
-                  preload={index === 0}
-                  sizes="100vw"
-                  className={cn(
-                    // Slow zoom by transition, not keyframes: the outgoing photo keeps its zoom
-                    // while it fades out and only resets once hidden (after the 1.2 s fade).
-                    "object-cover motion-reduce:scale-100 motion-reduce:transition-none",
-                    active && !reducedMotion && count > 1
-                      ? "scale-[1.06] transition-transform delay-0 duration-[7000ms] ease-out"
-                      : "scale-100 transition-transform delay-[1300ms] duration-0",
-                  )}
-                />
-              )}
+              <ol className="flex items-center">
+                {slides.map((slide, index) => (
+                  <li key={slide.path}>
+                    <button
+                      type="button"
+                      onClick={() => pick(index)}
+                      aria-current={index === current ? "true" : undefined}
+                      // Phones: closely spaced dots, each target still at least 24 × 32 px (WCAG 2.5.8).
+                      className="group inline-flex h-8 min-w-6 items-center justify-center px-[9px] md:size-11 md:px-0"
+                    >
+                      <span
+                        aria-hidden
+                        className={cn(
+                          "block h-1.5 rounded-full transition-all duration-500 ease-out",
+                          index === current ? "bg-bg w-6" : "bg-bg/55 group-hover:bg-bg/85 w-1.5",
+                        )}
+                      />
+                      <span className="sr-only">Show photo {index + 1}</span>
+                    </button>
+                  </li>
+                ))}
+              </ol>
             </div>
-          );
-        })}
-        {/* Solid scrim (no gradient outside category tiles, 03 §6) for legible text. */}
-        <div aria-hidden className="bg-ink/35 absolute inset-0 hidden md:block" />
-        {count > 1 && (
-          <div
-            role="group"
-            aria-label="Hero photos"
-            className="absolute inset-x-0 bottom-0 z-10 flex items-center justify-center md:bottom-4"
-          >
-            <ol className="flex items-center">
-              {slides.map((slide, index) => (
-                <li key={slide.path}>
-                  <button
-                    type="button"
-                    onClick={() => pick(index)}
-                    aria-current={index === current ? "true" : undefined}
-                    className="group inline-flex size-11 items-center justify-center"
-                  >
-                    <span
-                      aria-hidden
-                      className={cn(
-                        "block h-1.5 rounded-full transition-all duration-500 ease-out",
-                        index === current ? "bg-bg w-6" : "bg-bg/55 group-hover:bg-bg/85 w-1.5",
-                      )}
-                    />
-                    <span className="sr-only">Show photo {index + 1}</span>
-                  </button>
-                </li>
-              ))}
-            </ol>
-          </div>
-        )}
+          )}
+        </div>
+        {children}
       </div>
 
-      {children}
+      {actions}
     </section>
   );
 }

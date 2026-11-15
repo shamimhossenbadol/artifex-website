@@ -1,4 +1,4 @@
-import { MapPin, Phone } from "lucide-react";
+import { Mail, MapPin, Phone } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { DEVELOPER } from "@/config/site";
 import { Skeleton } from "@/components/ui/Skeleton";
@@ -13,9 +13,9 @@ const PILL =
   "border-line bg-surface text-ink hover:border-ink text-small inline-flex min-h-11 items-center gap-2 rounded-full border px-4 transition-colors";
 
 /**
- * Compact footer (ADR-035, ADR-049): brand (logo, two-line description, social icons) and contact
- * (one-line address, phone and WhatsApp as rounded buttons, email); centred on phones, two columns
- * from md; a quiet line with the developer credit and ©. Navigation lives in the header.
+ * Compact footer (ADR-035, ADR-049, ADR-050): brand (logo, two-line description, social icons) and
+ * contact (one-line address, phone and WhatsApp buttons from md, email); centred on phones, two
+ * columns from md; a quiet line with © and the developer credit. Navigation lives in the header.
  */
 export async function Footer() {
   const settings = await getSiteSettings();
@@ -37,14 +37,14 @@ export async function Footer() {
             <p className="text-ink-soft text-small line-clamp-2 max-w-sm">{description}</p>
           )}
           {socials.length > 0 && (
-            <ul className="-my-1 flex items-center md:-ml-2.5">
+            <ul className="mt-1 flex items-center gap-2 md:-my-1 md:mt-0 md:-ml-2.5 md:gap-0">
               {socials.map(({ href, label, Icon }) => (
                 <li key={label}>
                   <a
                     href={href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-ink-soft hover:text-walnut inline-flex size-11 items-center justify-center transition-colors"
+                    className="text-ink-soft hover:text-walnut border-line bg-surface inline-flex size-11 items-center justify-center rounded-full border transition-colors md:border-0 md:bg-transparent"
                   >
                     <Icon />
                     <span className="sr-only">
@@ -57,9 +57,12 @@ export async function Footer() {
           )}
         </div>
 
-        <address className="flex flex-col items-center gap-3 not-italic md:items-start">
+        {/* Phones: a short walnut rule between the brand and the contact details. */}
+        <div aria-hidden className="bg-walnut/50 -my-1 h-px w-10 md:hidden" />
+
+        <address className="flex flex-col items-center gap-1 not-italic md:items-start md:gap-3">
           {address && (
-            <p className="text-ink-soft text-small inline-flex items-start gap-2">
+            <p className="text-ink-soft text-small flex max-w-xs flex-col items-center gap-1 md:max-w-none md:flex-row md:items-start md:gap-2">
               <MapPin
                 aria-hidden
                 strokeWidth={1.5}
@@ -68,7 +71,8 @@ export async function Footer() {
               {address}
             </p>
           )}
-          <div className="flex flex-wrap justify-center gap-2 md:justify-start">
+          {/* Phones have the floating call and WhatsApp buttons, so these show from md only. */}
+          <div className="hidden flex-wrap gap-2 md:flex">
             {phone && telHref && (
               <a href={telHref} className={`${PILL} tabular-nums`}>
                 <Phone aria-hidden strokeWidth={1.5} className="text-walnut size-4 shrink-0" />
@@ -85,8 +89,13 @@ export async function Footer() {
           {settings.email && (
             <a
               href={`mailto:${settings.email}`}
-              className="text-ink-soft hover:text-ink text-small inline-flex min-h-11 items-center underline-offset-4 hover:underline md:min-h-0"
+              className="text-ink-soft hover:text-ink text-small inline-flex min-h-11 items-center gap-2 underline-offset-4 hover:underline md:min-h-0"
             >
+              <Mail
+                aria-hidden
+                strokeWidth={1.5}
+                className="text-walnut size-4 shrink-0 md:hidden"
+              />
               {settings.email}
             </a>
           )}
@@ -94,8 +103,11 @@ export async function Footer() {
       </Container>
 
       <div className="border-line border-t">
-        {/* Credit first: left on desktop, top line on phones. */}
+        {/* © on the left and the credit on the right; on phones the credit sits below. */}
         <Container className="text-small text-muted flex flex-col items-center gap-0 py-3 text-center sm:flex-row sm:justify-between sm:gap-4 sm:text-left">
+          <p className="pt-1 sm:py-1">
+            © {new Date().getFullYear()} {settings.businessName}. All rights reserved.
+          </p>
           <p>
             Developed by{" "}
             <a
@@ -107,9 +119,6 @@ export async function Footer() {
             >
               {DEVELOPER.name}
             </a>
-          </p>
-          <p className="py-1">
-            © {new Date().getFullYear()} {settings.businessName}. All rights reserved.
           </p>
         </Container>
       </div>

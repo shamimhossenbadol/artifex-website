@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { CategoryIcon } from "@/components/site/category-icons";
-import { SectionHeading } from "@/components/site/SectionHeading";
 import { Container } from "@/components/ui/Container";
 import type { HomeCategoryVM } from "@/server/services/home.service";
 
@@ -13,13 +12,12 @@ import type { HomeCategoryVM } from "@/server/services/home.service";
 export function CategoryTiles({ categories }: { categories: HomeCategoryVM[] }) {
   if (categories.length === 0) return null;
   return (
-    <section aria-labelledby="categories-heading" className="reveal py-12 md:py-24">
+    <section aria-labelledby="categories-heading" className="reveal pt-2 pb-12 md:pt-10 md:pb-24">
       <Container>
-        <SectionHeading
-          id="categories-heading"
-          title="Collections"
-          link={{ href: "/products", label: "All furniture" }}
-        />
+        {/* No visible heading: the hero's buttons already lead to all furniture (ADR-050). */}
+        <h2 id="categories-heading" className="sr-only">
+          Collections
+        </h2>
         <ul className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-6 lg:grid-cols-6">
           {categories.map((category) => {
             return (

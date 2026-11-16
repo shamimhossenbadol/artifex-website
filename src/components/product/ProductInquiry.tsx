@@ -20,7 +20,7 @@ type ProductInquiryProps = {
   phone: string | null;
   telHref: string | null;
   messengerHref: string | null;
-  /** No fixed price (ADR-063): the buttons ask for a quote and sit right under the quote card. */
+  /** No fixed price (ADR-063): the buttons say "Ask for price on …" and sit right under the card. */
   quote?: boolean;
 };
 
@@ -36,7 +36,7 @@ export function ProductInquiry({
   messengerHref,
   quote = false,
 }: ProductInquiryProps) {
-  const verb = quote ? "Get a quote on" : "Message on";
+  const verb = quote ? "Ask for price on" : "Message on";
   const [showBar, setShowBar] = useState(false);
   const ctaRef = useRef<HTMLDivElement>(null);
 
@@ -104,6 +104,7 @@ export function ProductInquiry({
       {(whatsappHref || messengerHref) && (
         <div
           data-hide-whatsapp-fab
+          data-product-bar
           aria-hidden={!showBar}
           className={cn(
             "border-line bg-bg fixed inset-x-0 bottom-0 z-30 border-t px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] transition-transform duration-200 ease-out lg:hidden",

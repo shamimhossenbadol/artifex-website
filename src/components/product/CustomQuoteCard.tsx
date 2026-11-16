@@ -25,7 +25,8 @@ export function CustomQuoteCard({ className }: { className?: string }) {
         Priced to your design
       </h2>
       <p className="text-small text-ink-soft mt-0.5">
-        Made to order: message us for a quote based on your customisation.
+        Every piece is made to your size and finish. Message us for your price, or visit our Uttara
+        showroom.
       </p>
       <ul className="mt-2.5 flex flex-wrap gap-x-3.5 gap-y-1.5">
         {POINTS.map(({ Icon, text }) => (

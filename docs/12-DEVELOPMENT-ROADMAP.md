@@ -103,6 +103,8 @@ Each phase ends with a short manual review of the phase's acceptance checks.
 - [x] Quick add specification buttons removed (ADR-062)
 - [x] Custom-quote card for products without a price (ADR-063); compact phone footer (ADR-064)
 - [x] No breadcrumbs on the phone product page (ADR-065)
+- [x] Invoice maker on the challan letterhead, nothing stored (ADR-067)
+- [x] Tighter phone product page; footer clears the phone product bar (ADR-068)
 
 ## Phase 8 — SEO, security & performance hardening
 - [x] `sitemap.ts`, `robots.ts`, canonical audit (ADR-037) — [ ] OG image check in the Facebook Sharing Debugger (owner, after the domain is final)

@@ -163,8 +163,9 @@ async function ProductDetail({ params, searchParams }: Props) {
         </div>
       </div>
 
-      {/* ADR-061: the description starts right under the rule, with no visible heading. */}
-      <div className="border-line mt-10 grid gap-10 border-t pt-8 md:mt-12 md:pt-10 lg:grid-cols-12 lg:gap-12">
+      {/* ADR-061: the description starts right under the rule, with no visible heading. Phones
+          (ADR-068): 24 px above and below the rule, before Specifications and before related. */}
+      <div className="border-line mt-6 grid gap-6 border-t pt-6 md:mt-12 md:gap-10 md:pt-10 lg:grid-cols-12 lg:gap-12">
         {product.description.trim() && (
           <section aria-labelledby="description" className="lg:col-span-7">
             <h2 id="description" className="sr-only">
@@ -210,7 +211,7 @@ async function RelatedProducts({
   const related = await getRelatedProducts(productId, categoryId);
   if (related.length === 0) return null;
   return (
-    <section aria-labelledby="related" className="reveal mt-12 md:mt-14">
+    <section aria-labelledby="related" className="reveal mt-6 md:mt-14">
       <SectionHeading id="related" title="You may also like" />
       <ProductGrid products={related} preloadFirst={0} />
     </section>

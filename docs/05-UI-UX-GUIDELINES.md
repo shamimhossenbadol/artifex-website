@@ -52,7 +52,7 @@ Sections with no content are **hidden**, never left empty.
 - Phones: the gallery starts directly under the header (no top padding) and runs edge to edge.
 - Below: tabs or stacked sections for *Description* and *Specifications* (stacked on mobile, no tabs; tabs are allowed on desktop).
 - Related products: 4 from the same category (excluding the current one), falling back to popular, under the heading "You may also like" (ADR-061).
-- Below the info block (ADR-061): a rule 40 px under it (48 px from md); the full description starts right under the rule (no visible heading), specs beside it on desktop; related products 48 px (56 px from md) below. With a single photo the gallery has no thumbnail column.
+- Below the info block (ADR-061, ADR-068): phones have 24 px above and below the rule, 24 px before Specifications and 24 px before related products; from md 48 px above the rule, 40 px below, related 56 px below. The full description starts right under the rule (no visible heading), specs beside it on desktop. On phone product pages the footer has extra bottom padding so the fixed price/contact bar never covers it. With a single photo the gallery has no thumbnail column.
 - Mobile sticky bottom bar (appears after the main CTA scrolls out of view): price and a "WhatsApp" button.
 
 ### Search

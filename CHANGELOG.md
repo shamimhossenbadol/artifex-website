@@ -6,6 +6,9 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 ## [Unreleased]
 
 ### Added
+- 2026-11-16 — Admin → Invoice: print customer invoices on the same letterhead as the delivery challan. Items with quantity, unit and unit price (line totals calculated), optional discount and advance, amount due, optional invoice number; one A4 page, nothing stored (ADR-067).
+
+### Added
 - 2026-11-16 — Delivery challan: optional driver details (driver name, phone, vehicle number), switched on with a checkbox and printed as a "Driver & vehicle" row under the items; blank fields print as lines to fill in by hand (ADR-066).
 
 ### Removed
@@ -26,6 +29,8 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 - 2026-11-12 — Test site showed a blank white page after the Phase 2 deploy: the deploy bundle was missing Turbopack's Prisma alias. Packaging now recreates and verifies it, CI boots the real bundle, and the deploy health check requires a complete page (ADR-023).
 
 ### Changed
+- 2026-11-16 — Products without a price: the buttons now say "Ask for price on WhatsApp/Messenger", and the card invites customers to message for their price or visit the Uttara showroom (ADR-069).
+- 2026-11-16 — Phones: tighter product page (less space around the line, before Specifications and before "You may also like"); the footer no longer sits under the fixed price/contact bar on product pages (ADR-068).
 - 2026-11-16 — Delivery challan: the title is now "Delivery Challan / Gate Pass" in a smaller size so it no longer runs into the salesman and date; the letterhead logo and contact details are a little larger (ADR-066).
 - 2026-11-16 — Phones: the product page no longer shows the Home / Category / Product path above the title (ADR-065).
 - 2026-11-16 — Product page: products without a fixed price show a "Priced to your design" quote card (made to your size, your fabric and finish, free quote) with "Get a quote on WhatsApp/Messenger" buttons, instead of "Price on request" and a separate Made to order badge (ADR-063). Phones: a more compact footer, with no line under the logo and tighter spacing (ADR-064).
@@ -80,6 +85,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 - 2026-11-12 — Artifex brand logo in the header (with a subtle reveal) and footer (with "Decor your dreams"), plus favicons and an Apple touch icon (ADR-022).
 
 ### Changed
+- 2026-11-16 — Products without a price: the buttons now say "Ask for price on WhatsApp/Messenger", and the card invites customers to message for their price or visit the Uttara showroom (ADR-069).
 - 2026-11-12 — Real contact details: WhatsApp/phone +880 1757-758388, Uttara showroom address, Facebook, Instagram and YouTube links.
 - 2026-11-12 — Design system & layout shell (Phase 2): colour/type tokens, Cormorant Garamond + Inter, buttons, badges, prices (৳ lakh format), form fields, breadcrumbs, skeletons; sticky header with category nav, mobile menu drawer, footer with contact and opening hours, floating WhatsApp button; branded 404 and error pages; dev style guide at `/_styleguide`.
 - 2026-11-12 — Subtle CSS-only animations (entrance, scroll reveal, hover), disabled for reduced-motion users (ADR-021).

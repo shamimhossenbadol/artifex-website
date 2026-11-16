@@ -463,3 +463,57 @@ test("challan: fill, preview, print only the sheet, then the form clears", async
   await expect(page.getByLabel("Name", { exact: true })).toHaveValue("");
   await expect(preview.getByText("E2E Customer")).toHaveCount(0);
 });
+
+// --- ADR-067: invoice. Same flow as the challan: built in the browser, printed, then cleared. ---
+
+test("invoice: items × prices, discount and advance, print only the sheet, then clear", async ({
+  page,
+}) => {
+  await signIn(page, EMAIL!, NEW_PASSWORD);
+  await expect(page).toHaveURL(/\/admin$/);
+  await page.goto("/admin/invoice");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Invoice");
+  await page.waitForLoadState("networkidle");
+
+  await page.evaluate(() => {
+    (window as unknown as { printed: number }).printed = 0;
+    window.print = () => {
+      (window as unknown as { printed: number }).printed++;
+    };
+  });
+  await page.getByRole("button", { name: "Print invoice" }).click();
+  await expect(page.getByText("Add the customer's name.")).toBeVisible();
+
+  await page.getByLabel("Name", { exact: true }).fill("E2E Invoice Customer");
+  await page.getByLabel("Item 1").fill("Mk-1 Fabrics");
+  await page.getByLabel("Qty").fill("27");
+  await page.getByLabel("Unit", { exact: true }).fill("yds");
+  await page.getByLabel("Unit price (৳)").fill("1500");
+  await page.getByRole("button", { name: "Add item" }).click();
+  await page.getByLabel("Item 2").fill("Curtain Making");
+  await page.getByLabel("Qty").nth(1).fill("2.5");
+  await page.getByLabel("Unit price (৳)").nth(1).fill("80");
+  await page.getByLabel("Discount (৳, optional)").fill("500");
+  await page.getByLabel("Advance paid (৳, optional)").fill("10,000");
+  await page.getByLabel("Invoice no. (optional)").fill("INV-0001");
+
+  // 27 × 1500 = 40,500; 2.5 × 80 = 200; subtotal 40,700 − 500 − 10,000 = 30,200 due.
+  const preview = page.getByRole("region", { name: "Preview" });
+  await expect(preview.getByText("E2E Invoice Customer")).toBeVisible();
+  await expect(preview.getByText("INV-0001")).toBeVisible();
+  await expect(preview.getByText("40,500", { exact: true })).toBeVisible();
+  await expect(preview.getByText("৳ 40,700")).toBeVisible();
+  await expect(preview.getByText("৳ 30,200")).toBeVisible();
+  await expect(preview.getByText(/^Email: /)).toBeVisible();
+
+  await page.emulateMedia({ media: "print" });
+  await expect(page.locator("#invoice-print-root")).toBeVisible();
+  await expect(page.locator("#invoice-print-root").getByText("E2E Invoice Customer")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Print invoice" })).toBeHidden();
+  await page.emulateMedia({ media: "screen" });
+
+  await page.getByRole("button", { name: "Print invoice" }).click();
+  expect(await page.evaluate(() => (window as unknown as { printed: number }).printed)).toBe(1);
+  await page.evaluate(() => window.dispatchEvent(new Event("afterprint")));
+  await expect(page.getByLabel("Name", { exact: true })).toHaveValue("");
+});

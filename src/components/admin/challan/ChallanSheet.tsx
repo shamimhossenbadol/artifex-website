@@ -1,9 +1,8 @@
-// The printable delivery challan (ADR-046): an A4 sheet in the style of the shop's letterhead —
+// The printable delivery challan (ADR-046): an A4 sheet in the style of the shop's letterhead
+// (shared with the invoice, print/Letterhead.tsx) —
 // logo left, address/phones/email right, a brand-red rule, a faint logo watermark — then the
 // customer, the items, signatures and the website on a red band. Exactly one A4 page (210 × 297 mm)
 // for both the on-screen preview and the print copy; it renders the form and keeps nothing.
-import Image from "next/image";
-import fullLogo from "@/assets/brand/artifex-logo.svg";
 import {
   filledItems,
   formatChallanDate,
@@ -13,8 +12,17 @@ import {
   type ChallanDraft,
 } from "@/lib/challan";
 import { cn } from "@/lib/utils";
+import {
+  A4_SHEET_CLASS,
+  SHEET_LABEL as LABEL,
+  SheetFooterBand,
+  SheetLetterhead,
+  SheetWatermark,
+  sheetOverflows,
+} from "../print/Letterhead";
 
-const LABEL = "text-eyebrow text-muted";
+// Kept here too so existing imports keep working; the shared copy lives in print/Letterhead.
+export { sheetOverflows };
 
 /** "Customer Name ........ Rahim Uddin": label left, value right, a dotted leader between. */
 function LeaderRow({
@@ -63,11 +71,6 @@ function DriverField({
 /** Id of the on-screen preview sheet, measured by the form to keep everything on one page. */
 export const CHALLAN_PREVIEW_ID = "challan-preview-sheet";
 
-/** True when the sheet's content runs past the bottom of the A4 page. */
-export function sheetOverflows(sheet: HTMLElement | null): boolean {
-  return sheet !== null && sheet.scrollHeight > sheet.clientHeight + 1;
-}
-
 export function ChallanSheet({
   draft,
   business,
@@ -87,30 +90,10 @@ export function ChallanSheet({
     <article
       id={id}
       aria-label="Delivery challan / gate pass"
-      className={cn(
-        "challan-sheet bg-surface text-ink relative isolate flex h-[297mm] w-[210mm] flex-col overflow-hidden px-[16mm] pt-[14mm] pb-[12mm]",
-        className,
-      )}
+      className={cn(A4_SHEET_CLASS, className)}
     >
-      {/* Watermark, as on the printed letterhead. */}
-      <Image
-        src={fullLogo}
-        alt=""
-        aria-hidden
-        loading="eager"
-        className="pointer-events-none absolute top-1/2 left-1/2 -z-10 w-[150mm] max-w-none -translate-x-1/2 -translate-y-1/2 opacity-[0.06]"
-      />
-
-      {/* Letterhead */}
-      <header className="flex items-start justify-between gap-8">
-        <Image src={fullLogo} alt={business.name} loading="eager" className="h-[24mm] w-auto" />
-        <div className="text-body text-ink-soft max-w-[110mm] pt-1 text-right leading-relaxed">
-          {business.address && <p>{business.address}</p>}
-          {business.phones.length > 0 && <p>Cell: {business.phones.join(", ")}</p>}
-          <p>Email: {business.email}</p>
-        </div>
-      </header>
-      <div aria-hidden className="border-brand mt-4 border-t-2" />
+      <SheetWatermark />
+      <SheetLetterhead business={business} />
 
       {/* Title with a brand-red accent; salesman and date as labelled blocks with a hairline. */}
       <div className="mt-7 flex items-end justify-between gap-6">
@@ -227,10 +210,7 @@ export function ChallanSheet({
         </div>
       </section>
 
-      {/* Website on a brand-red band across the foot of the page. */}
-      <footer className="bg-brand text-small -mx-[16mm] mt-8 -mb-[12mm] py-3 text-center font-medium tracking-[0.08em] text-white">
-        {business.website}
-      </footer>
+      <SheetFooterBand website={business.website} />
     </article>
   );
 }

@@ -65,7 +65,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
     <ToastProvider>
       {/* Desktop sidebar: fixed to the viewport, never scrolls. */}
       <aside className="admin-sidebar fixed inset-y-0 left-0 z-30 hidden w-64 flex-col overflow-hidden px-4 pt-6 pb-4 lg:flex">
-        <div className="mb-8 px-2">
+        <div className="mb-6 px-2">
           <Brand />
         </div>
         <SidebarContent />

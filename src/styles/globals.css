@@ -496,11 +496,13 @@ dialog.drawer.admin-sidebar::backdrop {
 }
 
 /*
- * Delivery challan printing (ADR-046): the challan page portals a copy of the sheet under <body>.
- * It's hidden on screen; when printing, it's the only thing shown: exactly one A4 page with no
- * browser margins and with background colours kept (brand rule, table header, red footer band).
+ * Printable A4 sheets: delivery challan (ADR-046) and invoice (ADR-067). Each page portals a copy
+ * of its sheet under <body>. It's hidden on screen; when printing, it's the only thing shown:
+ * exactly one A4 page with no browser margins and with background colours kept (brand rule, table
+ * header, red footer band). Both sheets share the .challan-sheet class (see print/Letterhead.tsx).
  */
-#challan-print-root {
+#challan-print-root,
+#invoice-print-root {
   display: none;
 }
 @page challan {
@@ -508,16 +510,19 @@ dialog.drawer.admin-sidebar::backdrop {
   margin: 0;
 }
 @media print {
-  body:has(> #challan-print-root) > :not(#challan-print-root) {
+  body:has(> #challan-print-root) > :not(#challan-print-root),
+  body:has(> #invoice-print-root) > :not(#invoice-print-root) {
     display: none !important;
   }
-  #challan-print-root {
+  #challan-print-root,
+  #invoice-print-root {
     display: block;
     width: 210mm;
     height: 297mm;
     overflow: hidden;
   }
-  #challan-print-root .challan-sheet {
+  #challan-print-root .challan-sheet,
+  #invoice-print-root .challan-sheet {
     page: challan;
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;

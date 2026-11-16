@@ -54,8 +54,10 @@ export async function Footer() {
     );
 
   return (
-    <footer className="border-line bg-sand border-t">
-      <Container className="flex flex-col items-center gap-3 py-6 text-center md:grid md:grid-cols-[1.2fr_1fr] md:items-start md:gap-12 md:py-10 md:text-left">
+    // Phone product pages (ADR-068): room at the bottom so the fixed price/contact bar never
+    // covers the social icons or the credit line.
+    <footer className="border-line bg-sand border-t max-lg:[body:has([data-product-bar])_&]:pb-[calc(4.5rem+env(safe-area-inset-bottom))]">
+      <Container className="flex flex-col items-center gap-3 pt-6 pb-8 text-center md:grid md:grid-cols-[1.2fr_1fr] md:items-start md:gap-12 md:py-10 md:text-left">
         <div className="flex flex-col items-center md:items-start md:gap-3">
           <Logo variant="full" className="h-11" />
           {description && (

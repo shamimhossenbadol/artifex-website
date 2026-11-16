@@ -18,7 +18,7 @@ Session and security mechanics are in `09-SECURITY-GUIDELINES.md` §2.
 
 ## 2. Layout
 
-- Left sidebar (collapsible to a drawer on mobile): Dashboard · Products · Categories · Blog · Homepage · Challan · Settings · Account · "View site ↗" · Logout.
+- Left sidebar (collapsible to a drawer on mobile): Dashboard · Products · Categories · Blog · Homepage · Challan · Invoice · Settings · Account · "View site ↗" · Logout.
 - Top bar: page title, primary action button (e.g. "New product").
 - It uses the same tokens as the public site, with a denser layout (Inter 14 px, `bg-surface` panels on `bg-bg`).
 - Must be usable on a phone (the owner may update products from mobile). Tables become stacked cards below md.
@@ -84,6 +84,12 @@ Session and security mechanics are in `09-SECURITY-GUIDELINES.md` §2.
 - **One page only:** the form measures the preview; if the content would run past the page (long address, long item notes or many items) it says "Too much for one A4 page…" and printing is blocked. About 9 items with notes fit (7 with driver details on), more without notes.
 - **Print:** "Print challan" checks the required fields (name, phone, address, ≥ 1 item, valid quantities, date) and calls `window.print()`. Only the sheet prints (a copy portalled under `<body>`; print CSS hides everything else; named `@page challan`: A4, no margins, background colours kept). Long challans continue on a second page.
 - **Nothing is stored:** no server action, no table, no browser storage. The form clears after printing (`afterprint`) and with "Clear".
+
+### 3.9 Invoice (ADR-067)
+- **Route:** `/admin/invoice` ("Invoice" in the sidebar). Requires admin. Works like the challan: built and printed in the browser, nothing stored, clears after printing.
+- **Form:** customer name (required), phone and address (optional); up to 15 items: description (product type-ahead or any text), quantity (up to two decimals), unit (pcs, set, yds, feet, sft, rft, meter, kg or any text), unit price (৳, up to two decimals), line total shown; discount and advance paid (optional) with a live Subtotal / Amount due summary; date (pre-filled, Dhaka) and optional invoice number.
+- **Sheet:** the same letterhead, watermark and red website band as the challan (`components/admin/print/Letterhead.tsx`); title "Invoice" with invoice no. and date; "Bill to"; table SL · Description · Qty · Unit · Unit price · Total; right-aligned Subtotal, Discount and Advance paid (only when set) and a bold Amount due; customer's and authorised signatures. Exactly one A4 page; the form warns when it would overflow.
+- **Print:** "Print invoice" checks the name, ≥ 1 item with quantity > 0 and a unit price, valid discount/advance (discount ≤ subtotal) and the date, then prints only the sheet (`#invoice-print-root`). Use "Save as PDF" to keep a copy.
 
 ## 4. Behaviour rules
 

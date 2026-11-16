@@ -2,11 +2,12 @@
 # production build, e2e tests, and the deploy bundle. Reused by deploy.yml (ADR-016/017).
 name: CI
 
+# Not on push to main (ADR-070): Deploy runs this same CI first, so a commit + deploy is one run.
+# Pull requests still run it, and "Run workflow" runs it by hand without deploying.
 on:
-  push:
-    branches: [main]
   pull_request:
   workflow_call:
+  workflow_dispatch:
 
 permissions:
   contents: read

@@ -103,7 +103,7 @@ Passenger hooks `server.listen`, so the standalone `server.js` works as-is (it r
 5. Smoke test (TESTING-GUIDELINES §7). Roll back by swapping back to `artifex-app-prev`.
 
 ### 5.1 Automated deploys with GitHub Actions (ADR-016, ADR-017, the default)
-`.github/workflows/ci.yml` runs on every push and pull request. `.github/workflows/deploy.yml` is started by hand (GitHub → Actions → **Deploy** → Run workflow) and runs CI first.
+`.github/workflows/ci.yml` runs on pull requests and by hand (Actions → **CI** → Run workflow), not on push to `main` (ADR-070). `.github/workflows/deploy.yml` is started by hand (GitHub → Actions → **Deploy** → Run workflow) and runs CI first, so a commit + deploy is one run.
 
 **One-time setup**
 1. ✅ cPanel → **Manage Shell** → SSH enabled (done 2026-11-12).

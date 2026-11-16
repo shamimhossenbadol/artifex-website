@@ -562,3 +562,9 @@ Format: each ADR has a number, date, status (Accepted / Superseded by ADR-x / Pr
 **Context:** "Price" reads more naturally than "quote" for most Bangladeshi customers, and the card's line repeated "Made to order" and didn't mention the showroom.
 **Decision:** This updates ADR-063's wording. The buttons under the card read "Ask for price on WhatsApp" / "Ask for price on Messenger" (also the phone sticky bar's Messenger label). The card's line reads "Every piece is made to your size and finish. Message us for your price, or visit our Uttara showroom." Heading and the three points are unchanged.
 **Consequences:** Copy only. 03 and 06 are updated.
+
+### ADR-070 — One workflow run per deploy (CI no longer runs on push to main)
+**Date:** 2026-11-16 · **Status:** Accepted
+**Context:** Every "commit and deploy" started two runs: CI on the push to `main`, and the manually started Deploy, which runs the same CI again before deploying. The owner wants exactly one run.
+**Decision:** `ci.yml` no longer triggers on push to `main`; it runs on pull requests, when called by `deploy.yml` (`workflow_call`), and by hand (`workflow_dispatch`, "Run workflow"). Deploy is unchanged: started by hand, CI first, then the release. So a push followed by a deploy is a single run that both tests and deploys.
+**Consequences:** A push to `main` without a deploy isn't tested automatically; run CI by hand if needed. This supersedes the "runs on every push" note in 10 §5.

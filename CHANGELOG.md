@@ -29,6 +29,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 - 2026-11-12 — Test site showed a blank white page after the Phase 2 deploy: the deploy bundle was missing Turbopack's Prisma alias. Packaging now recreates and verifies it, CI boots the real bundle, and the deploy health check requires a complete page (ADR-023).
 
 ### Changed
+- 2026-11-16 — Deploys: one GitHub Actions run per deploy; CI no longer also runs separately on every push to main (ADR-070).
 - 2026-11-16 — Products without a price: the buttons now say "Ask for price on WhatsApp/Messenger", and the card invites customers to message for their price or visit the Uttara showroom (ADR-069).
 - 2026-11-16 — Phones: tighter product page (less space around the line, before Specifications and before "You may also like"); the footer no longer sits under the fixed price/contact bar on product pages (ADR-068).
 - 2026-11-16 — Delivery challan: the title is now "Delivery Challan / Gate Pass" in a smaller size so it no longer runs into the salesman and date; the letterhead logo and contact details are a little larger (ADR-066).

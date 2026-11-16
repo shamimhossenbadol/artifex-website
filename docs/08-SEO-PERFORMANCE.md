@@ -9,7 +9,7 @@
 |---|---|---|---|
 | Home | defaultSeoTitle | defaultSeoDescription | og default |
 | Category | `seoTitle ?? "{Name} — Premium {name} in Dhaka"` | `seoDescription ?? description` | category image |
-| Product | `seoTitle ?? "{Title} — {Category}"` | `seoDescription ?? shortDescription` | primary image (1600 variant), `og:type=website` |
+| Product | `seoTitle ?? "{Title} — {Category}"` | `shortDescription` (the product's SEO description, ADR-060) | primary image (1600 variant), `og:type=website` |
 | Blog post | `seoTitle ?? title` | `seoDescription ?? excerpt` | cover, `og:type=article`, `article:published_time` |
 | Search, admin | — | — | `robots: { index: false }` |
 
@@ -20,7 +20,7 @@
 Rendered by a `<JsonLd data={…} />` component (`JSON.stringify` with `<` escaped as `<`).
 - **Organization + WebSite** (home): name, logo, sameAs (Facebook, Instagram), plus `SearchAction` → `/search?q={search_term_string}`.
 - **FurnitureStore** (LocalBusiness) on home + contact: address, geo, telephone, openingHoursSpecification, url, image.
-- **Product** (detail): name, image[], description, sku, brand "Artifex Furniture", category, `offers` { priceCurrency `BDT`, price (effective), availability `InStock` (or `PreOrder` if made to order), url }. When the price is on request, omit `offers`.
+- **Product** (detail): name, image[], description, sku (from an optional "SKU" spec row, ADR-059), brand "Artifex Furniture", category, `offers` { priceCurrency `BDT`, price (effective), availability `InStock` (or `PreOrder` if made to order), url }. When the price is on request, omit `offers`.
 - **BreadcrumbList** on category, product, and blog post pages.
 - **Article / BlogPosting** on posts: headline, image, datePublished, dateModified, author { name }, publisher.
 

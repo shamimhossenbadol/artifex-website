@@ -140,7 +140,7 @@ export async function findProductSearchSources(categoryId: number) {
       id: true,
       title: true,
       keywords: true,
-      material: true,
+      specs: { select: { value: true } },
     },
   });
 }

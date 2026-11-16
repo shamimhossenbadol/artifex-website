@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AdminForm } from "@/components/admin/AdminForm";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { AdminSaveBar } from "@/components/admin/AdminSaveBar";
 import { ProductFields } from "@/components/admin/products/ProductFields";
 import { ProductImages } from "@/components/admin/products/ProductImages";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
@@ -27,9 +28,11 @@ export default async function EditProductPage({ params }: PageProps<"/admin/prod
 
   return (
     <>
-      <Breadcrumbs
-        items={[{ label: "Products", href: "/admin/products" }, { label: product.title }]}
-      />
+      <AdminSaveBar slotId="product-save">
+        <Breadcrumbs
+          items={[{ label: "Products", href: "/admin/products" }, { label: product.title }]}
+        />
+      </AdminSaveBar>
       <AdminPageHeader
         title="Edit product"
         description={
@@ -64,10 +67,14 @@ export default async function EditProductPage({ params }: PageProps<"/admin/prod
           <ProductImages productId={product.id} images={product.images} max={MAX_PRODUCT_IMAGES} />
         </section>
 
+        {/* Keyed on updatedAt: a page restored from the router's cache (or after a change from the
+            list switch) re-mounts with the saved values instead of showing stale ones (ADR-059). */}
         <AdminForm
+          key={product.updatedAt.toISOString()}
           action={updateProductAction}
           submitLabel="Save product"
           redirectTo="/admin/products"
+          submitSlot="product-save"
           guardUnsaved
         >
           <ProductFields product={product} categories={categories} />

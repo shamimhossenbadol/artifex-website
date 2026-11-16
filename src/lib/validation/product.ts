@@ -54,21 +54,18 @@ export const productSchema = z
     title: requiredText(150, "Title"),
     slug: z.string().trim().max(PRODUCT_SLUG_MAX, `Keep this under ${PRODUCT_SLUG_MAX} characters`),
     categoryId: z.coerce.number({ error: "Choose a category" }).int().positive("Choose a category"),
-    shortDescription: requiredText(300, "Short description"),
+    // The SEO description (ADR-060): Google and link previews only, not shown on the product page.
+    shortDescription: requiredText(300, "SEO description"),
     description: z.string().trim().max(20_000, "Keep this under 20,000 characters"),
     regularPrice: optionalPrice,
     discountPrice: optionalPrice,
     specs: jsonArray(specSchema, MAX_SPECS, "specifications"),
-    sku: optionalText(50),
-    material: optionalText(120),
-    dimensions: optionalText(120),
     isMadeToOrder: checkbox,
     keywords: optionalText(255),
     status: z.enum(["DRAFT", "PUBLISHED"], { error: "Choose Draft or Published" }),
     isPopular: checkbox,
     isNewArrival: checkbox,
     seoTitle: optionalText(70),
-    seoDescription: optionalText(170),
   })
   .transform(({ slug, ...rest }) => ({
     ...rest,

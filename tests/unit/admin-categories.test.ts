@@ -154,7 +154,7 @@ describe("category admin service", () => {
   it("recomputes product search text on rename", async () => {
     repo.findCategoryById.mockResolvedValue(row());
     repo.findProductSearchSources.mockResolvedValue([
-      { id: 5, title: "Oslo Sofa", keywords: "couch", material: "Oak" },
+      { id: 5, title: "Oslo Sofa", keywords: "couch", specs: [{ value: "Oak" }] },
     ]);
     await updateCategory(1, parsed({ name: "Sofas & Couches", slug: "sofas" }), null);
     expect(repo.updateProductSearchTexts).toHaveBeenCalledWith([

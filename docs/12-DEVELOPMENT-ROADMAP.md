@@ -96,6 +96,8 @@ Each phase ends with a short manual review of the phase's acceptance checks.
 - [x] Draft/Published switch on the product list (ADR-056)
 - [x] Product images 1:1 everywhere; desktop gallery no longer crops square photos (ADR-057)
 - [x] Reliable image uploads: browser resize/re-encode, automatic retries, lighter server processing (ADR-058)
+- [x] Specs replace SKU/material/dimensions, dining-table default specs, Save top right, SEO fixes (ADR-059)
+- [x] One SEO description per product; product page shows only full description and specs (ADR-060)
 
 ## Phase 8 — SEO, security & performance hardening
 - [x] `sitemap.ts`, `robots.ts`, canonical audit (ADR-037) — [ ] OG image check in the Facebook Sharing Debugger (owner, after the domain is final)

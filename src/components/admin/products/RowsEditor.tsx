@@ -6,7 +6,7 @@ import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import type { ActionResult } from "@/lib/action-result";
-import { specPresetsFor } from "@/lib/spec-presets";
+import { defaultSpecsFor, specPresetsFor } from "@/lib/spec-presets";
 import { useAdminFormState } from "../AdminForm";
 import { fieldError } from "../FormMessage";
 
@@ -37,6 +37,8 @@ function useRows(initial: { a: string; b: string }[]) {
   };
   return {
     rows,
+    /** Automatic default rows: not an edit, so the unsaved-changes guard stays quiet. */
+    replace: (labels: string[]) => setRows(withKeys(labels.map((a) => ({ a, b: "" })))),
     add: (a = "", b = "") => update([...rows, { key: nextKey++, a, b }]),
     change: (key: number, patch: Partial<Row>) =>
       setRows(rows.map((r) => (r.key === key ? { ...r, ...patch } : r))),
@@ -113,18 +115,25 @@ function MoveButtons({
   );
 }
 
-/** Specifications: label + value, with quick-add labels for the selected category. */
+/**
+ * Specifications: label + value, with quick-add labels for the selected category. Categories with
+ * default rows (ADR-059, e.g. Dining Tables) fill them in for a new product, and whenever the
+ * category changes while the rows are still untouched defaults or empty.
+ */
 export function SpecsEditor({
   initial,
   max,
   categories,
+  fillDefaultsOnStart = false,
 }: {
   initial: { label: string; value: string }[];
   max: number;
   /** id → slug, to pick presets for the category chosen in the form. */
   categories: { id: number; slug: string }[];
+  /** New products start with the category's default rows; existing ones keep what they have. */
+  fillDefaultsOnStart?: boolean;
 }) {
-  const { rows, add, change, remove, move } = useRows(
+  const { rows, replace, add, change, remove, move } = useRows(
     initial.map((s) => ({ a: s.label, b: s.value })),
   );
   const value = JSON.stringify(rows.map((r) => ({ label: r.a, value: r.b })));
@@ -144,6 +153,24 @@ export function SpecsEditor({
   }, []);
 
   const slug = categories.find((c) => String(c.id) === categoryId)?.slug;
+
+  // Fill default rows when the category changes (and on start for a new product), but only while
+  // the rows are empty or still exactly the defaults with no values typed: never overwrite work.
+  const lastCategory = useRef<string | null>(null);
+  useEffect(() => {
+    if (!categoryId || categoryId === lastCategory.current) return;
+    const first = lastCategory.current === null;
+    lastCategory.current = categoryId;
+    if (first && !fillDefaultsOnStart) return;
+    const untouched = rows.every((r) => r.b.trim() === "");
+    if (!untouched) return;
+    const defaults = defaultSpecsFor(slug);
+    const same =
+      defaults.length === rows.length && defaults.every((label, i) => rows[i]?.a === label);
+    if (!same) replace(defaults);
+    // Only reacts to category changes; rows are read as they are at that moment.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categoryId, slug]);
   const used = new Set(rows.map((r) => r.a.trim().toLowerCase()));
   const presets = specPresetsFor(slug).filter((p) => !used.has(p.toLowerCase()));
 

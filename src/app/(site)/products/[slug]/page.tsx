@@ -48,11 +48,12 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   return {
     ...(preview ? { robots: { index: false, follow: false } } : {}),
     title: product.seoTitle ?? `${product.title} — ${product.category.name}`,
-    description: product.seoDescription ?? product.shortDescription,
+    description: product.shortDescription,
     alternates: { canonical: product.href },
     openGraph: {
       type: "website",
-      title: product.title,
+      // Link previews (Facebook, WhatsApp) use the SEO fields too when they're set (ADR-059).
+      title: product.seoTitle ?? product.title,
       description: product.shortDescription,
       url: product.href,
       ...(primary ? { images: [{ url: absoluteImageUrl(primary.path), alt: primary.alt }] } : {}),
@@ -72,10 +73,9 @@ async function ProductDetail({ params, searchParams }: Props) {
   const { phone, telHref } = getContactLinks(settings);
   const hasWhatsApp = settings.whatsappNumber.replace(/\D/g, "").length >= 8;
 
-  const facts = [
-    { label: "Material", value: product.material },
-    { label: "Dimensions", value: product.dimensions },
-  ].filter((f): f is { label: string; value: string } => Boolean(f.value));
+  // The JSON-LD SKU comes from an optional "SKU" specification row (ADR-059).
+  const specByLabel = (label: string) =>
+    product.specs.find((s) => s.label.trim().toLowerCase() === label);
   const price = getPriceInfo(product.regularPrice, product.discountPrice);
 
   return (
@@ -94,7 +94,7 @@ async function ProductDetail({ params, searchParams }: Props) {
             title: product.title,
             description: product.shortDescription,
             path: product.href,
-            sku: product.sku,
+            sku: specByLabel("sku")?.value ?? null,
             categoryName: product.category.name,
             regularPrice: product.regularPrice,
             discountPrice: product.discountPrice,
@@ -148,18 +148,6 @@ async function ProductDetail({ params, searchParams }: Props) {
               telHref={telHref}
               messengerHref={toMessengerUrl(settings.facebookUrl)}
             />
-
-            <p className="text-body-lg mt-8">{product.shortDescription}</p>
-            {facts.length > 0 && (
-              <dl className="border-line mt-6 grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 border-t pt-6">
-                {facts.map((fact) => (
-                  <div key={fact.label} className="contents">
-                    <dt className="text-small text-muted">{fact.label}</dt>
-                    <dd className="text-ink">{fact.value}</dd>
-                  </div>
-                ))}
-              </dl>
-            )}
           </div>
         </div>
       </div>

@@ -90,9 +90,6 @@ const EDIT_SELECT = {
   description: true,
   regularPrice: true,
   discountPrice: true,
-  sku: true,
-  material: true,
-  dimensions: true,
   isMadeToOrder: true,
   isPopular: true,
   isNewArrival: true,
@@ -100,7 +97,6 @@ const EDIT_SELECT = {
   publishedAt: true,
   keywords: true,
   seoTitle: true,
-  seoDescription: true,
   updatedAt: true,
   category: { select: { slug: true, isActive: true } },
   images: {
@@ -121,11 +117,6 @@ export async function findProductIdBySlug(slug: string): Promise<number | null> 
   return row?.id ?? null;
 }
 
-export async function findProductIdBySku(sku: string): Promise<number | null> {
-  const row = await db.product.findUnique({ where: { sku }, select: { id: true } });
-  return row?.id ?? null;
-}
-
 export type ProductData = {
   title: string;
   slug: string;
@@ -135,9 +126,6 @@ export type ProductData = {
   regularPrice: number | null;
   discountPrice: number | null;
   effectivePrice: number | null;
-  sku: string | null;
-  material: string | null;
-  dimensions: string | null;
   isMadeToOrder: boolean;
   isPopular: boolean;
   isNewArrival: boolean;
@@ -146,7 +134,6 @@ export type ProductData = {
   keywords: string | null;
   searchText: string;
   seoTitle: string | null;
-  seoDescription: string | null;
 };
 
 export type ProductChildren = {
@@ -302,11 +289,11 @@ export async function touchProduct(id: number): Promise<void> {
   await db.product.update({ where: { id }, data: { updatedAt: new Date() } });
 }
 
-/** Product names for the challan item picker (07 §3.8): every product, A–Z, names and SKUs only. */
+/** Product names for the challan item picker (07 §3.8): every product, A–Z, names only. */
 export async function findProductNamesForChallan() {
   return db.product.findMany({
     orderBy: { title: "asc" },
     take: 2000,
-    select: { id: true, title: true, sku: true },
+    select: { id: true, title: true },
   });
 }

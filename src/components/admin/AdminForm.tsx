@@ -8,12 +8,15 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useId,
   useState,
+  useSyncExternalStore,
   useTransition,
   type ComponentProps,
   type FormEvent,
   type ReactNode,
 } from "react";
+import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
 import type { ActionResult } from "@/lib/action-result";
@@ -25,6 +28,15 @@ import {
 } from "@/lib/prepare-upload";
 import { FormMessage, fieldError } from "./FormMessage";
 import { useToast } from "./Toaster";
+
+/**
+ * The slot is rendered by the page, possibly in the same commit as the form (client navigation),
+ * so look again on the next frame; after that it doesn't change while the page is open.
+ */
+const recheckNextFrame = (onChange: () => void) => {
+  const frame = requestAnimationFrame(onChange);
+  return () => cancelAnimationFrame(frame);
+};
 
 type FormState = {
   state: ActionResult<unknown> | null;
@@ -54,6 +66,11 @@ type AdminFormProps<T> = {
    * `data-guard-ignore` (e.g. the photo manager, which saves on its own) don't count.
    */
   guardUnsaved?: boolean;
+  /**
+   * id of an element elsewhere on the page (e.g. a sticky top bar, see AdminSaveBar) to show the
+   * Save button in, so it stays visible (ADR-059). Without it, Save sits in a sticky bottom bar.
+   */
+  submitSlot?: string;
 };
 
 export function AdminForm<T>({
@@ -63,7 +80,16 @@ export function AdminForm<T>({
   redirectTo,
   className,
   guardUnsaved = false,
+  submitSlot,
 }: AdminFormProps<T>) {
+  const formId = useId();
+  // The slot element, or null: then Save shows nowhere until the slot appears (or, without
+  // submitSlot, in the sticky bottom bar).
+  const slot = useSyncExternalStore(
+    recheckNextFrame,
+    () => (submitSlot ? document.getElementById(submitSlot) : null),
+    () => null,
+  );
   const [state, setState] = useState<ActionResult<T> | null>(null);
   const [pending, startTransition] = useTransition();
   const [dirty, setDirty] = useState(false);
@@ -119,9 +145,24 @@ export function AdminForm<T>({
     });
   }
 
+  // A button outside the <form> element (in the slot) submits it through the form attribute.
+  const submitButton = (
+    <Button
+      type="submit"
+      form={formId}
+      disabled={pending}
+      aria-disabled={pending}
+      className={slot ? "shadow-card" : undefined}
+    >
+      {pending && <Loader2 aria-hidden strokeWidth={1.5} className="size-4 animate-spin" />}
+      {pending ? "Saving…" : submitLabel}
+    </Button>
+  );
+
   return (
     <FormStateContext value={{ state, pending, markDirty }}>
       <form
+        id={formId}
         onSubmit={onSubmit}
         onInput={guardUnsaved ? onEdit : undefined}
         noValidate
@@ -129,12 +170,13 @@ export function AdminForm<T>({
       >
         <FormMessage state={state as ActionResult | null} />
         {children}
-        <div className="border-line bg-bg/85 sticky bottom-0 z-10 -mx-1 flex justify-end border-t px-1 py-3 backdrop-blur-md">
-          <Button type="submit" disabled={pending} aria-disabled={pending}>
-            {pending && <Loader2 aria-hidden strokeWidth={1.5} className="size-4 animate-spin" />}
-            {pending ? "Saving…" : submitLabel}
-          </Button>
-        </div>
+        {slot ? (
+          createPortal(submitButton, slot)
+        ) : submitSlot ? null : (
+          <div className="border-line bg-bg/85 sticky bottom-0 z-10 -mx-1 flex justify-end border-t px-1 py-3 backdrop-blur-md">
+            {submitButton}
+          </div>
+        )}
       </form>
     </FormStateContext>
   );

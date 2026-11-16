@@ -1,6 +1,5 @@
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
-import { Textarea } from "@/components/ui/Textarea";
 import { MAX_SPECS } from "@/lib/validation/product";
 import type { AdminProductRow, CategoryOption } from "@/server/services/product-admin.service";
 import { AdminField, FormSection } from "../AdminForm";
@@ -27,7 +26,7 @@ export function ProductFields({
     <>
       {product && <input type="hidden" name="id" value={product.id} />}
 
-      <FormSection title="Basics">
+      <FormSection title="Basic info">
         <AdminField name="title" label="Title">
           <Input name="title" defaultValue={product?.title ?? ""} required maxLength={150} />
         </AdminField>
@@ -67,19 +66,6 @@ export function ProductFields({
           </Select>
         </AdminField>
         <AdminField
-          name="shortDescription"
-          label="Short description"
-          hint="One or two sentences, shown near the price. Up to 300 characters."
-        >
-          <Textarea
-            name="shortDescription"
-            rows={3}
-            defaultValue={product?.shortDescription ?? ""}
-            required
-            maxLength={300}
-          />
-        </AdminField>
-        <AdminField
           name="description"
           label="Full description (optional)"
           hint="Formatting: **bold**, _italic_, ## heading, - list. Use Preview to check it."
@@ -89,39 +75,6 @@ export function ProductFields({
             defaultValue={product?.description ?? ""}
             maxLength={20000}
           />
-        </AdminField>
-      </FormSection>
-
-      <FormSection title="Pricing">
-        <PricingFields
-          regularPrice={product?.regularPrice ?? null}
-          discountPrice={product?.discountPrice ?? null}
-        />
-      </FormSection>
-
-      <FormSection title="Specifications" description="Shown as a table on the product page.">
-        <SpecsEditor
-          initial={product?.specs ?? []}
-          max={MAX_SPECS}
-          categories={categories.map(({ id, slug }) => ({ id, slug }))}
-        />
-      </FormSection>
-
-      <FormSection title="Details">
-        <div className="grid gap-5 sm:grid-cols-2">
-          <AdminField name="sku" label="SKU (optional)">
-            <Input name="sku" defaultValue={product?.sku ?? ""} maxLength={50} />
-          </AdminField>
-          <AdminField name="material" label="Material (optional)" hint="e.g. Solid mahogany">
-            <Input name="material" defaultValue={product?.material ?? ""} maxLength={120} />
-          </AdminField>
-        </div>
-        <AdminField
-          name="dimensions"
-          label="Dimensions (optional)"
-          hint="e.g. W 220 × D 95 × H 85 cm"
-        >
-          <Input name="dimensions" defaultValue={product?.dimensions ?? ""} maxLength={120} />
         </AdminField>
         <AdminField
           name="keywords"
@@ -139,6 +92,25 @@ export function ProductFields({
           />
           Made to order (custom size or finish)
         </label>
+      </FormSection>
+
+      <FormSection title="Pricing">
+        <PricingFields
+          regularPrice={product?.regularPrice ?? null}
+          discountPrice={product?.discountPrice ?? null}
+        />
+      </FormSection>
+
+      <FormSection
+        title="Specifications"
+        description="Shown as a table on the product page. Material, Dimensions and SKU are specifications too. Remove rows you don't need; every row that stays needs a value."
+      >
+        <SpecsEditor
+          initial={product?.specs ?? []}
+          max={MAX_SPECS}
+          categories={categories.map(({ id, slug }) => ({ id, slug }))}
+          fillDefaultsOnStart={!product}
+        />
       </FormSection>
 
       <FormSection
@@ -173,18 +145,19 @@ export function ProductFields({
         </div>
       </FormSection>
 
-      <details className="admin-card group">
-        <summary className="text-ink flex min-h-14 cursor-pointer items-center px-5 font-semibold sm:px-6">
-          Search engines (optional)
-        </summary>
-        <div className="px-5 pb-6 sm:px-6">
-          <SeoFields
-            seoTitle={product?.seoTitle ?? null}
-            seoDescription={product?.seoDescription ?? null}
-            slug={product?.slug ?? ""}
-          />
-        </div>
-      </details>
+      <FormSection
+        title="Search engines"
+        description="Used only for the Google result and for link previews on Facebook and WhatsApp. Not shown on the product page (ADR-060)."
+      >
+        <SeoFields
+          seoTitle={product?.seoTitle ?? null}
+          seoDescription={product?.shortDescription ?? null}
+          slug={product?.slug ?? ""}
+          descriptionName="shortDescription"
+          descriptionMax={300}
+          descriptionRequired
+        />
+      </FormSection>
     </>
   );
 }

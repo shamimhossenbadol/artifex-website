@@ -16,7 +16,7 @@ Each feature lists its **behaviour**, **data source**, and **acceptance criteria
 
 ### F1.2 Product detail
 - Source: `catalog.service.getProductBySlug(slug)` (published only; drafts are visible to a logged-in admin via `?preview=1`).
-- Shows: gallery (primary image first, then by `sortOrder`), title, category (in the breadcrumbs), price (see F1.3), made-to-order note, WhatsApp CTA (F3), short description, quick facts, specs table, full description (Markdown), and related products.
+- Shows: gallery (primary image first, then by `sortOrder`), title, category (in the breadcrumbs), price (see F1.3), made-to-order note, WhatsApp CTA (F3), full description (Markdown), specs table, and related products. The short description is the SEO description and isn't shown on the page (ADR-060).
 - **AC:** a missing or unpublished slug renders the not-found page with `noindex` (ADR-025), the gallery works with 1–5 images (1 main + up to 4 gallery photos, ADR-041), and the page has Product JSON-LD (see 08).
 - `?preview=1`: a signed-in admin sees drafts (and products in hidden categories), uncached, with a "Preview" banner and `noindex`; anyone else gets the normal page (ADR-037). Blog posts work the same way.
 
@@ -44,7 +44,7 @@ Format: `Intl.NumberFormat('en-IN')` grouping with the `৳` prefix (BD uses lak
 
 - **Instant search:** `GET /api/search?q=` (Zod: 2–60 chars, trimmed). Returns `{ products: [{title, slug, price, discountPrice, image}], categories: [{name, slug}] }` with max 6 products and 3 categories. Response `Cache-Control: public, max-age=60`.
 - **Results page:** `/search?q=&page=`, using the same card grid, 24 per page, `noindex`.
-- **Matching:** the query is normalised (lowercase, collapsed whitespace) and split into terms, up to 5. A product matches if **every** term is found in `searchText` (`AND` of `LIKE %term%`). `searchText` contains the title, category name, keywords, and material.
+- **Matching:** the query is normalised (lowercase, collapsed whitespace) and split into terms, up to 5. A product matches if **every** term is found in `searchText` (`AND` of `LIKE %term%`). `searchText` contains the title, category name, keywords, and specification values (ADR-059).
 - **Ranking:** title starts with the query > title contains the query > other matches; ties go by `isPopular`, then newest. Done in the service after fetching ≤ 200 candidates (fine at catalogue scale).
 - The client debounces 250 ms and aborts previous requests (`AbortController`). Keyboard: ↑/↓ to move, Enter to open, Esc to close.
 - **AC:** "sofa" finds all sofas, "walnut bed" finds beds with walnut material, SQL wildcard characters (`%`, `_`) in the input are escaped, and an empty or 1-character query shows no request.

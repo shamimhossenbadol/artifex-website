@@ -46,9 +46,9 @@ Sections with no content are **hidden**, never left empty.
 - Pagination: numbered links (`?page=2`) with Prev/Next, 24 per page. No infinite scroll (bad for SEO and the back button).
 
 ### Product detail
-- Mobile order: gallery → title/category → price → WhatsApp CTA → short description → specs → full description → related.
+- Mobile order: gallery → title/category → price → WhatsApp CTA → full description → specs → related (no short description or quick facts on the page, ADR-060).
 - Desktop: two columns (gallery 7/12, info 5/12, info column sticky).
-- Info block: breadcrumbs (they name the category; no separate category eyebrow), title (h1), price, "Made to order" badge on its own line with its note below, **WhatsApp and Messenger buttons (full width, lg)**, a secondary "Call us" link, short description, then quick facts (material, dimensions).
+- Info block: breadcrumbs (they name the category; no separate category eyebrow), title (h1), price, "Made to order" badge on its own line with its note below, **WhatsApp and Messenger buttons (full width, lg)**, a secondary "Call us" link. Nothing follows the buttons in the info block (ADR-060).
 - Phones: the gallery starts directly under the header (no top padding) and runs edge to edge.
 - Below: tabs or stacked sections for *Description* and *Specifications* (stacked on mobile, no tabs; tabs are allowed on desktop).
 - Related products: 4 from the same category (excluding the current one), falling back to popular.

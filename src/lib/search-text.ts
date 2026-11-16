@@ -1,12 +1,13 @@
 // Denormalised product search text (04 §4, ADR-007): lowercased title + category + keywords +
-// material, collapsed whitespace, capped at the column size (1000).
+// specification values (ADR-059), collapsed whitespace, capped at the column size (1000).
 export function buildSearchText(parts: {
   title: string;
   categoryName: string;
   keywords?: string | null;
-  material?: string | null;
+  /** Specification values, e.g. "Solid mahogany", "6 seats". Labels aren't searched. */
+  specValues?: string[];
 }): string {
-  return [parts.title, parts.categoryName, parts.keywords, parts.material]
+  return [parts.title, parts.categoryName, parts.keywords, ...(parts.specValues ?? [])]
     .filter(Boolean)
     .join(" ")
     .toLowerCase()

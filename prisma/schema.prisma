@@ -39,23 +39,19 @@ model Product {
   slug              String         @unique @db.VarChar(170)
   categoryId        Int
   category          Category       @relation(fields: [categoryId], references: [id], onDelete: Restrict)
-  shortDescription  String         @db.VarChar(300)
+  shortDescription  String         @db.VarChar(300)    // the SEO description (meta + link previews); not shown on the page (ADR-060)
   description       String         @db.Text            // Markdown
   regularPrice      Int?                                // null => "Price on request"
   discountPrice     Int?                                // must be < regularPrice (validated)
   effectivePrice    Int?                                // denormalised: discountPrice ?? regularPrice (price sort)
-  sku               String?        @unique @db.VarChar(50)
-  material          String?        @db.VarChar(120)    // quick facet shown on cards/detail
-  dimensions        String?        @db.VarChar(120)    // e.g. "W 220 × D 95 × H 85 cm"
   isMadeToOrder     Boolean        @default(false)
   isPopular         Boolean        @default(false)
   isNewArrival      Boolean        @default(false)     // explicit flag; fallback = newest by createdAt
   status            ContentStatus  @default(DRAFT)
   publishedAt       DateTime?
   keywords          String?        @db.VarChar(255)    // admin-entered synonyms: "couch, settee"
-  searchText        String         @db.VarChar(1000)   // denormalised: title + category + keywords + material (lowercased)
+  searchText        String         @db.VarChar(1000)   // denormalised: title + category + keywords + spec values (lowercased)
   seoTitle          String?        @db.VarChar(70)
-  seoDescription    String?        @db.VarChar(170)
   images            ProductImage[]
   specs             ProductSpec[]
   createdAt         DateTime       @default(now())

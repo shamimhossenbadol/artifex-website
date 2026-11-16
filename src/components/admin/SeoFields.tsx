@@ -15,6 +15,9 @@ export function SeoFields({
   path = "products",
   summaryField = "shortDescription",
   summaryLabel = "short description",
+  descriptionName = "seoDescription",
+  descriptionMax = 170,
+  descriptionRequired = false,
 }: {
   seoTitle: string | null;
   seoDescription: string | null;
@@ -24,6 +27,13 @@ export function SeoFields({
   /** The form field used when the SEO description is blank. */
   summaryField?: string;
   summaryLabel?: string;
+  /**
+   * Products (ADR-060) store their only description for search engines in "shortDescription":
+   * required, up to 300 characters, no fallback. Posts keep an optional "seoDescription".
+   */
+  descriptionName?: string;
+  descriptionMax?: number;
+  descriptionRequired?: boolean;
 }) {
   const [title, setTitle] = useState(seoTitle ?? "");
   const [description, setDescription] = useState(seoDescription ?? "");
@@ -49,7 +59,7 @@ export function SeoFields({
   }, [slug, summaryField]);
 
   const shownTitle = title || fallback.title || "Title";
-  const shownDescription = description || fallback.description;
+  const shownDescription = description || (descriptionRequired ? "" : fallback.description);
   const host = SITE.replace(/^https?:\/\//, "").replace(/\/+$/, "");
 
   return (
@@ -67,16 +77,21 @@ export function SeoFields({
         />
       </AdminField>
       <AdminField
-        name="seoDescription"
+        name={descriptionName}
         label="SEO description"
-        hint={`${description.length}/170 · Leave blank to use the ${summaryLabel}.`}
+        hint={
+          descriptionRequired
+            ? `${description.length}/${descriptionMax} · One or two sentences for Google and link previews; about 155 characters show in full.`
+            : `${description.length}/${descriptionMax} · Leave blank to use the ${summaryLabel}.`
+        }
       >
         <Textarea
-          name="seoDescription"
+          name={descriptionName}
           rows={3}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          maxLength={170}
+          maxLength={descriptionMax}
+          required={descriptionRequired}
         />
       </AdminField>
       <div className="bg-bg rounded-md p-4" aria-label="Search result preview">
@@ -87,7 +102,10 @@ export function SeoFields({
           {shownTitle} | Artifex Furniture
         </p>
         <p className="text-small text-ink-soft mt-1 line-clamp-2">
-          {shownDescription || `The ${summaryLabel} appears here.`}
+          {shownDescription ||
+            (descriptionRequired
+              ? "The SEO description appears here."
+              : `The ${summaryLabel} appears here.`)}
         </p>
       </div>
     </div>

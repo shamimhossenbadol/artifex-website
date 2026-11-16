@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { specPresetsFor } from "@/lib/spec-presets";
+import { defaultSpecsFor, specPresetsFor } from "@/lib/spec-presets";
 import { adminProductQuerySchema, productSchema } from "@/lib/validation/product";
 
 const repo = vi.hoisted(() => ({
@@ -9,7 +9,6 @@ const repo = vi.hoisted(() => ({
   findCategoryOptions: vi.fn(),
   findImageIds: vi.fn(),
   findProductForEdit: vi.fn(),
-  findProductIdBySku: vi.fn(),
   findProductIdBySlug: vi.fn(),
   findProductImage: vi.fn(),
   findProductStatus: vi.fn(),
@@ -40,13 +39,9 @@ const FORM = {
   regularPrice: "45,500",
   discountPrice: "",
   specs: "[]",
-  sku: "",
-  material: "",
-  dimensions: "",
   keywords: "",
   status: "DRAFT",
   seoTitle: "",
-  seoDescription: "",
 };
 
 const parse = (over: Record<string, string> = {}) => productSchema.safeParse({ ...FORM, ...over });
@@ -69,9 +64,6 @@ const editRow = (over: Record<string, unknown> = {}) => ({
   description: "",
   regularPrice: 45500,
   discountPrice: null,
-  sku: "OS-1",
-  material: "Oak",
-  dimensions: null,
   isMadeToOrder: false,
   isPopular: true,
   isNewArrival: false,
@@ -79,7 +71,6 @@ const editRow = (over: Record<string, unknown> = {}) => ({
   publishedAt: new Date("2026-11-01T00:00:00Z"),
   keywords: null,
   seoTitle: null,
-  seoDescription: null,
   updatedAt: new Date(),
   category: { slug: "sofas", isActive: true },
   images: [],
@@ -153,7 +144,18 @@ describe("adminProductQuerySchema", () => {
   });
 });
 
-describe("specPresetsFor", () => {
+describe("specPresetsFor / defaultSpecsFor", () => {
+  it("gives dining tables twelve default rows, other categories none (ADR-059)", () => {
+    const dining = defaultSpecsFor("dining-tables");
+    expect(dining).toHaveLength(12);
+    expect(dining[0]).toBe("Product Name");
+    expect(dining).toContain("Number of Chairs");
+    expect(defaultSpecsFor("sofas")).toEqual([]);
+    expect(defaultSpecsFor(null)).toEqual([]);
+    // Removed defaults can be added back with Quick add.
+    for (const label of dining) expect(specPresetsFor("dining-tables")).toContain(label);
+  });
+
   it("has category presets and a general fallback", () => {
     expect(specPresetsFor("sofas")).toContain("Seating capacity");
     expect(specPresetsFor("unknown")).toContain("Warranty");
@@ -166,7 +168,6 @@ describe("product admin service", () => {
     vi.resetAllMocks();
     repo.findCategoryName.mockResolvedValue("Sofas");
     repo.findProductIdBySlug.mockResolvedValue(null);
-    repo.findProductIdBySku.mockResolvedValue(null);
     repo.insertProduct.mockResolvedValue(42);
   });
 
@@ -189,24 +190,28 @@ describe("product admin service", () => {
     expect(repo.insertProduct.mock.calls[0]![0].publishedAt).toBeNull();
   });
 
-  it("rejects a taken slug or SKU and an unknown category", async () => {
+  it("rejects a taken slug and an unknown category", async () => {
     repo.findProductIdBySlug.mockResolvedValue(3);
     expect(await service.createProduct(input())).toMatchObject({ ok: false, field: "slug" });
     repo.findProductIdBySlug.mockResolvedValue(null);
-    repo.findProductIdBySku.mockResolvedValue(3);
-    expect(await service.createProduct(input({ sku: "OS-1" }))).toMatchObject({
-      ok: false,
-      field: "sku",
-    });
     repo.findCategoryName.mockResolvedValue(null);
     expect(await service.createProduct(input())).toMatchObject({ ok: false, field: "categoryId" });
   });
 
-  it("maps a unique-constraint race on SKU", async () => {
+  it("maps a unique-constraint race on the slug", async () => {
     repo.insertProduct.mockRejectedValue(
-      Object.assign(new Error("dup"), { code: "P2002", meta: { target: ["sku"] } }),
+      Object.assign(new Error("dup"), { code: "P2002", meta: { target: ["slug"] } }),
     );
-    expect(await service.createProduct(input({ sku: "X" }))).toMatchObject({ field: "sku" });
+    expect(await service.createProduct(input())).toMatchObject({ field: "slug" });
+  });
+
+  it("searches specification values (ADR-059)", async () => {
+    await service.createProduct(
+      input({ specs: JSON.stringify([{ label: "Material", value: "Solid Mahogany" }]) }),
+    );
+    const [data] = repo.insertProduct.mock.calls[0]!;
+    expect(data.searchText).toContain("solid mahogany");
+    expect(data.searchText).not.toContain("material");
   });
 
   it("keeps the first publish date and its own slug on update", async () => {
@@ -224,7 +229,7 @@ describe("product admin service", () => {
     expect(repo.writeProduct.mock.calls[0]![1].publishedAt).toBe(publishedAt);
   });
 
-  it("duplicates as a draft without SKU or images, with a free slug", async () => {
+  it("duplicates as a draft without images, with a free slug", async () => {
     repo.findProductForEdit.mockResolvedValue(editRow());
     repo.findProductIdBySlug.mockImplementation(async (slug: string) =>
       slug === "oslo-3-seater-sofa-copy" ? 99 : null,
@@ -234,7 +239,6 @@ describe("product admin service", () => {
     expect(data).toMatchObject({
       slug: "oslo-3-seater-sofa-copy-2",
       title: "Oslo 3-Seater Sofa (copy)",
-      sku: null,
       status: "DRAFT",
       publishedAt: null,
       isPopular: true,

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { AdminForm } from "@/components/admin/AdminForm";
 import { AdminPageHeader, AdminPanel } from "@/components/admin/AdminPageHeader";
+import { AdminSaveBar } from "@/components/admin/AdminSaveBar";
 import { ProductFields } from "@/components/admin/products/ProductFields";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { createProductAction } from "@/server/actions/product.actions";
@@ -18,9 +19,11 @@ export default async function NewProductPage({ searchParams }: PageProps<"/admin
 
   return (
     <>
-      <Breadcrumbs
-        items={[{ label: "Products", href: "/admin/products" }, { label: "Add product" }]}
-      />
+      <AdminSaveBar slotId="product-save">
+        <Breadcrumbs
+          items={[{ label: "Products", href: "/admin/products" }, { label: "Add product" }]}
+        />
+      </AdminSaveBar>
       <AdminPageHeader
         title="Add product"
         description="Save the details first, then open the product from the list to add its photos."
@@ -35,6 +38,7 @@ export default async function NewProductPage({ searchParams }: PageProps<"/admin
             action={createProductAction}
             submitLabel="Save product"
             redirectTo="/admin/products"
+            submitSlot="product-save"
             guardUnsaved
           >
             <ProductFields

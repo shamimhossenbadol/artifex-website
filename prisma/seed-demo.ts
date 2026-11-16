@@ -9,6 +9,7 @@ type DemoProduct = {
   category: string;
   regularPrice: number | null;
   discountPrice?: number;
+  /** Stored as the first specification rows (ADR-059). */
   material?: string;
   dimensions?: string;
   isMadeToOrder?: boolean;
@@ -17,6 +18,14 @@ type DemoProduct = {
   specs?: [string, string][];
   keywords?: string;
 };
+
+/** Material and dimensions become specification rows, followed by the product's own specs. */
+function specRows(p: DemoProduct): [string, string][] {
+  const rows: [string, string][] = [];
+  if (p.material) rows.push(["Material", p.material]);
+  if (p.dimensions) rows.push(["Dimensions", p.dimensions]);
+  return [...rows, ...(p.specs ?? [])];
+}
 
 const HANDMADE: DemoProduct[] = [
   {
@@ -154,8 +163,6 @@ export async function seedDemoCatalogue(db: PrismaClient): Promise<void> {
         regularPrice: p.regularPrice,
         discountPrice: p.discountPrice ?? null,
         effectivePrice: effectivePrice(p.regularPrice, p.discountPrice ?? null),
-        material: p.material ?? null,
-        dimensions: p.dimensions ?? null,
         isMadeToOrder: p.isMadeToOrder ?? false,
         isNewArrival: p.isNewArrival ?? false,
         isPopular: p.isPopular ?? false,
@@ -164,13 +171,13 @@ export async function seedDemoCatalogue(db: PrismaClient): Promise<void> {
           title: p.title,
           categoryName: category.name,
           keywords: p.keywords,
-          material: p.material,
+          specValues: specRows(p).map(([, value]) => value),
         }),
         status: "PUBLISHED",
         // Spread publish dates so "Newest" ordering is stable and meaningful.
         publishedAt: new Date(now - index * 3600_000),
         specs: {
-          create: (p.specs ?? []).map(([label, value], sortOrder) => ({ label, value, sortOrder })),
+          create: specRows(p).map(([label, value], sortOrder) => ({ label, value, sortOrder })),
         },
       },
     });

@@ -35,17 +35,16 @@ Session and security mechanics are in `09-SECURITY-GUIDELINES.md` §2.
 ### 3.2 Products
 - **List:** search by title, filter by category/status/flags, and sort by updated/price. Columns: thumb, title, category, price, status, flags (Popular, New), updated. Row actions: Edit, View, Duplicate, Delete (with confirmation). Paginated at 20.
 - **Status switch (ADR-056):** each row has a Draft/Published switch that changes the status straight from the list (optimistic, with a toast; same publish-date rule and cache revalidation as the form).
-- **Create/Edit form** (one page with sections; sticky Save bar):
-  1. *Basics*: title, slug (auto, editable, with a warning on change after publish), category, short description (counter 300), full description (Markdown textarea with a toolbar: bold, italic, heading, list, link, and preview tab).
+- **Create/Edit form** (one page with sections; Save in a sticky top bar, top right, ADR-059):
+  1. *Basic info*: title, slug (auto, editable, with a warning on change after publish), category, full description (Markdown textarea with a toolbar: bold, italic, heading, list, link, and preview tab), search keywords (comma-separated synonyms), made-to-order.
   2. *Pricing*: regular price (blank = Price on request), discount price, with a live preview "৳ 38,675 ~~৳ 45,500~~ -15%".
   3. *Images*: drag & drop multi-upload (max 5: 1 main + 4 gallery, ADR-041; originals up to 40 MB each, shrunk in the browser to ≤ 2400 px before upload (ADR-058), JPEG/PNG/WebP), per-file upload progress, move up/down, "Set as main photo" (primary: cards, listings, sharing), alt text per image (required), and delete. Gallery photos show only on the product page.
-  4. *Specifications*: repeatable label/value rows, reorderable, with quick-add presets per category (e.g. Sofas: Frame, Upholstery, Seating capacity, Cushion, Warranty).
-  5. *Details*: SKU, material, dimensions, made-to-order, keywords (comma-separated synonyms for search).
-  6. *Visibility*: status (Draft/Published), Popular (ranks search and related products), New arrival (badge + homepage New arrivals). Featured and home sort order were removed (ADR-042).
-  7. *SEO* (collapsed): SEO title and description with a counter and a Google-style preview; defaults are derived when blank.
+  4. *Specifications*: repeatable label/value rows, reorderable, with quick-add presets per category (e.g. Sofas: Material, Dimensions, Frame, Upholstery…). SKU, Material and Dimensions are specification rows (ADR-059). **Dining Tables** start with 12 default rows (Product Name, Product Type, Material, Tabletop, Seating Capacity, Number of Chairs, Chair Upholstery, Surface Finish, Color & Design, Style, Room Type, Usage): removable, but every row that stays needs a value.
+  5. *Visibility*: status (Draft/Published), Popular (ranks search and related products), New arrival (badge + homepage New arrivals). Featured and home sort order were removed (ADR-042).
+  6. *Search engines*: SEO title (optional, falls back to "{Title} — {Category}") and **SEO description** (required, up to 300, stored as `shortDescription`; ADR-060), with counters and a Google-style preview. Used for Google and Facebook/WhatsApp link previews only, never shown on the product page.
 - Validation errors show inline and in a summary at the top. A failed save keeps the form state.
 - Unsaved-changes guard (`beforeunload`).
-- "Duplicate" copies everything except slug/SKU/images as a Draft.
+- "Duplicate" copies everything except the slug and images as a Draft.
 - **As built (ADR-034):** photos are added on the edit page after the first save ("Save and add photos"), in a Photos panel that saves on its own, outside the details form. Reorder uses move up/down buttons (not drag), upload progress is a per-file status (waiting / uploading / uploaded / failed) rather than a byte percentage, and new photos get the product title as default alt text. Specs reorder with up/down buttons. Colours were removed (ADR-054).
 - **After saving (ADR-054):** creating or editing a product returns to the product list with a toast; photos are added by opening the product from the list.
 

@@ -245,7 +245,7 @@ test("products: create a draft, publish it, duplicate and delete", async ({ page
   await page.getByLabel("Title", { exact: true }).fill("E2E Walnut Bench");
   // Curtains, not Sofas: other e2e files count Sofas and run in parallel with this one.
   await page.getByLabel("Category").selectOption({ label: "Curtains" });
-  await page.getByLabel("Short description").fill("A bench made for e2e tests.");
+  await page.getByLabel("SEO description").fill("A bench made for e2e tests.");
   await page.getByLabel("Regular price (৳)").fill("20000");
   await page.getByLabel("Discount price (৳, optional)").fill("25000");
   await expect(page.getByText("Shown on the website as")).toBeVisible();

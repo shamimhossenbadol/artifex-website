@@ -17,7 +17,6 @@ import {
   findCategoryOptions,
   findImageIds,
   findProductForEdit,
-  findProductIdBySku,
   findProductIdBySlug,
   findProductImage,
   findProductStatus,
@@ -87,18 +86,15 @@ export async function getProductForEdit(id: number): Promise<AdminProductRow | n
 }
 
 const SLUG_TAKEN = "Another product already uses this web address.";
-const SKU_TAKEN = "Another product already uses this SKU.";
-
-function uniqueField(err: unknown): "slug" | "sku" | null {
+function uniqueField(err: unknown): "slug" | null {
   if (typeof err !== "object" || err === null || !("code" in err) || err.code !== "P2002") {
     return null;
   }
-  const target = JSON.stringify((err as { meta?: unknown }).meta ?? "");
-  return target.includes("sku") ? "sku" : "slug";
+  return "slug";
 }
 
-function duplicateError(field: "slug" | "sku"): { ok: false; error: string; field: string } {
-  return { ok: false, error: field === "sku" ? SKU_TAKEN : SLUG_TAKEN, field };
+function duplicateError(field: "slug"): { ok: false; error: string; field: string } {
+  return { ok: false, error: SLUG_TAKEN, field };
 }
 
 async function checkUnique(
@@ -107,10 +103,6 @@ async function checkUnique(
 ): Promise<{ ok: false; error: string; field: string } | null> {
   const slugOwner = await findProductIdBySlug(input.slug);
   if (slugOwner !== null && slugOwner !== selfId) return duplicateError("slug");
-  if (input.sku) {
-    const skuOwner = await findProductIdBySku(input.sku);
-    if (skuOwner !== null && skuOwner !== selfId) return duplicateError("sku");
-  }
   return null;
 }
 
@@ -129,9 +121,6 @@ function toData(
     regularPrice: input.regularPrice,
     discountPrice: input.discountPrice,
     effectivePrice: effectivePrice(input.regularPrice, input.discountPrice),
-    sku: input.sku,
-    material: input.material,
-    dimensions: input.dimensions,
     isMadeToOrder: input.isMadeToOrder,
     isPopular: input.isPopular,
     isNewArrival: input.isNewArrival,
@@ -143,10 +132,9 @@ function toData(
       title: input.title,
       categoryName,
       keywords: input.keywords,
-      material: input.material,
+      specValues: input.specs.map((s) => s.value),
     }),
     seoTitle: input.seoTitle,
-    seoDescription: input.seoDescription,
   };
 }
 
@@ -211,7 +199,7 @@ export async function setProductStatus(
   return { ok: true, data: { slug: current.slug } };
 }
 
-/** "Duplicate" copies everything except slug, SKU and images, as a draft (07 §3.2). */
+/** "Duplicate" copies everything except the slug and images, as a draft (07 §3.2). */
 export async function duplicateProduct(id: number): Promise<SaveResult<{ id: number }>> {
   const source = await findProductForEdit(id);
   if (!source) return { ok: false, error: "This product no longer exists." };
@@ -233,16 +221,12 @@ export async function duplicateProduct(id: number): Promise<SaveResult<{ id: num
     regularPrice: source.regularPrice,
     discountPrice: source.discountPrice,
     specs: source.specs,
-    sku: null,
-    material: source.material,
-    dimensions: source.dimensions,
     isMadeToOrder: source.isMadeToOrder,
     keywords: source.keywords,
     status: "DRAFT",
     isPopular: source.isPopular,
     isNewArrival: source.isNewArrival,
     seoTitle: source.seoTitle,
-    seoDescription: source.seoDescription,
   };
   const newId = await insertProduct(toData(input, categoryName, null, new Date()), input);
   return { ok: true, data: { id: newId } };

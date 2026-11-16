@@ -113,7 +113,8 @@ export async function Footer() {
         {socialList("-mt-1 flex gap-2 md:hidden")}
       </Container>
 
-      <div className="border-line border-t">
+      {/* Phone product pages (ADR-071) drop this bar: on phones it only holds the credit. */}
+      <div className="border-line border-t max-md:[body:has([data-product-bar])_&]:hidden">
         {/* © on the left and the credit on the right; on phones the credit sits below. */}
         <Container className="text-small text-muted flex flex-col items-center gap-0 py-2 text-center sm:flex-row sm:justify-between sm:gap-4 sm:py-3 sm:text-left">
           {/* No copyright line on phones (ADR-061). */}

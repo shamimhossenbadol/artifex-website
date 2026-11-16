@@ -568,3 +568,9 @@ Format: each ADR has a number, date, status (Accepted / Superseded by ADR-x / Pr
 **Context:** Every "commit and deploy" started two runs: CI on the push to `main`, and the manually started Deploy, which runs the same CI again before deploying. The owner wants exactly one run.
 **Decision:** `ci.yml` no longer triggers on push to `main`; it runs on pull requests, when called by `deploy.yml` (`workflow_call`), and by hand (`workflow_dispatch`, "Run workflow"). Deploy is unchanged: started by hand, CI first, then the release. So a push followed by a deploy is a single run that both tests and deploys.
 **Consequences:** A push to `main` without a deploy isn't tested automatically; run CI by hand if needed. This supersedes the "runs on every push" note in 10 §5.
+
+### ADR-071 — No developer credit on phone product pages
+**Date:** 2026-11-16 · **Status:** Accepted
+**Context:** The owner asked to remove "Developed by …" from the product page on phones.
+**Decision:** Below md, on pages with the product's sticky bar (`data-product-bar`, i.e. product pages), the footer's bottom bar is hidden; on phones it only holds the credit (the © line is already hidden there, ADR-061). Other pages, tablets and desktop keep it.
+**Consequences:** No new token or dependency. 05 is updated.

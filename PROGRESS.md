@@ -86,6 +86,7 @@ Answer these by editing this list. Agents: use the **default** until an answer i
 
 Add one line per session, newest first: `YYYY-MM-DD — summary — files touched`.
 
+- 2026-11-16 — ADR-071: footer bottom bar hidden below md on pages with data-product-bar. Not committed/deployed — src/components/site/Footer.tsx, docs
 - 2026-11-16 — CI on a2566f9 failed: mobile sticky-bar e2e scrolled before streamed sections were revealed (snapshot: html scrollTop 299; the related-card count includes hidden, not-yet-revealed cards). Test now scrolls in a toPass loop. ADR-070: ci.yml no longer runs on push to main (Deploy runs CI), one run per deploy — tests/e2e/catalogue.spec.ts, .github/workflows/ci.yml, docs/10
 - 2026-11-16 — ADR-069: quote buttons "Ask for price on …", card line mentions the Uttara showroom. Not committed/deployed (with ADR-067/068) — src/components/product/{CustomQuoteCard,ProductInquiry}.tsx, docs
 - 2026-11-16 — ADR-068: phone product page 24 px rule/spec/related spacing; sticky bar data-product-bar + footer bottom padding below lg; phone footer pb-8. Not checked in a browser (other session's dev server holds the folder). Not committed/deployed (with ADR-067) — src/app/(site)/products/[slug]/page.tsx, src/components/product/ProductInquiry.tsx, src/components/site/Footer.tsx, docs

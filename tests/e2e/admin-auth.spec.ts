@@ -260,8 +260,10 @@ test("products: create a draft, publish it, duplicate and delete", async ({ page
   await page.getByRole("button", { name: "Save product" }).click();
   // Saving goes back to the catalogue list (ADR-054); photos are added on the edit page.
   await expect(page).toHaveURL(/\/admin\/products$/);
-  await expect(page.getByText("Product created.").first()).toBeVisible();
-  await page.getByRole("link", { name: "E2E Walnut Bench" }).first().click();
+  await expect(shown(page.getByText("Product created.")).first()).toBeVisible();
+  await shown(page.getByRole("link", { name: "E2E Walnut Bench" }))
+    .first()
+    .click();
   await expect(page).toHaveURL(/\/admin\/products\/\d+$/);
   await expect(page.getByRole("heading", { name: "Photos" })).toBeVisible();
 
@@ -284,7 +286,7 @@ test("products: create a draft, publish it, duplicate and delete", async ({ page
   await page.waitForLoadState("networkidle");
   await page.getByLabel("Status").selectOption("PUBLISHED");
   await page.getByRole("button", { name: "Save product" }).click();
-  await expect(page.getByText("Product saved.").first()).toBeVisible();
+  await expect(shown(page.getByText("Product saved.")).first()).toBeVisible();
   await expect(page).toHaveURL(/\/admin\/products$/);
   await page.goto("/products/e2e-walnut-bench");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("E2E Walnut Bench");
@@ -293,17 +295,17 @@ test("products: create a draft, publish it, duplicate and delete", async ({ page
   // The list's status switch unpublishes and republishes without opening the form (ADR-056).
   await page.goto("/admin/products?q=E2E+Walnut");
   await page.waitForLoadState("networkidle");
-  const statusSwitch = page.getByRole("switch", { name: "Published: “E2E Walnut Bench”" });
+  const statusSwitch = shown(page.getByRole("switch", { name: "Published: “E2E Walnut Bench”" }));
   await expect(statusSwitch).toHaveAttribute("aria-checked", "true");
   await statusSwitch.click();
-  await expect(page.getByText("Product moved to drafts.").first()).toBeVisible();
+  await expect(shown(page.getByText("Product moved to drafts.")).first()).toBeVisible();
   await expect(statusSwitch).toHaveAttribute("aria-checked", "false");
   await page.goto("/products/e2e-walnut-bench");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("We couldn't find that page");
   await page.goto("/admin/products?q=E2E+Walnut");
   await page.waitForLoadState("networkidle");
   await statusSwitch.click();
-  await expect(page.getByText("Product published.").first()).toBeVisible();
+  await expect(shown(page.getByText("Product published.")).first()).toBeVisible();
   await expect(statusSwitch).toHaveAttribute("aria-checked", "true");
 
   // Filter the list, duplicate, then delete both.

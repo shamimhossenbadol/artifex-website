@@ -128,6 +128,8 @@ Passenger hooks `server.listen`, so the standalone `server.js` works as-is (it r
 
 **What a deploy run does:** CI (typecheck → lint → unit tests → migrations + seed twice on MariaDB 11.4 → build → e2e → package → **boot the packaged bundle and check the page**, ADR-023) → upload the bundle with `rsync` to `~/artifex-app-next` → open the tunnel → `mariadb-dump` backup to `~/backups/` (last 10 kept) → `prisma migrate deploy` → seed (optional "Run the seed" checkbox, **off by default**; tick it for the very first deploy or when a release adds new default categories or settings; an empty or deleted `ADMIN_INITIAL_PASSWORD` is fine once the admin exists) → swap `artifex-app-next` → `artifex-app` (previous kept as `artifex-app-prev`) → `touch tmp/restart.txt` → health check (12 tries over ~1 min; needs HTTP 200 **and** a complete page with `</html>` and `</footer>`). If the health check fails it moves the new release to `~/artifex-app-failed`, restores `artifex-app-prev`, and restarts again.
 
+**A migration failed (Prisma P3018):** the run stops before the swap, so the live site keeps the previous release. Fix the migration SQL in a new commit, then run Deploy with **rolled_back_migration** set to the failed migration's folder name (e.g. `20261116000000_drop_product_colors`). That marks it rolled back (bookkeeping only, after the usual backup) and applies the fixed version. Only do this when the failed migration changed nothing, or after checking what it did change.
+
 ## 6. Images on Cloudflare R2 (ADR-014)
 
 Images are stored in and served from Cloudflare R2. The shared host only does the upload processing.

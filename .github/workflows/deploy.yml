@@ -10,6 +10,10 @@ on:
         description: "Run the idempotent seed (creates missing categories/settings/admin)"
         type: boolean
         default: false
+      rolled_back_migration:
+        description: "Recovery only: name of a FAILED migration to mark as rolled back before migrating (e.g. 20261116000000_drop_product_colors). Leave empty normally."
+        type: string
+        default: ""
 
 concurrency:
   group: deploy-production
@@ -94,6 +98,20 @@ jobs:
 
       - name: Back up database to ~/backups (keeps the last 10)
         run: node scripts/ci-db-backup.mjs | ssh artifex 'mkdir -p ~/backups && chmod 700 ~/backups && f=~/backups/artifex-$(date -u +%Y%m%d-%H%M%S).sql.gz && cat > "$f" && echo "saved $f" && ls -1t ~/backups/artifex-*.sql.gz | tail -n +11 | xargs -r rm --'
+
+      # Recovery after a migration failed part-way (Prisma error P3018): marks it rolled back so the
+      # fixed version can run. Only edits Prisma's _prisma_migrations row; the backup above is taken
+      # first. The name is validated so the input can't inject shell.
+      - name: Mark failed migration as rolled back
+        if: ${{ inputs.rolled_back_migration != '' }}
+        env:
+          MIGRATION: ${{ inputs.rolled_back_migration }}
+        run: |
+          if ! [[ "$MIGRATION" =~ ^[0-9]{14}_[a-z0-9_]+$ ]]; then
+            echo "Not a migration name: $MIGRATION" >&2
+            exit 1
+          fi
+          npx prisma migrate resolve --rolled-back "$MIGRATION"
 
       - name: Apply migrations
         run: npx prisma migrate deploy

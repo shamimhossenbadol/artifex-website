@@ -80,13 +80,13 @@ export function ProductInquiry({
         {whatsappHref && (
           <ButtonLink href={whatsappHref} external variant="whatsapp" size="lg" fullWidth>
             <WhatsAppIcon className="size-5" />
-            {verb} WhatsApp
+            {`${verb} WhatsApp`}
           </ButtonLink>
         )}
         {messengerHref && (
           <ButtonLink href={messengerHref} external variant="messenger" size="lg" fullWidth>
             <MessengerIcon className="size-5" />
-            {verb} Messenger
+            {`${verb} Messenger`}
           </ButtonLink>
         )}
         {telHref && (
@@ -121,7 +121,7 @@ export function ProductInquiry({
                 className="bg-messenger hover:bg-ink inline-flex size-11 shrink-0 items-center justify-center rounded-md text-white transition-colors"
               >
                 <MessengerIcon className="size-5" />
-                <span className="sr-only">{verb} Messenger</span>
+                <span className="sr-only">{`${verb} Messenger`}</span>
               </a>
             )}
             {whatsappHref && (

@@ -5,6 +5,9 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 
 ## [Unreleased]
 
+### Added
+- 2026-11-16 — Delivery challan: optional driver details (driver name, phone, vehicle number), switched on with a checkbox and printed as a "Driver & vehicle" row under the items; blank fields print as lines to fill in by hand (ADR-066).
+
 ### Removed
 - 2026-11-16 — Product colours are gone everywhere: no colour rows in the admin product form, no colour swatches on product pages, no colour in the WhatsApp message, and the `ProductColor` database table is dropped by a migration (ADR-054).
 
@@ -23,6 +26,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 - 2026-11-12 — Test site showed a blank white page after the Phase 2 deploy: the deploy bundle was missing Turbopack's Prisma alias. Packaging now recreates and verifies it, CI boots the real bundle, and the deploy health check requires a complete page (ADR-023).
 
 ### Changed
+- 2026-11-16 — Delivery challan: the title is now "Delivery Challan / Gate Pass" in a smaller size so it no longer runs into the salesman and date; the letterhead logo and contact details are a little larger (ADR-066).
 - 2026-11-16 — Phones: the product page no longer shows the Home / Category / Product path above the title (ADR-065).
 - 2026-11-16 — Product page: products without a fixed price show a "Priced to your design" quote card (made to your size, your fabric and finish, free quote) with "Get a quote on WhatsApp/Messenger" buttons, instead of "Price on request" and a separate Made to order badge (ADR-063). Phones: a more compact footer, with no line under the logo and tighter spacing (ADR-064).
 - 2026-11-16 — Admin product form: the Quick add specification buttons are gone; add rows with "Add specification". Dining Tables still start with their default rows (ADR-062).

@@ -91,6 +91,7 @@ Each phase ends with a short manual review of the phase's acceptance checks.
 **Exit check:** the owner can do every workflow in 07 on a phone, and the auth tests pass.
 
 - [x] Delivery challan maker (Admin → Challan, print-only, nothing stored; ADR-046)
+- [x] Challan as gate pass: larger letterhead, smaller title, optional driver details (ADR-066)
 - [x] Remove product colours from schema, admin, product page and WhatsApp message; product saves return to the list (ADR-054)
 - [x] Premium admin theme: Manrope, fixed espresso sidebar, gold accent, CSS motion (ADR-055)
 - [x] Draft/Published switch on the product list (ADR-056)

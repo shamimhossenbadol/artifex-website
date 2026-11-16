@@ -535,3 +535,9 @@ Format: each ADR has a number, date, status (Accepted / Superseded by ADR-x / Pr
 **Context:** The owner asked to remove the browsing path (Home / Category / Product) from the product page on phones.
 **Decision:** On the product page the visible breadcrumbs are hidden below md (`hidden md:block`) and the title moves up to sit right under the gallery gap; from md they show as before. The BreadcrumbList JSON-LD is unchanged, so search engines still get the path. The category stays reachable from the header menu.
 **Consequences:** No new token or dependency. 05 is updated.
+
+### ADR-066 — Challan as a gate pass: larger letterhead, optional driver details
+**Date:** 2026-11-16 · **Status:** Accepted (extends ADR-046)
+**Context:** The owner wanted the challan to double as the gate pass for the delivery vehicle, with the letterhead logo and contact details a little larger. The longer title at the old h2 size would run into the Salesman/Date block.
+**Decision:** The sheet title is "Delivery Challan / Gate Pass" at the `text-h3` size (one line, never wrapping); the Salesman/Date block does not shrink. The logo is 24 mm tall (was 20 mm) and the address/cell/email use `text-body` (was `text-small`). The draft gains `driverEnabled` (off by default), `driverName`, `driverPhone` and `vehicleNumber`; when enabled, a compact "Driver & vehicle" row of three columns prints under the items, with empty values left blank on a dotted line to fill in by hand. None of the driver fields is required. Space above the signatures (pt-12) and the footer band (mt-8) is trimmed slightly so 7 items with notes still fit with driver details on. Still nothing is stored (ADR-046).
+**Consequences:** About one item row fewer fits on the page than before; the existing overflow check still blocks printing when content would run past the A4 page, and its message now also suggests turning off driver details. No new token or dependency.

@@ -50,7 +50,7 @@ function DriverField({
       <dt className="text-small text-muted">{label}</dt>
       <dd
         className={cn(
-          "text-ink border-muted mt-1 min-h-[7mm] border-b break-words border-dotted pb-0.5 font-medium",
+          "text-ink border-muted mt-1 min-h-[7mm] border-b border-dotted pb-0.5 font-medium break-words",
           valueClassName,
         )}
       >
@@ -214,7 +214,7 @@ export function ChallanSheet({
       )}
 
       {/* Signatures, pushed to the bottom of the page (room above the lines to sign). */}
-      <section className="mt-auto pt-14">
+      <section className="mt-auto pt-12">
         <div className="grid grid-cols-2 gap-16">
           <div className="border-ink border-t pt-2">
             <p className="text-small text-ink font-medium">Customer&apos;s signature</p>
@@ -228,7 +228,7 @@ export function ChallanSheet({
       </section>
 
       {/* Website on a brand-red band across the foot of the page. */}
-      <footer className="bg-brand text-small -mx-[16mm] mt-10 -mb-[12mm] py-3 text-center font-medium tracking-[0.08em] text-white">
+      <footer className="bg-brand text-small -mx-[16mm] mt-8 -mb-[12mm] py-3 text-center font-medium tracking-[0.08em] text-white">
         {business.website}
       </footer>
     </article>

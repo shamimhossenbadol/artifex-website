@@ -98,7 +98,9 @@ export function ChallanMaker({
   const problems = [
     ...challanProblems(draft),
     ...(overflows
-      ? ["Too much for one A4 page: remove an item, shorten the address or item notes, or turn off driver details."]
+      ? [
+          "Too much for one A4 page: remove an item, shorten the address or item notes, or turn off driver details.",
+        ]
       : []),
   ];
   const set = <K extends keyof ChallanDraft>(key: K, value: ChallanDraft[K]) =>

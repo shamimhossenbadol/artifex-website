@@ -255,7 +255,8 @@ test("products: create a draft, publish it, duplicate and delete", async ({ page
   await expect(page.getByLabel("Title", { exact: true })).toHaveValue("E2E Walnut Bench");
 
   await page.getByLabel("Discount price (৳, optional)").fill("18000");
-  await page.getByRole("button", { name: "Fabric" }).click(); // Curtains preset
+  await page.getByRole("button", { name: "Add specification" }).click();
+  await page.getByLabel("Label of specification 1").fill("Fabric");
   await page.getByLabel("Value of “Fabric”").fill("Solid walnut");
   await page.getByRole("button", { name: "Save product" }).click();
   // Saving goes back to the catalogue list (ADR-054); photos are added on the edit page.

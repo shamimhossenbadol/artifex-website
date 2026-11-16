@@ -9,6 +9,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 - 2026-11-16 — Product colours are gone everywhere: no colour rows in the admin product form, no colour swatches on product pages, no colour in the WhatsApp message, and the `ProductColor` database table is dropped by a migration (ADR-054).
 
 ### Fixed
+- 2026-11-16 — Product page on desktop: a product with only one photo showed it as a small thumbnail; it now fills the gallery (ADR-061).
 - 2026-11-16 — Admin image uploads: some photos failed with a connection error while others worked. Photos are now resized (max 2400 px) and re-encoded in the browser before upload, failed requests are retried automatically up to twice, and the server processes images with much less memory. Large originals up to 40 MB can be chosen (ADR-058).
 - 2026-11-16 — Product page on desktop: the main photo used a 4:3 frame that cut off the top and bottom of square product photos. Product images are now square (1:1) everywhere: product page, thumbnails, cards, search results and the admin photo preview (ADR-057).
 - 2026-11-15 — Deploys no longer fail at the seed step after the temporary admin password secret is deleted: the seed treats an empty secret as not set, and the deploy's "Run the seed" option is now off by default (tick it only when new categories or settings must be created).
@@ -22,6 +23,8 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 - 2026-11-12 — Test site showed a blank white page after the Phase 2 deploy: the deploy bundle was missing Turbopack's Prisma alias. Packaging now recreates and verifies it, CI boots the real bundle, and the deploy health check requires a complete page (ADR-023).
 
 ### Changed
+- 2026-11-16 — Admin product form: the Quick add specification buttons are gone; add rows with "Add specification". Dining Tables still start with their default rows (ADR-062).
+- 2026-11-16 — Phones: the footer shows just the logo, address, email and social icons (no description or copyright line). Product page: no "Description" heading (the text starts under the line), less space above the line and before the related products, which are now titled "You may also like" (ADR-061).
 - 2026-11-16 — Product page: shows only the full description and specifications; the short description and quick facts under the buttons are gone. In the admin, the short description is now the required **SEO description** in the Search engines section (Google and link previews only); any SEO description already typed replaces it (ADR-060).
 - 2026-11-16 — Admin product form: Dining Tables start with 12 default specifications (removable; each kept row needs a value). SKU, material and dimensions are now specification rows (existing values are moved automatically); the Details section is gone, with Search keywords and Made to order in Basic info. Save sits at the top right and stays visible. The SEO section is always open and its title/description now also drive Facebook/WhatsApp link previews; reopened edit forms always show the saved values (ADR-059).
 - 2026-11-16 — Admin product list: each product has a Draft/Published switch, so you can publish or unpublish without opening the edit form (ADR-056).

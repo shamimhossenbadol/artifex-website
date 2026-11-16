@@ -502,3 +502,18 @@ Format: each ADR has a number, date, status (Accepted / Superseded by ADR-x / Pr
 **Context:** The owner finds the short description under the buttons on the product page unnecessary. They want the short description and the SEO description to be the same thing, used only for search engines, and the product page to show just the full description and the specifications.
 **Decision:** `Product.shortDescription` (VARCHAR 300, required) is now the product's **SEO description**: the meta description, Open Graph/link-preview description and JSON-LD description. It's edited in the admin's Search engines section as "SEO description" (required, counter, Google-style preview), no longer in Basic info. Migration `20261116200000_product_seo_description_merge` copies any separately typed `Product.seoDescription` into `shortDescription` (it wins), then drops `Product.seoDescription`. Categories and posts keep their own optional `seoDescription`. The product page no longer shows the short description or the quick facts (Material/Dimensions, which repeat the specs table): the info block ends with the WhatsApp/Messenger/call buttons, and below it are the full description and the specifications. This supersedes the short-description and quick-facts parts of ADR-059, 05 and F1.2.
 **Consequences:** One migration that changes data (a typed SEO description replaces the short description; nothing else changes). Google shows about 155 characters, so the hint suggests one or two sentences; up to 300 are allowed so existing text stays valid.
+
+### ADR-061 — Phone footer trimmed; product page spacing; single-photo gallery fix
+**Date:** 2026-11-16 · **Status:** Accepted
+**Context:** The owner asked for a simpler phone footer (logo, then address, email and social icons; no copyright section), a product page without the visible "Description" heading, less space above the rule and above the related products, and only "You may also like" on the related section. They also reported that on desktop a product with a single photo showed it as a tiny thumbnail.
+**Decision:**
+- **Footer (phones only):** logo → address → email → social icons, centred; the short description and the © line are hidden below `sm`/`md`. The developer credit line stays. md+ is unchanged (social icons stay under the description there; the icons render once per layout, `md:hidden` / `hidden md:flex`).
+- **Product page:** the description starts right under the horizontal rule; its "Description" heading is screen-reader only. Space above the rule drops from 64 px to 40 px (48 px from md) and below it from 48 px to 32 px (40 px from md). The related section is headed "You may also like" (the "Related pieces" title is gone) and sits 48 px (56 px from md) below the specs instead of 80 px.
+- **Gallery:** the desktop two-column layout (thumbnail strip + main photo) only applies with 2+ photos; with one photo the main image fills the column. Previously it was placed in the 5.5 rem thumbnail column.
+**Consequences:** No new token or dependency. 05 is updated.
+
+### ADR-062 — No Quick add buttons for specifications
+**Date:** 2026-11-16 · **Status:** Accepted
+**Context:** The owner asked to remove the Quick add specification buttons from the add/edit product page.
+**Decision:** The specs editor no longer shows Quick add buttons; rows are added with "Add specification" (type the label and value). The per-category quick-add lists and `specPresetsFor` are removed. Default rows for Dining Tables (ADR-059) stay; a removed default row is added back with "Add specification". This supersedes the quick-add part of 07 §3.2 and of ADR-059.
+**Consequences:** Less code in the product form. The e2e test adds its specification row by hand.

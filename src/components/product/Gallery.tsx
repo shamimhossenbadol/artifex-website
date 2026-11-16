@@ -57,7 +57,9 @@ export function Gallery({ images, title }: { images: GalleryImage[]; title: stri
   const current = images[active] ?? images[0]!;
 
   return (
-    <div className="lg:grid lg:grid-cols-[5.5rem_1fr] lg:gap-4">
+    // The thumbnail column only exists with 2+ photos; a single photo takes the full width
+    // (otherwise it was squeezed into the 5.5rem thumbnail column on desktop, ADR-061).
+    <div className={cn(count > 1 && "lg:grid lg:grid-cols-[5.5rem_1fr] lg:gap-4")}>
       {/* Main image strip */}
       <div className="relative -mx-4 sm:-mx-6 lg:order-2 lg:mx-0">
         <div

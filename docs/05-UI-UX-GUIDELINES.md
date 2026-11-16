@@ -18,7 +18,7 @@
 **Mobile header** (h-16, sticky): `[Menu]  [Wordmark centred]  [Search]`
 - The menu opens a full-height left drawer with categories (each with a small thumbnail), then Blog, About, and Contact, then the phone number, WhatsApp, and Facebook. It traps focus and closes on Esc or backdrop click.
 
-**Footer (compact, ADR-035, ADR-049, ADR-050):** two columns from md: logo (h-11), short description (aboutShort, at most two lines) and social icons; then a one-line address, phone and WhatsApp as rounded pill buttons (44 px tall, from md only: phones have the floating buttons, ADR-050), and the email link when set. Padding `py-8 md:py-10`. A quiet line below with © (left) and the developer credit (right; below © on phones). No category or company links (navigation lives in the header). On phones everything stacks and is centred.
+**Footer (compact, ADR-035, ADR-049, ADR-050, ADR-061):** phones show only logo → address → email → social icons, centred, plus the developer credit (no description, no © line). From md: two columns from md: logo (h-11), short description (aboutShort, at most two lines) and social icons; then a one-line address, phone and WhatsApp as rounded pill buttons (44 px tall, from md only: phones have the floating buttons, ADR-050), and the email link when set. Padding `py-8 md:py-10`. A quiet line below with © (left) and the developer credit (right; below © on phones). No category or company links (navigation lives in the header). On phones everything stacks and is centred.
 
 **Floating contact buttons** (bottom-right): Messenger (`messenger` blue, links to `m.me/<page>` from the Facebook URL) above WhatsApp (whatsapp-dark). 44 px circles on phones, 48/56 px from md; on phones they sit above the home indicator (`env(safe-area-inset-bottom)`, `viewportFit: cover`). Messenger and WhatsApp always appear together: the sales team answers on both (ADR-044). Both:
 - Shown on all public pages **except** product detail on mobile, whose sticky bottom bar has price, a Messenger button and a WhatsApp button.
@@ -51,7 +51,8 @@ Sections with no content are **hidden**, never left empty.
 - Info block: breadcrumbs (they name the category; no separate category eyebrow), title (h1), price, "Made to order" badge on its own line with its note below, **WhatsApp and Messenger buttons (full width, lg)**, a secondary "Call us" link. Nothing follows the buttons in the info block (ADR-060).
 - Phones: the gallery starts directly under the header (no top padding) and runs edge to edge.
 - Below: tabs or stacked sections for *Description* and *Specifications* (stacked on mobile, no tabs; tabs are allowed on desktop).
-- Related products: 4 from the same category (excluding the current one), falling back to popular.
+- Related products: 4 from the same category (excluding the current one), falling back to popular, under the heading "You may also like" (ADR-061).
+- Below the info block (ADR-061): a rule 40 px under it (48 px from md); the full description starts right under the rule (no visible heading), specs beside it on desktop; related products 48 px (56 px from md) below. With a single photo the gallery has no thumbnail column.
 - Mobile sticky bottom bar (appears after the main CTA scrolls out of view): price and a "WhatsApp" button.
 
 ### Search

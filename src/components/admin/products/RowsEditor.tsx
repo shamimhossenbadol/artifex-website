@@ -6,7 +6,7 @@ import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import type { ActionResult } from "@/lib/action-result";
-import { defaultSpecsFor, specPresetsFor } from "@/lib/spec-presets";
+import { defaultSpecsFor } from "@/lib/spec-presets";
 import { useAdminFormState } from "../AdminForm";
 import { fieldError } from "../FormMessage";
 
@@ -116,7 +116,7 @@ function MoveButtons({
 }
 
 /**
- * Specifications: label + value, with quick-add labels for the selected category. Categories with
+ * Specifications: label + value rows (no Quick add buttons, ADR-062). Categories with
  * default rows (ADR-059, e.g. Dining Tables) fill them in for a new product, and whenever the
  * category changes while the rows are still untouched defaults or empty.
  */
@@ -128,7 +128,7 @@ export function SpecsEditor({
 }: {
   initial: { label: string; value: string }[];
   max: number;
-  /** id → slug, to pick presets for the category chosen in the form. */
+  /** id → slug, to pick default rows for the category chosen in the form. */
   categories: { id: number; slug: string }[];
   /** New products start with the category's default rows; existing ones keep what they have. */
   fillDefaultsOnStart?: boolean;
@@ -140,7 +140,7 @@ export function SpecsEditor({
   const anchor = useRef<HTMLDivElement>(null);
   const [categoryId, setCategoryId] = useState<string>("");
 
-  // Follow the form's category <select> so presets match the chosen category.
+  // Follow the form's category <select> so default rows match the chosen category.
   useEffect(() => {
     const select = anchor.current
       ?.closest("form")
@@ -171,27 +171,9 @@ export function SpecsEditor({
     // Only reacts to category changes; rows are read as they are at that moment.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categoryId, slug]);
-  const used = new Set(rows.map((r) => r.a.trim().toLowerCase()));
-  const presets = specPresetsFor(slug).filter((p) => !used.has(p.toLowerCase()));
 
   return (
     <div ref={anchor} className="flex flex-col gap-4">
-      {presets.length > 0 && rows.length < max && (
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-small text-muted">Quick add:</span>
-          {presets.map((label) => (
-            <button
-              key={label}
-              type="button"
-              onClick={() => add(label, "")}
-              className="border-line text-small text-ink-soft hover:border-ink hover:text-ink inline-flex min-h-9 items-center gap-1 rounded-full border px-3"
-            >
-              <Plus aria-hidden strokeWidth={1.5} className="size-3.5" />
-              {label}
-            </button>
-          ))}
-        </div>
-      )}
       <RowsShell
         name="specs"
         value={value}

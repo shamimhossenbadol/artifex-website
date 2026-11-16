@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { defaultSpecsFor, specPresetsFor } from "@/lib/spec-presets";
+import { defaultSpecsFor } from "@/lib/spec-presets";
 import { adminProductQuerySchema, productSchema } from "@/lib/validation/product";
 
 const repo = vi.hoisted(() => ({
@@ -144,7 +144,7 @@ describe("adminProductQuerySchema", () => {
   });
 });
 
-describe("specPresetsFor / defaultSpecsFor", () => {
+describe("defaultSpecsFor", () => {
   it("gives dining tables twelve default rows, other categories none (ADR-059)", () => {
     const dining = defaultSpecsFor("dining-tables");
     expect(dining).toHaveLength(12);
@@ -152,14 +152,6 @@ describe("specPresetsFor / defaultSpecsFor", () => {
     expect(dining).toContain("Number of Chairs");
     expect(defaultSpecsFor("sofas")).toEqual([]);
     expect(defaultSpecsFor(null)).toEqual([]);
-    // Removed defaults can be added back with Quick add.
-    for (const label of dining) expect(specPresetsFor("dining-tables")).toContain(label);
-  });
-
-  it("has category presets and a general fallback", () => {
-    expect(specPresetsFor("sofas")).toContain("Seating capacity");
-    expect(specPresetsFor("unknown")).toContain("Warranty");
-    expect(specPresetsFor(null)).toContain("Material");
   });
 });
 

@@ -1,5 +1,6 @@
 import { Mail, MapPin, Phone } from "lucide-react";
 import { Container } from "@/components/ui/Container";
+import { cn } from "@/lib/utils";
 import { DEVELOPER } from "@/config/site";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { getSiteSettings } from "@/server/services/settings.service";
@@ -13,9 +14,10 @@ const PILL =
   "border-line bg-surface text-ink hover:border-ink text-small inline-flex min-h-11 items-center gap-2 rounded-full border px-4 transition-colors";
 
 /**
- * Compact footer (ADR-035, ADR-049, ADR-050): brand (logo, two-line description, social icons) and
- * contact (one-line address, phone and WhatsApp buttons from md, email); centred on phones, two
- * columns from md; a quiet line with © and the developer credit. Navigation lives in the header.
+ * Compact footer (ADR-035, ADR-049, ADR-050, ADR-061): from md, brand (logo, two-line description,
+ * social icons) and contact (address, phone and WhatsApp buttons, email) in two columns, then a
+ * quiet line with © and the developer credit. Phones show only logo → address → email → social
+ * icons, centred, and the credit (no description, no © line). Navigation lives in the header.
  */
 export async function Footer() {
   const settings = await getSiteSettings();
@@ -28,33 +30,39 @@ export async function Footer() {
     { href: settings.youtubeUrl, label: "YouTube", Icon: YoutubeIcon },
   ].filter((s): s is typeof s & { href: string } => Boolean(s.href));
 
+  /** Social icons: under the description from md; last on phones (ADR-061). */
+  const socialList = (className: string) =>
+    socials.length > 0 && (
+      <ul className={cn("items-center", className)}>
+        {socials.map(({ href, label, Icon }) => (
+          <li key={label}>
+            <a
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-ink-soft hover:text-walnut border-line bg-surface inline-flex size-11 items-center justify-center rounded-full border transition-colors md:border-0 md:bg-transparent"
+            >
+              <Icon />
+              <span className="sr-only">
+                {settings.businessName} on {label}
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    );
+
   return (
     <footer className="border-line bg-sand border-t">
       <Container className="flex flex-col items-center gap-6 py-8 text-center md:grid md:grid-cols-[1.2fr_1fr] md:items-start md:gap-12 md:py-10 md:text-left">
         <div className="flex flex-col items-center gap-3 md:items-start">
           <Logo variant="full" className="h-11" />
           {description && (
-            <p className="text-ink-soft text-small line-clamp-2 max-w-sm">{description}</p>
+            <p className="text-ink-soft text-small line-clamp-2 hidden max-w-sm md:block">
+              {description}
+            </p>
           )}
-          {socials.length > 0 && (
-            <ul className="mt-1 flex items-center gap-2 md:-my-1 md:mt-0 md:-ml-2.5 md:gap-0">
-              {socials.map(({ href, label, Icon }) => (
-                <li key={label}>
-                  <a
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-ink-soft hover:text-walnut border-line bg-surface inline-flex size-11 items-center justify-center rounded-full border transition-colors md:border-0 md:bg-transparent"
-                  >
-                    <Icon />
-                    <span className="sr-only">
-                      {settings.businessName} on {label}
-                    </span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          )}
+          {socialList("hidden md:-my-1 md:-ml-2.5 md:flex md:gap-0")}
         </div>
 
         {/* Phones: a short walnut rule between the brand and the contact details. */}
@@ -100,12 +108,16 @@ export async function Footer() {
             </a>
           )}
         </address>
+
+        {/* Phones (ADR-061): logo → address → email → social icons. */}
+        {socialList("flex gap-2 md:hidden")}
       </Container>
 
       <div className="border-line border-t">
         {/* © on the left and the credit on the right; on phones the credit sits below. */}
         <Container className="text-small text-muted flex flex-col items-center gap-0 py-3 text-center sm:flex-row sm:justify-between sm:gap-4 sm:text-left">
-          <p className="pt-1 sm:py-1">
+          {/* No copyright line on phones (ADR-061). */}
+          <p className="hidden sm:block sm:py-1">
             © {new Date().getFullYear()} {settings.businessName}. All rights reserved.
           </p>
           <p>

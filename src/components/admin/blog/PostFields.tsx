@@ -148,7 +148,7 @@ export function PostFields({
         </div>
       </FormSection>
 
-      <details className="border-line bg-surface rounded-md border">
+      <details className="admin-card">
         <summary className="text-ink flex min-h-14 cursor-pointer items-center px-5 font-semibold sm:px-6">
           Search engines (optional)
         </summary>

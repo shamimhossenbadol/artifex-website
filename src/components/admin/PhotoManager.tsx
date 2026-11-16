@@ -1,8 +1,9 @@
 "use client";
 // Photo manager (07 §4) for product photos and hero slides (ADR-039): drag & drop or pick several
-// files; each is uploaded in its own request (low memory on shared hosting), two at a time, with a
-// status per file. Saved photos can be reordered, described (alt text), deleted and, where the
-// owner supports it, set as the main photo. Changes save immediately.
+// files; each is shrunk in the browser and uploaded in its own request (low memory on shared
+// hosting, ADR-058), two at a time, retried if the request fails, with a status per file. Saved
+// photos can be reordered, described (alt text), deleted and, where the owner supports it, set as
+// the main photo. Changes save immediately.
 import { ArrowDown, ArrowUp, Check, ImageUp, Loader2, Star, TriangleAlert, X } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -11,6 +12,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import type { ActionResult } from "@/lib/action-result";
+import { MAX_ORIGINAL_BYTES, UPLOAD_QUALITIES, sendImageWithRetry } from "@/lib/prepare-upload";
 import { cn } from "@/lib/utils";
 import { ConfirmButton } from "./ConfirmButton";
 import { useToast } from "./Toaster";
@@ -27,7 +29,6 @@ export type PhotoActions = {
   setPrimary?: (id: number) => Promise<ActionResult>;
 };
 
-const MAX_BYTES = 10 * 1024 * 1024;
 const ACCEPT = ["image/jpeg", "image/png", "image/webp"];
 const CONCURRENCY = 2;
 
@@ -35,8 +36,20 @@ type QueueItem = {
   key: number;
   name: string;
   status: "waiting" | "uploading" | "done" | "failed";
+  /** 1 on the first try; 2–3 while retrying after the request didn't get through (ADR-058). */
+  attempt?: number;
   error?: string;
 };
+
+/** Shrinks and re-encodes in the browser, uploads, and retries if the request didn't get through. */
+async function uploadWithRetry(
+  original: File,
+  upload: PhotoActions["upload"],
+  onAttempt: (attempt: number) => void,
+): Promise<ActionResult<unknown>> {
+  const delivery = await sendImageWithRetry(original, upload, onAttempt);
+  return delivery.ok ? delivery.result : { ok: false, error: delivery.message };
+}
 
 let nextKey = 1;
 
@@ -84,8 +97,8 @@ export function PhotoManager({
       const item: QueueItem = { key: nextKey++, name: file.name, status: "waiting" };
       if (!ACCEPT.includes(file.type)) {
         rejected.push({ ...item, status: "failed", error: "Use a JPEG, PNG or WebP image." });
-      } else if (file.size > MAX_BYTES) {
-        rejected.push({ ...item, status: "failed", error: "Images must be 10 MB or smaller." });
+      } else if (file.size > MAX_ORIGINAL_BYTES) {
+        rejected.push({ ...item, status: "failed", error: "Images must be 40 MB or smaller." });
       } else if (accepted.length >= room) {
         rejected.push({ ...item, status: "failed", error: limitMessage });
       } else {
@@ -105,12 +118,9 @@ export function PhotoManager({
       while (next < accepted.length) {
         const { file, item } = accepted[next++]!;
         setItem(item.key, { status: "uploading" });
-        let result: ActionResult<unknown>;
-        try {
-          result = await actions.upload(file);
-        } catch {
-          result = { ok: false, error: "The upload failed. Check your connection and retry." };
-        }
+        const result = await uploadWithRetry(file, actions.upload, (attempt) =>
+          setItem(item.key, { status: "uploading", attempt }),
+        );
         if (result.ok) {
           added++;
           setItem(item.key, { status: "done" });
@@ -185,7 +195,7 @@ export function PhotoManager({
           }}
         />
         <p className="text-small text-muted">
-          JPEG, PNG or WebP, up to 10 MB each · {images.length}/{max} photos
+          JPEG, PNG or WebP, up to 40 MB each (resized before upload) · {images.length}/{max} photos
         </p>
       </div>
 
@@ -208,7 +218,10 @@ export function PhotoManager({
               <span className="text-ink min-w-0 truncate">{item.name}</span>
               <span className={item.status === "failed" ? "text-danger" : "text-muted"}>
                 {item.status === "waiting" && "Waiting"}
-                {item.status === "uploading" && "Uploading…"}
+                {item.status === "uploading" &&
+                  ((item.attempt ?? 1) > 1
+                    ? `Retrying (try ${item.attempt} of ${UPLOAD_QUALITIES.length})…`
+                    : "Uploading…")}
                 {item.status === "done" && "Uploaded"}
                 {item.status === "failed" && item.error}
               </span>

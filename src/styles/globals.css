@@ -29,6 +29,20 @@
   --color-messenger: #0866ff;
   /* Brand red from the Artifex logo, refined from the source #FF0707. Logo only (ADR-022). */
   --color-brand: #d2161e;
+  /* Admin only (ADR-055): espresso sidebar and a champagne-gold accent. */
+  --color-espresso: #16130f;
+  --color-espresso-soft: #231f1a;
+  --color-espresso-line: #352f28;
+  /* Muted text on espresso: 7.3:1. */
+  --color-espresso-muted: #a89f92;
+  --color-gold: #c9a56c;
+  /* Gold for text/icons on white or ivory: 4.8:1 on white. */
+  --color-gold-dark: #876536;
+
+  /* Admin elevation (ADR-055). The public site stays flat. */
+  --shadow-card: 0 1px 2px rgb(28 26 23 / 0.04), 0 10px 30px -18px rgb(28 26 23 / 0.18);
+  --shadow-lift: 0 2px 4px rgb(28 26 23 / 0.05), 0 22px 40px -22px rgb(28 26 23 / 0.32);
+  --shadow-float: 0 18px 50px -12px rgb(22 19 15 / 0.45);
 
   --font-serif: var(--font-cormorant), Georgia, serif;
   --font-sans: var(--font-inter), system-ui, sans-serif;
@@ -298,6 +312,187 @@ html:has(dialog[open]:modal) {
   from {
     opacity: 0;
   }
+}
+
+/*
+ * Admin panel theme (ADR-055). Scoped to .admin-root so the public site is untouched: Manrope for
+ * the interface (Cormorant stays for page titles), softer radii, card elevation, a fixed espresso
+ * sidebar and CSS-only motion. All motion stops under prefers-reduced-motion (rule above).
+ */
+.admin-root {
+  --font-sans: var(--font-manrope), var(--font-inter), system-ui, sans-serif;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  font-family: var(--font-sans);
+  font-feature-settings: "cv11", "ss01";
+}
+.admin-root ::selection {
+  background-color: color-mix(in srgb, var(--color-gold) 30%, transparent);
+}
+/* Fields: a soft gold halo on focus, on top of the walnut outline. */
+.admin-root :is(input, select, textarea):not([type="checkbox"], [type="radio"], [type="file"]) {
+  transition:
+    border-color 150ms var(--ease-out),
+    box-shadow 200ms var(--ease-out);
+}
+.admin-root :is(input, select, textarea):focus {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-gold) 22%, transparent);
+}
+.admin-root button:not(:disabled) {
+  transition-property: color, background-color, border-color, box-shadow, transform;
+}
+.admin-root button:not(:disabled):active {
+  transform: scale(0.97);
+}
+
+/* Panels and cards. */
+@utility admin-card {
+  border: 1px solid var(--color-line);
+  background-color: var(--color-surface);
+  border-radius: 0.875rem;
+  box-shadow: var(--shadow-card);
+}
+/* Cards that are links or that invite a closer look lift a little on hover. */
+@utility admin-lift {
+  transition:
+    transform 250ms var(--ease-out),
+    box-shadow 250ms var(--ease-out),
+    border-color 250ms var(--ease-out);
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lift);
+    border-color: color-mix(in srgb, var(--color-gold) 45%, var(--color-line));
+  }
+}
+
+/* Main canvas: ivory with a faint warm glow in the top corner. */
+@utility admin-canvas {
+  background-color: var(--color-bg);
+  background-image:
+    radial-gradient(
+      60rem 28rem at 100% -8rem,
+      color-mix(in srgb, var(--color-gold) 12%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      40rem 22rem at 0% 110%,
+      color-mix(in srgb, var(--color-sand) 70%, transparent),
+      transparent 70%
+    );
+  background-attachment: fixed;
+}
+
+/* Sidebar: deep espresso with a soft gold light at the top. */
+@utility admin-sidebar {
+  color: var(--color-espresso-muted);
+  background-color: var(--color-espresso);
+  background-image:
+    radial-gradient(
+      22rem 16rem at 0% 0%,
+      color-mix(in srgb, var(--color-gold) 16%, transparent),
+      transparent 70%
+    ),
+    linear-gradient(180deg, var(--color-espresso-soft), var(--color-espresso) 45%);
+  & :focus-visible {
+    outline-color: var(--color-gold);
+  }
+}
+
+/* Sidebar links: a gold bar grows in on the active item; icons nudge on hover. */
+@utility admin-nav-link {
+  position: relative;
+  transition:
+    color 200ms var(--ease-out),
+    background-color 200ms var(--ease-out);
+  &::before {
+    content: "";
+    position: absolute;
+    inset-block: 0.5rem;
+    left: -0.75rem;
+    width: 3px;
+    border-radius: 0 3px 3px 0;
+    background-color: var(--color-gold);
+    transform: scaleY(0);
+    transition: transform 300ms var(--ease-out);
+  }
+  &[aria-current="page"]::before {
+    transform: scaleY(1);
+  }
+  & svg {
+    transition: transform 250ms var(--ease-out);
+  }
+  &:hover svg {
+    transform: translateX(2px);
+  }
+}
+
+@keyframes admin-page-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.625rem);
+  }
+}
+@keyframes admin-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-0.5rem);
+  }
+}
+@keyframes admin-line-in {
+  from {
+    transform: scaleX(0);
+  }
+}
+@keyframes admin-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem) scale(0.97);
+  }
+}
+
+/* Each admin page fades up as it arrives (the (panel) template re-mounts per navigation). */
+@utility animate-admin-page {
+  animation: admin-page-in 450ms var(--ease-out) both;
+}
+/* Sidebar items slide in one after another on first load; set --i to the item's index. */
+@utility animate-admin-nav {
+  animation: admin-slide-in 450ms var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 40ms + 80ms);
+}
+/* The short gold rule above page titles draws itself in. */
+@utility animate-admin-line {
+  transform-origin: left;
+  animation: admin-line-in 700ms 150ms var(--ease-out) both;
+}
+@utility animate-admin-pop {
+  animation: admin-pop-in 300ms var(--ease-out) both;
+}
+/* Children appear one after another (cards in a grid, rows in a list). */
+@utility admin-stagger {
+  & > * {
+    animation: admin-page-in 500ms var(--ease-out) both;
+  }
+  & > :nth-child(2) {
+    animation-delay: 60ms;
+  }
+  & > :nth-child(3) {
+    animation-delay: 120ms;
+  }
+  & > :nth-child(4) {
+    animation-delay: 180ms;
+  }
+  & > :nth-child(5) {
+    animation-delay: 240ms;
+  }
+  & > :nth-child(n + 6) {
+    animation-delay: 300ms;
+  }
+}
+
+/* The mobile admin drawer is dark like the sidebar. */
+dialog.drawer.admin-sidebar::backdrop {
+  background-color: color-mix(in srgb, var(--color-espresso) 55%, transparent);
+  backdrop-filter: blur(2px);
 }
 
 /*

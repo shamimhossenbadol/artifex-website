@@ -7,10 +7,10 @@ import { useRef, useState, type ReactNode } from "react";
 import { Markdown } from "@/components/ui/Markdown";
 import { Textarea } from "@/components/ui/Textarea";
 import type { ActionResult } from "@/lib/action-result";
+import { MAX_ORIGINAL_BYTES, sendImageWithRetry } from "@/lib/prepare-upload";
 import { cn } from "@/lib/utils";
 
 const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
-const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
 const ALT_PLACEHOLDER = "Describe the image";
 
 type Edit = (
@@ -110,16 +110,17 @@ export function MarkdownEditor({
     if (!file || !uploadImage) return;
     setImageError(null);
     if (!IMAGE_TYPES.includes(file.type)) return setImageError("Use a JPEG, PNG or WebP image.");
-    if (file.size > MAX_IMAGE_BYTES) return setImageError("Images must be 10 MB or smaller.");
+    if (file.size > MAX_ORIGINAL_BYTES) return setImageError("Images must be 40 MB or smaller.");
     setUploading(true);
-    let result: ActionResult<{ path: string }>;
-    try {
+    // Shrunk in the browser and retried if the request doesn't get through (ADR-058).
+    const delivery = await sendImageWithRetry(file, (prepared) => {
       const formData = new FormData();
-      formData.set("file", file);
-      result = await uploadImage(formData);
-    } catch {
-      result = { ok: false, error: "The upload failed. Check your connection and retry." };
-    }
+      formData.set("file", prepared);
+      return uploadImage(formData);
+    });
+    const result: ActionResult<{ path: string }> = delivery.ok
+      ? delivery.result
+      : { ok: false, error: delivery.message };
     setUploading(false);
     if (!result.ok || !result.data) {
       setImageError(result.ok ? "The upload failed." : result.error);

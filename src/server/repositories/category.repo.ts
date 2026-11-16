@@ -141,7 +141,6 @@ export async function findProductSearchSources(categoryId: number) {
       title: true,
       keywords: true,
       material: true,
-      colors: { orderBy: { sortOrder: "asc" }, select: { name: true } },
     },
   });
 }

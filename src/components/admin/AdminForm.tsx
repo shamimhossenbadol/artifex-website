@@ -17,6 +17,12 @@ import {
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
 import type { ActionResult } from "@/lib/action-result";
+import {
+  NOT_DELIVERED_MESSAGE,
+  UPLOAD_QUALITIES,
+  prepareFormImages,
+  waitBeforeRetry,
+} from "@/lib/prepare-upload";
 import { FormMessage, fieldError } from "./FormMessage";
 import { useToast } from "./Toaster";
 
@@ -79,14 +85,27 @@ export function AdminForm<T>({
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const formData = new FormData(event.currentTarget);
+    const raw = new FormData(event.currentTarget);
     startTransition(async () => {
-      let result: ActionResult<T>;
-      try {
-        result = await action(null, formData);
-      } catch {
-        result = { ok: false, error: "Something went wrong. Please try again." };
+      let result: ActionResult<T> | null = null;
+      let hadImages = false;
+      // Chosen images are shrunk in the browser first. Only forms carrying an image are retried
+      // when the request doesn't get through (ADR-058); other saves are never sent twice.
+      for (let attempt = 0; attempt < UPLOAD_QUALITIES.length; attempt++) {
+        const { formData, hasImages } = await prepareFormImages(raw, UPLOAD_QUALITIES[attempt]);
+        hadImages = hasImages;
+        try {
+          result = await action(null, formData);
+          break;
+        } catch {
+          if (!hasImages || attempt === UPLOAD_QUALITIES.length - 1) break;
+          await waitBeforeRetry(1500 * (attempt + 1));
+        }
       }
+      result ??= {
+        ok: false,
+        error: hadImages ? NOT_DELIVERED_MESSAGE : "Something went wrong. Please try again.",
+      };
       startTransition(() => setState(result));
       if (!result.ok) {
         toast.error(result.error);
@@ -110,7 +129,7 @@ export function AdminForm<T>({
       >
         <FormMessage state={state as ActionResult | null} />
         {children}
-        <div className="border-line bg-bg/95 sticky bottom-0 z-10 -mx-1 flex justify-end border-t px-1 py-3 backdrop-blur-sm">
+        <div className="border-line bg-bg/85 sticky bottom-0 z-10 -mx-1 flex justify-end border-t px-1 py-3 backdrop-blur-md">
           <Button type="submit" disabled={pending} aria-disabled={pending}>
             {pending && <Loader2 aria-hidden strokeWidth={1.5} className="size-4 animate-spin" />}
             {pending ? "Saving…" : submitLabel}
@@ -152,10 +171,10 @@ export function FormSection({
   children: ReactNode;
 }) {
   return (
-    <fieldset className="border-line bg-surface flex min-w-0 flex-col gap-5 rounded-md border p-5 sm:p-6">
+    <fieldset className="admin-card flex min-w-0 flex-col gap-5 p-5 sm:p-6">
       <legend className="sr-only">{title}</legend>
       <div aria-hidden>
-        <p className="text-ink text-base font-semibold">{title}</p>
+        <p className="text-ink text-[15px] font-semibold tracking-tight">{title}</p>
         {description && <p className="text-small text-muted mt-1">{description}</p>}
       </div>
       {children}

@@ -23,24 +23,22 @@ export type ProductMessageInput = {
   business: string;
   product: string;
   url: string;
-  color?: string | null;
   price?: string | null;
 };
 
 /**
- * Fills the admin-editable product template. Placeholders: {business}, {product}, {color},
- * {price}, {url}. `{color}` renders as " (Colour: Walnut Brown)" or nothing.
+ * Fills the admin-editable product template. Placeholders: {business}, {product},
+ * {price}, {url}. Products have no colour choice (ADR-054).
  */
 export function buildProductMessage(input: ProductMessageInput): string {
   const values: Record<string, string> = {
     business: input.business,
     product: input.product,
-    color: input.color ? ` (Colour: ${input.color})` : "",
     price: input.price ?? "",
     url: input.url,
   };
   return input.template.replace(
-    /\{(business|product|color|price|url)\}/g,
+    /\{(business|product|price|url)\}/g,
     (_, key: string) => values[key] ?? "",
   );
 }

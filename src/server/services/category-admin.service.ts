@@ -68,7 +68,6 @@ async function refreshProductSearchText(categoryId: number, categoryName: string
         categoryName,
         keywords: p.keywords,
         material: p.material,
-        colorNames: p.colors.map((c) => c.name),
       }),
     })),
   );

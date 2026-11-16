@@ -49,7 +49,7 @@ Each phase ends with a short manual review of the phase's acceptance checks.
 - [x] ProductCard + ProductGrid + Pagination + SortBar (links, ADR-025)
 - [x] `/products` and `/categories/[slug]` listing pages (sort, on-sale, pagination, metadata)
 - [x] `/products/[slug]` detail: Gallery, ColorSwatches, Price, specs, description (Markdown), related, sticky mobile CTA. Gallery with real photos still to be checked once R2 has images
-- [x] `lib/whatsapp.ts` + WhatsApp inquiry button with selected colour (unit + e2e tested)
+- [x] `lib/whatsapp.ts` + WhatsApp inquiry button (unit + e2e tested; colour choice removed, ADR-054)
 - [x] Product + Breadcrumb JSON-LD
 
 **Exit check:** F1 and F3 acceptance criteria pass with seeded demo data. ✅ 2026-11-12: 27 e2e tests pass against the demo catalogue (not-found status is 200 + noindex, ADR-025); real-photo gallery check pending R2.
@@ -91,6 +91,11 @@ Each phase ends with a short manual review of the phase's acceptance checks.
 **Exit check:** the owner can do every workflow in 07 on a phone, and the auth tests pass.
 
 - [x] Delivery challan maker (Admin → Challan, print-only, nothing stored; ADR-046)
+- [x] Remove product colours from schema, admin, product page and WhatsApp message; product saves return to the list (ADR-054)
+- [x] Premium admin theme: Manrope, fixed espresso sidebar, gold accent, CSS motion (ADR-055)
+- [x] Draft/Published switch on the product list (ADR-056)
+- [x] Product images 1:1 everywhere; desktop gallery no longer crops square photos (ADR-057)
+- [x] Reliable image uploads: browser resize/re-encode, automatic retries, lighter server processing (ADR-058)
 
 ## Phase 8 — SEO, security & performance hardening
 - [x] `sitemap.ts`, `robots.ts`, canonical audit (ADR-037) — [ ] OG image check in the Facebook Sharing Debugger (owner, after the domain is final)
@@ -114,4 +119,4 @@ Each phase ends with a short manual review of the phase's acceptance checks.
 ---
 
 ## Future (not scheduled)
-Bangla language · per-colour images · slug redirects table · Cloudflare in front · cookieless analytics · additional admin users with roles · room-based collections ("Living room", "Bedroom") · showroom gallery page · product comparison.
+Bangla language · slug redirects table · Cloudflare in front · cookieless analytics · additional admin users with roles · room-based collections ("Living room", "Bedroom") · showroom gallery page · product comparison.

@@ -38,6 +38,7 @@ export function ProductImages({
       actions={actions}
       limitMessage={`Up to ${max} photos per product: 1 main photo and ${max - 1} gallery photos.`}
       emptyMessage="No photos yet. The first photo becomes the main photo."
+      aspect="aspect-square"
       deleteDescription="The photo is removed from the product and the website. This can't be undone."
     />
   );

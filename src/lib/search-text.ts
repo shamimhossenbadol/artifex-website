@@ -1,19 +1,12 @@
 // Denormalised product search text (04 §4, ADR-007): lowercased title + category + keywords +
-// material + colour names, collapsed whitespace, capped at the column size (1000).
+// material, collapsed whitespace, capped at the column size (1000).
 export function buildSearchText(parts: {
   title: string;
   categoryName: string;
   keywords?: string | null;
   material?: string | null;
-  colorNames?: string[];
 }): string {
-  return [
-    parts.title,
-    parts.categoryName,
-    parts.keywords,
-    parts.material,
-    ...(parts.colorNames ?? []),
-  ]
+  return [parts.title, parts.categoryName, parts.keywords, parts.material]
     .filter(Boolean)
     .join(" ")
     .toLowerCase()

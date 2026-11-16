@@ -81,7 +81,6 @@ export const PRODUCT_DETAIL_SELECT = {
     orderBy: [{ isPrimary: "desc" }, { sortOrder: "asc" }, { id: "asc" }],
     select: { id: true, path: true, alt: true, width: true, height: true },
   },
-  colors: { orderBy: { sortOrder: "asc" }, select: { id: true, name: true, hex: true } },
   specs: { orderBy: { sortOrder: "asc" }, select: { id: true, label: true, value: true } },
 } satisfies Prisma.ProductSelect;
 

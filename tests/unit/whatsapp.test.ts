@@ -3,7 +3,7 @@ import { buildProductMessage, buildWhatsAppUrl, sanitizeWhatsAppNumber } from "@
 import { toTelHref } from "@/lib/phone";
 
 const TEMPLATE =
-  "Hello {business}, I'm interested in {product}{color}. Could you share more details?\n{url}";
+  "Hello {business}, I'm interested in {product}. Could you share more details?\n{url}";
 
 describe("sanitizeWhatsAppNumber", () => {
   it("keeps digits only", () => {
@@ -34,14 +34,16 @@ describe("buildProductMessage", () => {
     url: "https://artifex.example/products/signature-l-shape-sofa",
   };
 
-  it("includes the colour when one is selected", () => {
-    expect(buildProductMessage({ ...base, color: "Walnut Brown" })).toBe(
-      "Hello Artifex Furniture, I'm interested in Signature L-Shape Sofa (Colour: Walnut Brown). Could you share more details?\nhttps://artifex.example/products/signature-l-shape-sofa",
+  it("fills the product name and URL", () => {
+    expect(buildProductMessage(base)).toBe(
+      "Hello Artifex Furniture, I'm interested in Signature L-Shape Sofa. Could you share more details?\nhttps://artifex.example/products/signature-l-shape-sofa",
     );
   });
 
-  it("omits the colour placeholder when none is selected", () => {
-    expect(buildProductMessage(base)).toContain("Signature L-Shape Sofa. Could");
+  it("no longer fills {color} (ADR-054)", () => {
+    expect(buildProductMessage({ ...base, template: "{product}{color}" })).toBe(
+      "Signature L-Shape Sofa{color}",
+    );
   });
 
   it("leaves unknown placeholders untouched", () => {

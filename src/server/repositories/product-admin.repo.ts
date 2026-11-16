@@ -107,7 +107,6 @@ const EDIT_SELECT = {
     orderBy: [{ sortOrder: "asc" }, { id: "asc" }],
     select: { id: true, path: true, alt: true, width: true, height: true, isPrimary: true },
   },
-  colors: { orderBy: { sortOrder: "asc" }, select: { name: true, hex: true } },
   specs: { orderBy: { sortOrder: "asc" }, select: { label: true, value: true } },
 } satisfies Prisma.ProductSelect;
 
@@ -151,7 +150,6 @@ export type ProductData = {
 };
 
 export type ProductChildren = {
-  colors: { name: string; hex: string }[];
   specs: { label: string; value: string }[];
 };
 
@@ -162,7 +160,6 @@ export async function insertProduct(data: ProductData, children: ProductChildren
   const row = await db.product.create({
     data: {
       ...data,
-      colors: { create: withOrder(children.colors) },
       specs: { create: withOrder(children.specs) },
     },
     select: { id: true },
@@ -170,7 +167,7 @@ export async function insertProduct(data: ProductData, children: ProductChildren
   return row.id;
 }
 
-/** Replaces the product's fields, colours and specs in one transaction. */
+/** Replaces the product's fields and specs in one transaction. */
 export async function writeProduct(
   id: number,
   data: ProductData,
@@ -178,10 +175,6 @@ export async function writeProduct(
 ): Promise<void> {
   await db.$transaction([
     db.product.update({ where: { id }, data }),
-    db.productColor.deleteMany({ where: { productId: id } }),
-    db.productColor.createMany({
-      data: withOrder(children.colors).map((c) => ({ ...c, productId: id })),
-    }),
     db.productSpec.deleteMany({ where: { productId: id } }),
     db.productSpec.createMany({
       data: withOrder(children.specs).map((s) => ({ ...s, productId: id })),
@@ -189,7 +182,7 @@ export async function writeProduct(
   ]);
 }
 
-/** Deletes the product (images, colours and specs cascade) and returns its image paths. */
+/** Deletes the product (images and specs cascade) and returns its image paths. */
 export async function removeProduct(id: number): Promise<string[]> {
   const images = await db.productImage.findMany({
     where: { productId: id },
@@ -287,6 +280,24 @@ export async function removeProductImage(id: number, productId: number, wasPrima
 }
 
 /** Bumps updatedAt so the list shows recent photo edits. */
+/** Status shortcut on the product list (ADR-056): just what the status change needs. */
+export async function findProductStatus(
+  id: number,
+): Promise<{ slug: string; status: "DRAFT" | "PUBLISHED"; publishedAt: Date | null } | null> {
+  return db.product.findUnique({
+    where: { id },
+    select: { slug: true, status: true, publishedAt: true },
+  });
+}
+
+export async function writeProductStatus(
+  id: number,
+  status: "DRAFT" | "PUBLISHED",
+  publishedAt: Date | null,
+): Promise<void> {
+  await db.product.update({ where: { id }, data: { status, publishedAt } });
+}
+
 export async function touchProduct(id: number): Promise<void> {
   await db.product.update({ where: { id }, data: { updatedAt: new Date() } });
 }

@@ -40,7 +40,7 @@ Rendered by a `<JsonLd data={…} />` component (`JSON.stringify` with `<` escap
 
 - `next/font` self-hosts the fonts (no Google request at runtime), with `display: swap` and only the weights listed in 03.
 - Tailwind purges automatically, with a target of < 25 KB CSS gzipped.
-- **Client JS budget:** < 90 KB gzipped on public pages beyond the framework. Client components are limited to: MobileNav, SearchOverlay, Gallery, ColorSwatches + WhatsApp button (selected colour state), the sticky bar, OpeningStatus, and MapLoader. Nothing else.
+- **Client JS budget:** < 90 KB gzipped on public pages beyond the framework. Client components are limited to: MobileNav, SearchOverlay, Gallery, the WhatsApp/Messenger inquiry with its sticky bar, OpeningStatus, and MapLoader. Nothing else.
 - Analytics (ADR-040): first-party, cookieless counts via `sendBeacon` to `/api/track` (no third-party script). The Meta Pixel loads only when a Pixel ID is set, and `fbevents.js` waits for the browser to be idle so it never delays LCP.
 
 ## 5. Caching & revalidation

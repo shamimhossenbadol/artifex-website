@@ -72,7 +72,7 @@ E:\ArtifexFurniture\Website\      # repo root (git)
 │  ├─ components/
 │  │  ├─ ui/                     # primitives: Button, Container, Badge, Input, Price, Skeleton…
 │  │  ├─ site/                   # Header, Footer, MobileNav (button + drawer), MobileMenuContent, SearchDialog, WhatsAppFab, SiteTracker…
-│  │  ├─ product/                # ProductCard, ProductGrid, Gallery, ColorSwatches, SpecsTable, WhatsAppInquiry
+│  │  ├─ product/                # ProductCard, ProductGrid, Gallery, SpecsTable, WhatsAppInquiry
 │  │  ├─ blog/                   # PostCard, PostBody (markdown)
 │  │  └─ admin/                  # AdminShell, DataTable, ImageUploader, FormField, ConfirmDialog
 │  ├─ server/
@@ -138,8 +138,8 @@ Slugs are unique per entity. Changing a slug in admin shows a warning (old links
 
 ## 5. Images pipeline
 
-1. The admin uploads JPEG/PNG/WebP (≤ 10 MB each, up to 12 per product).
-2. The server action validates the MIME type and magic bytes with `sharp().metadata()`, rotates using EXIF, then **strips metadata**.
+1. The admin picks JPEG/PNG/WebP photos (originals up to 40 MB; up to 5 per product). The browser resizes each to ≤ 2400 px and re-encodes it as WebP before sending, retrying up to twice if the request fails (ADR-058). Each request is ≤ 10 MB.
+2. The server action validates the MIME type and magic bytes with `sharp().metadata()`, rotates using EXIF, shrinks once to 1600 px as raw pixels (ADR-058), then **strips metadata**.
 3. It generates WebP variants at widths **480, 960, and 1600** (quality ~78) in memory.
 4. It uploads each variant to **Cloudflare R2** (`server/media/r2.storage.ts`, S3-compatible API signed with `aws4fetch`). The key is `<folder>/<yyyy>/<mm>/<hash>-<w>.webp`, where folder is `products`, `categories`, `blog`, `home` or `site`. Each object gets the headers `Content-Type: image/webp` and `Cache-Control: public, max-age=31536000, immutable`. Uploads run one after another so only one buffer is held in memory at a time.
 5. Only after all three variants have uploaded does it save the `ProductImage` row (key base, width, height, alt, sortOrder, isPrimary). If any upload fails, it deletes the variants that did upload and returns an error.

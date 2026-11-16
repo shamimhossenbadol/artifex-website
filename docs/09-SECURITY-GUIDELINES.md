@@ -25,7 +25,7 @@ The public site is read-only. The attack surface is: **admin login** (brute forc
 ## 3. Input validation
 
 - Zod schemas in `src/lib/validation/*` are shared by client forms (for UX) and Server Actions (authoritative).
-- Strings are trimmed with max lengths matching DB columns. Numbers are coerced with `int().min(0).max(100_000_000)`. Slugs follow `^[a-z0-9]+(?:-[a-z0-9]+)*$`. Hex colours follow `^#[0-9A-Fa-f]{6}$`.
+- Strings are trimmed with max lengths matching DB columns. Numbers are coerced with `int().min(0).max(100_000_000)`. Slugs follow `^[a-z0-9]+(?:-[a-z0-9]+)*$`.
 - URLs entered by the admin: `mapEmbedUrl` must start with `https://www.google.com/maps/embed`. Social URLs must be `https://` on an allow-listed host. Internal links (`ctaHref`) must start with `/` or `https://`, and `javascript:` is rejected.
 - Search query: 2–60 chars. Escape `%`, `_`, and `\` before `LIKE` (Prisma's `contains` handles parameterisation, but wildcards must be escaped explicitly; verified on MariaDB 11.4, ADR-027 → `src/lib/search.ts`).
 - Route params (`slug`, `page`) are validated, and invalid ones return `notFound()`.
@@ -43,7 +43,7 @@ Server Actions are POST-only, and Next.js checks `Origin` against `Host`. Set `s
 
 ## 6. File uploads
 
-- Admin only. One file per request. Size limit 10 MB (`serverActions.bodySizeLimit: '11mb'`).
+- Admin only. One file per request. Size limit 10 MB per request (`serverActions.bodySizeLimit: '11mb'`). The browser shrinks photos (≤ 2400 px, WebP) before sending (ADR-058); this is a convenience, not a security control, so the server checks below always apply.
 - Accept only image/jpeg, image/png, and image/webp, **verified by decoding with sharp** (not by extension or client MIME). Reject anything sharp can't decode, and reject dimensions above 8000 px.
 - Re-encode to WebP. This strips EXIF/GPS and neutralises polyglot files.
 - Object keys are server-generated (`<folder>/<yyyy>/<mm>/<random 12-char hash>-<w>.webp`), so user filenames never reach storage. `folder` comes from a fixed allow-list.

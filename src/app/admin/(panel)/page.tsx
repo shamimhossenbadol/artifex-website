@@ -1,4 +1,14 @@
-import { AlertTriangle, FilePlus2, House, PackagePlus } from "lucide-react";
+import {
+  AlertTriangle,
+  ArrowUpRight,
+  FilePenLine,
+  FilePlus2,
+  FolderTree,
+  House,
+  Newspaper,
+  Package,
+  PackagePlus,
+} from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
@@ -39,10 +49,10 @@ export default async function DashboardPage({ searchParams }: PageProps<"/admin"
     searchParams.then((params) => loadAnalytics(params.range)),
   ]);
   const stats = [
-    { label: "Published products", value: counts.published },
-    { label: "Draft products", value: counts.drafts },
-    { label: "Categories", value: counts.categories },
-    { label: "Published posts", value: counts.posts },
+    { label: "Published products", value: counts.published, Icon: Package },
+    { label: "Draft products", value: counts.drafts, Icon: FilePenLine },
+    { label: "Categories", value: counts.categories, Icon: FolderTree },
+    { label: "Published posts", value: counts.posts, Icon: Newspaper },
   ];
 
   return (
@@ -72,17 +82,22 @@ export default async function DashboardPage({ searchParams }: PageProps<"/admin"
       {analytics ? (
         <AnalyticsPanel summary={analytics} />
       ) : (
-        <p className="border-line bg-surface text-ink-soft mb-8 rounded-md border px-4 py-3">
+        <p className="admin-card text-ink-soft mb-8 px-4 py-3">
           Visitor numbers can&apos;t be loaded right now. Please try again later.
         </p>
       )}
 
       <h2 className="text-h3 mb-3">Catalogue</h2>
-      <dl className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
-        {stats.map((s) => (
-          <div key={s.label} className="border-line bg-surface rounded-md border p-4">
-            <dt className="text-small text-muted">{s.label}</dt>
-            <dd className="text-h2 mt-1 tabular-nums">{s.value}</dd>
+      <dl className="admin-stagger mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
+        {stats.map(({ label, value, Icon }) => (
+          <div key={label} className="admin-card admin-lift p-4 sm:p-5">
+            <dt className="text-small text-muted flex items-start justify-between gap-2">
+              {label}
+              <span className="bg-gold/12 text-gold-dark inline-flex size-8 shrink-0 items-center justify-center rounded-full">
+                <Icon aria-hidden strokeWidth={1.5} className="size-4" />
+              </span>
+            </dt>
+            <dd className="text-h2 mt-1 lining-nums tabular-nums">{value}</dd>
           </div>
         ))}
       </dl>
@@ -94,10 +109,17 @@ export default async function DashboardPage({ searchParams }: PageProps<"/admin"
               <li key={href}>
                 <Link
                   href={href}
-                  className="border-line text-ink hover:border-ink flex min-h-11 items-center gap-3 rounded-md border px-3 transition-colors"
+                  className="group border-line text-ink hover:border-gold hover:bg-bg flex min-h-12 items-center gap-3 rounded-md border px-3 font-medium transition-colors duration-200"
                 >
-                  <Icon aria-hidden strokeWidth={1.5} className="text-walnut size-5" />
-                  {label}
+                  <span className="bg-gold/12 text-gold-dark inline-flex size-8 items-center justify-center rounded-full">
+                    <Icon aria-hidden strokeWidth={1.5} className="size-4" />
+                  </span>
+                  <span className="flex-1">{label}</span>
+                  <ArrowUpRight
+                    aria-hidden
+                    strokeWidth={1.5}
+                    className="text-muted size-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                  />
                 </Link>
               </li>
             ))}
@@ -109,7 +131,7 @@ export default async function DashboardPage({ searchParams }: PageProps<"/admin"
             {recent.length === 0 ? (
               <p className="text-muted">No products yet.</p>
             ) : (
-              <ul className="divide-line divide-y">
+              <ul className="admin-stagger divide-line divide-y">
                 {recent.map((p) => (
                   <li key={p.id} className="flex flex-wrap items-center gap-x-3 gap-y-1 py-3">
                     <Link

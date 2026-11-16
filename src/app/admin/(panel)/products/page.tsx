@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { AdminPageHeader, AdminPanel } from "@/components/admin/AdminPageHeader";
+import { ProductStatusToggle } from "@/components/admin/products/ProductStatusToggle";
 import { ProductRowActions } from "@/components/admin/products/ProductRowActions";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -58,7 +59,7 @@ export default async function ProductsAdminPage({ searchParams }: PageProps<"/ad
         action="/admin/products"
         role="search"
         aria-label="Filter products"
-        className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-6"
+        className="admin-card mb-6 grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-6"
       >
         <label className="lg:col-span-2">
           <span className="sr-only">Search by title</span>
@@ -129,11 +130,14 @@ export default async function ProductsAdminPage({ searchParams }: PageProps<"/ad
             {filtered ? "No products match these filters." : "No products yet. Add your first one."}
           </p>
         ) : (
-          <ul className="divide-line flex flex-col divide-y">
+          <ul className="admin-stagger divide-line flex flex-col divide-y">
             {list.items.map((p) => {
               const live = p.status === "PUBLISHED" && p.category.isActive;
               return (
-                <li key={p.id} className="flex flex-col gap-3 py-3 md:flex-row md:items-center">
+                <li
+                  key={p.id}
+                  className="hover:bg-bg -mx-3 flex flex-col gap-3 rounded-md px-3 py-3 transition-colors duration-200 md:flex-row md:items-center"
+                >
                   <div className="flex min-w-0 flex-1 items-center gap-3">
                     <div className="bg-sand relative size-16 shrink-0 overflow-hidden rounded-sm">
                       {p.imagePath ? (
@@ -162,14 +166,16 @@ export default async function ProductsAdminPage({ searchParams }: PageProps<"/ad
                       <p className="text-small text-muted truncate">
                         {p.category.name} · Updated {formatPostDate(p.updatedAt)}
                         {p.imageCount === 0 && " · No photos"}
+                        {p.status === "PUBLISHED" &&
+                          !p.category.isActive &&
+                          " · Hidden: its category is hidden"}
                       </p>
-                      <div className="mt-1 flex flex-wrap gap-1.5">
-                        <Badge variant={p.status === "PUBLISHED" ? "new" : "neutral"}>
-                          {p.status === "PUBLISHED" ? "Published" : "Draft"}
-                        </Badge>
-                        {p.isPopular && <Badge>Popular</Badge>}
-                        {p.isNewArrival && <Badge>New</Badge>}
-                      </div>
+                      {(p.isPopular || p.isNewArrival) && (
+                        <div className="mt-1 flex flex-wrap gap-1.5">
+                          {p.isPopular && <Badge>Popular</Badge>}
+                          {p.isNewArrival && <Badge>New</Badge>}
+                        </div>
+                      )}
                     </div>
                   </div>
                   <Price
@@ -177,6 +183,7 @@ export default async function ProductsAdminPage({ searchParams }: PageProps<"/ad
                     discountPrice={p.discountPrice}
                     className="text-small md:w-44 md:justify-end md:text-right"
                   />
+                  <ProductStatusToggle id={p.id} title={p.title} status={p.status} />
                   <div className="flex items-center gap-1">
                     <Link href={`/admin/products/${p.id}`} className={ICON_LINK}>
                       <Pencil aria-hidden strokeWidth={1.5} className="size-5" />

@@ -52,7 +52,7 @@ export default async function BlogAdminPage({ searchParams }: PageProps<"/admin/
         action="/admin/blog"
         role="search"
         aria-label="Filter posts"
-        className="mb-6 grid gap-3 sm:grid-cols-[1fr_12rem_auto]"
+        className="admin-card mb-6 grid gap-3 p-4 sm:grid-cols-[1fr_12rem_auto]"
       >
         <label>
           <span className="sr-only">Search by title</span>
@@ -93,11 +93,14 @@ export default async function BlogAdminPage({ searchParams }: PageProps<"/admin/
             {filtered ? "No posts match these filters." : "No posts yet. Write your first one."}
           </p>
         ) : (
-          <ul className="divide-line flex flex-col divide-y">
+          <ul className="admin-stagger divide-line flex flex-col divide-y">
             {list.items.map((post) => {
               const live = post.status === "PUBLISHED";
               return (
-                <li key={post.id} className="flex flex-col gap-3 py-3 md:flex-row md:items-center">
+                <li
+                  key={post.id}
+                  className="hover:bg-bg -mx-3 flex flex-col gap-3 rounded-md px-3 py-3 transition-colors duration-200 md:flex-row md:items-center"
+                >
                   <div className="flex min-w-0 flex-1 items-center gap-3">
                     <div className="bg-sand relative aspect-[4/3] w-20 shrink-0 overflow-hidden rounded-sm">
                       {post.coverImagePath ? (

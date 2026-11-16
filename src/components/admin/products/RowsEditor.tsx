@@ -1,5 +1,5 @@
 "use client";
-// Repeatable rows for colours and specifications (07 §3.2): add, edit, reorder, remove. The rows
+// Repeatable rows for specifications (07 §3.2): add, edit, reorder, remove. The rows
 // are sent as JSON in one hidden input and validated on the server (lib/validation/product).
 import { ArrowDown, ArrowUp, Plus, X } from "lucide-react";
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
@@ -13,8 +13,8 @@ import { fieldError } from "../FormMessage";
 type Row = { key: number; a: string; b: string };
 
 type RowsEditorProps = {
-  /** The hidden input's name and the field-error prefix: "colors" or "specs". */
-  name: "colors" | "specs";
+  /** The hidden input's name and the field-error prefix. */
+  name: "specs";
   initial: { a: string; b: string }[];
   max: number;
   addLabel: string;
@@ -110,76 +110,6 @@ function MoveButtons({
         <span className="sr-only">Move {label} down</span>
       </button>
     </>
-  );
-}
-
-/** Colours: name + colour picker (with the hex shown and editable). */
-export function ColorsEditor({
-  initial,
-  max,
-}: {
-  initial: { name: string; hex: string }[];
-  max: number;
-}) {
-  const { rows, add, change, remove, move } = useRows(
-    initial.map((c) => ({ a: c.name, b: c.hex })),
-  );
-  const value = JSON.stringify(rows.map((r) => ({ name: r.a, hex: r.b })));
-  return (
-    <RowsShell
-      name="colors"
-      value={value}
-      count={rows.length}
-      max={max}
-      addLabel="Add colour"
-      empty="No colours. Add the finishes or fabrics a customer can choose."
-      onAdd={() => add("", "#8B6B4A")}
-    >
-      {rows.map((row, index) => {
-        const label = row.a ? `colour “${row.a}”` : `colour ${index + 1}`;
-        return (
-          <li key={row.key} className="flex flex-col gap-1">
-            <div className="flex flex-wrap items-center gap-2">
-              <input
-                type="color"
-                value={/^#[0-9a-fA-F]{6}$/.test(row.b) ? row.b : "#000000"}
-                onChange={(e) => change(row.key, { b: e.target.value.toUpperCase() })}
-                aria-label={`Pick ${label}`}
-                className="border-line h-11 w-12 shrink-0 cursor-pointer rounded-md border bg-transparent p-1"
-              />
-              <Input
-                value={row.a}
-                onChange={(e) => change(row.key, { a: e.target.value })}
-                placeholder="Walnut Brown"
-                maxLength={50}
-                aria-label={`Name of ${label}`}
-                className="min-w-0 flex-1 basis-40"
-              />
-              <Input
-                value={row.b}
-                onChange={(e) => change(row.key, { b: e.target.value })}
-                maxLength={7}
-                aria-label={`Hex code of ${label}`}
-                className="w-28 font-mono uppercase"
-              />
-              <div className="flex">
-                <MoveButtons
-                  index={index}
-                  count={rows.length}
-                  label={label}
-                  onMove={(d) => move(index, d)}
-                />
-                <button type="button" onClick={() => remove(row.key)} className={ICON_BUTTON}>
-                  <X aria-hidden strokeWidth={1.5} className="size-4" />
-                  <span className="sr-only">Remove {label}</span>
-                </button>
-              </div>
-            </div>
-            <RowErrors name="colors" index={index} />
-          </li>
-        );
-      })}
-    </RowsShell>
   );
 }
 

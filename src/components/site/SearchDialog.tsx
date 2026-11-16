@@ -193,7 +193,7 @@ export function SearchDialog() {
                     active === index ? "bg-sand" : "hover:bg-sand",
                   )}
                 >
-                  <span className="bg-sand relative aspect-[4/5] w-12 shrink-0 overflow-hidden">
+                  <span className="bg-sand relative aspect-square w-12 shrink-0 overflow-hidden">
                     {product.image && (
                       <Image
                         src={product.image.path}

@@ -23,7 +23,7 @@ E2E tests run against `next build && next start` with a seeded test database (`D
 |---|---|
 | `lib/format.ts` | `formatBDT(125000)` → `৳ 1,25,000`; 0; null → "Price on request" |
 | Pricing service | discount % rounding; discount ≥ regular is rejected; discount without regular is rejected |
-| `lib/whatsapp.ts` | number sanitising; template placeholders; colour present/absent; `&`, `#`, `?`, emoji, and Bangla encoded; absolute URL |
+| `lib/whatsapp.ts` | number sanitising; template placeholders; `&`, `#`, `?`, emoji, and Bangla encoded; absolute URL |
 | Search service | normalisation; multi-term AND; `%`/`_` escaped; ranking order; < 2 chars → empty |
 | Slug util | Unicode/Bangla titles fall back to a transliteration or id-based slug; collisions get `-2`, `-3` suffixes |
 | Validation schemas | each admin schema: valid sample passes, each invalid field fails |
@@ -35,7 +35,7 @@ E2E tests run against `next build && next start` with a seeded test database (`D
 ## 3. E2E — public
 
 - **Catalogue:** the home page renders all non-empty sections; clicking a category opens the grid; pagination page 2 works; sort by price changes the order; an unknown category returns 404.
-- **Product detail:** clicking a gallery thumbnail changes the main image; selecting a colour updates the label; the WhatsApp link `href` contains the product name, colour, and URL (assert the `href`, don't open WhatsApp); related products are shown.
+- **Product detail:** clicking a gallery thumbnail changes the main image; the WhatsApp link `href` contains the product name and URL (assert the `href`, don't open WhatsApp); related products are shown.
 - **Search:** typing "sofa" shows suggestions; Enter → results page; a nonsense query shows the empty state.
 - **Blog:** list → post → related links work.
 - **Contact:** the map placeholder loads the iframe on click; tel: and WhatsApp links are correct.
@@ -46,7 +46,7 @@ E2E tests run against `next build && next start` with a seeded test database (`D
 - Login with wrong password → generic error. Six wrong attempts → locked message.
 - First login → forced to the change-password page, and other admin URLs redirect back.
 - Change password → old sessions are invalid (second browser context gets logged out).
-- Create product with 2 images, 2 colours, and 3 specs → publish → appears on the public category page **without a restart** (revalidation works).
+- Create product with 2 images and 3 specs → publish → appears on the public category page **without a restart** (revalidation works).
 - Edit price → the public price updates. Unpublish → the public page returns 404.
 - Delete a category with products → blocked with a message.
 - Update the WhatsApp number in settings → the floating button `href` updates.

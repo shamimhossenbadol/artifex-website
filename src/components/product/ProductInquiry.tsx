@@ -1,6 +1,6 @@
 "use client";
-// Colour swatches + WhatsApp/Messenger inquiry + mobile sticky bar (F1.4, F3, 05 §3). The selected
-// colour goes into the WhatsApp message. Without JavaScript the links still work (no colour).
+// WhatsApp/Messenger inquiry + mobile sticky bar (F3, 05 §3). Without JavaScript the links still
+// work. Products have no colour choice (ADR-054).
 // Messenger sits beside WhatsApp everywhere: the sales team answers on both (ADR-044).
 import { Phone } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -10,10 +10,7 @@ import { ButtonLink } from "@/components/ui/ButtonLink";
 import { cn } from "@/lib/utils";
 import { buildProductMessage, buildWhatsAppUrl } from "@/lib/whatsapp";
 
-export type InquiryColor = { id: number; name: string; hex: string };
-
 type ProductInquiryProps = {
-  colors: InquiryColor[];
   whatsappNumber: string | null;
   template: string;
   business: string;
@@ -26,7 +23,6 @@ type ProductInquiryProps = {
 };
 
 export function ProductInquiry({
-  colors,
   whatsappNumber,
   template,
   business,
@@ -37,7 +33,6 @@ export function ProductInquiry({
   telHref,
   messengerHref,
 }: ProductInquiryProps) {
-  const [selected, setSelected] = useState<InquiryColor | null>(null);
   const [showBar, setShowBar] = useState(false);
   const ctaRef = useRef<HTMLDivElement>(null);
 
@@ -70,7 +65,6 @@ export function ProductInquiry({
           business,
           product: productTitle,
           url: productUrl,
-          color: selected?.name ?? null,
           price: priceLabel,
         }),
       })
@@ -78,39 +72,6 @@ export function ProductInquiry({
 
   return (
     <>
-      {colors.length > 0 && (
-        <fieldset className="mt-6">
-          <legend className="text-small text-ink-soft mb-3">
-            Colour: <span className="text-ink font-medium">{selected?.name ?? "Choose one"}</span>
-          </legend>
-          <div className="flex flex-wrap gap-3">
-            {colors.map((color) => {
-              const isSelected = selected?.id === color.id;
-              return (
-                <button
-                  key={color.id}
-                  type="button"
-                  onClick={() => setSelected(isSelected ? null : color)}
-                  aria-pressed={isSelected}
-                  aria-label={color.name}
-                  title={color.name}
-                  className="inline-flex size-11 items-center justify-center rounded-full"
-                >
-                  <span
-                    aria-hidden
-                    className={cn(
-                      "border-line block size-7 rounded-full border",
-                      isSelected && "ring-ink ring-offset-bg ring-2 ring-offset-2",
-                    )}
-                    style={{ backgroundColor: color.hex }}
-                  />
-                </button>
-              );
-            })}
-          </div>
-        </fieldset>
-      )}
-
       <div ref={ctaRef} className="mt-8 flex flex-col gap-3">
         {whatsappHref && (
           <ButtonLink href={whatsappHref} external variant="whatsapp" size="lg" fullWidth>

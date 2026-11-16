@@ -67,7 +67,7 @@ Rules: headings are serif, while everything functional (nav, buttons, prices, fo
 
 ## 4. Shape, elevation, motion
 
-- **Radius:** `--radius-sm: 2px` (inputs, badges) and `--radius-md: 4px` (buttons, cards). Images have **no radius** (crisp editorial look). Pills only for colour swatches (full circle).
+- **Radius:** `--radius-sm: 2px` (inputs, badges) and `--radius-md: 4px` (buttons, cards). Images have **no radius** (crisp editorial look). No pills on the public site.
 - **Shadows:** none on the public site. Use borders (`--color-line`) instead. Admin may use `shadow-sm` on popovers.
 - **Motion (ADR-021, CSS only):** hover/colour transitions 150–250 ms `ease-out`; image `scale-[1.03]` on card hover (desktop only); menu slide-in. Entrance animations `animate-rise` (fade + rise, staggered with `stagger-1..3`) and `animate-settle` (transform only, for the LCP heading/image); scroll reveal `reveal` (CSS scroll timeline, progressive enhancement). All defined in `globals.css` and disabled under `prefers-reduced-motion`. **No** animation libraries, parallax, looping animations, or autoplay sliders, and never fade the LCP element in. **Exception (ADR-048):** the homepage hero slider autoplays with a 1.2 s crossfade and a slow zoom by transition (transform only, the outgoing photo keeps its zoom until it has faded out; off under reduced motion).
 
@@ -79,16 +79,23 @@ Rules: headings are serif, while everything functional (nav, buttons, prices, fo
 | **ProductCard** (`product/`) | Square (1:1) image (ADR-035) on a sand background, title (Inter 500, 15–16 px, 2-line clamp), category (small, muted), price row. Discount: sale-coloured price, struck-through regular price in muted, and a "-15%" badge top-left. "New" badge optional. The whole card is a link. Hover: image scale 1.03 and title underline. |
 | **Price** | Formats `৳ 45,500`. Handles regular-only, discounted, and "Price on request". |
 | **Badge** | 11–12 px uppercase Inter 500, tracking 0.08em, 2 px radius. Variants: `sale`, `new`, `neutral`. |
-| **ColorSwatches** (`product/`) | 28 px circles with a 1 px line border; the selected one gets a 2 px ink ring with offset. The colour name shows next to the label. They're buttons with `aria-pressed`. |
-| **Gallery** (`product/`) | Main image 1:1 on mobile, 4:3 on desktop (ADR-035; mobile is full-bleed swipeable via CSS scroll-snap, no library). Thumbnail strip below (desktop: vertical strip left). Click opens a lightweight fullscreen viewer (native `<dialog>`). |
+| **Gallery** (`product/`) | Main image 1:1 at every size (ADR-057; mobile is full-bleed swipeable via CSS scroll-snap, no library). Thumbnail strip below (desktop: vertical strip left). Click opens a lightweight fullscreen viewer (native `<dialog>`). |
 | **SectionHeading** (`site/`) | Eyebrow, then h2, then optional "View all →" link aligned right on desktop. |
 | **Input / Textarea / Select** | h-11, 1 px line border, 2 px radius, white surface, walnut focus ring. Labels above (small, ink-soft). |
 | **Breadcrumbs** | small, muted, `/` separators, last item ink. |
 | **Skeleton** | sand-coloured blocks with a subtle pulse (disabled under reduced motion). |
 
+### Admin theme (ADR-055)
+The admin has its own, richer skin; the public site doesn't use any of it.
+- **Font:** Manrope (loaded in `src/app/admin/layout.tsx`, admin routes only) via `.admin-root`, which swaps `--font-sans`. Page titles stay Cormorant (`text-h2`).
+- **Colours:** `espresso` #16130F, `espresso-soft` #231F1A, `espresso-line` #352F28, `espresso-muted` #A89F92 (sidebar text, 7.3:1), `gold` #C9A56C (accents on dark, bars, rules), `gold-dark` #876536 (gold text/icons on light, 4.8:1).
+- **Shape and depth:** inside `.admin-root` radii are 6 px (sm) and 10 px (md); `admin-card` = white, 1 px line border, 14 px radius, `shadow-card`. `admin-lift` raises a card 2 px with `shadow-lift` on hover. Toasts use `shadow-float`.
+- **Layout:** fixed 16 rem espresso sidebar (`admin-sidebar`) that never scrolls; nav rows scale with viewport height; "View site" and "Log out" pinned at the bottom. Phones: espresso top bar and drawer. Main area on `admin-canvas` (ivory with a faint gold glow), content max 78 rem.
+- **Motion (CSS only):** `animate-admin-page` per navigation (template), `animate-admin-nav` staggered sidebar rows, `animate-admin-line` gold rule above page titles, `admin-stagger` for card grids and list rows, `animate-admin-pop` for toasts and the login card, active nav bar grows in, button press scale 0.97. All off under reduced motion.
+
 ## 6. Imagery guidelines
 
-- Product photos: shown **square** on cards and mobile gallery, **4:3** in the desktop gallery (centre-cropped), so keep the product centred; at least 1600 px on the long edge, on neutral/lifestyle backgrounds. Consistent lighting matters more than quantity.
+- Product photos: shown **square (1:1) everywhere** (cards, gallery, thumbnails, search results, admin preview; ADR-057), centre-cropped, so shoot or crop them square with the product centred; at least 1600 px on the long edge, on neutral/lifestyle backgrounds. Consistent lighting matters more than quantity.
 - Hero: 16:9 desktop / 4:5 mobile crop (art-directed via two image fields if needed later; v1 uses `object-cover` with a focal point centred).
 - Blog covers: 3:2.
 - Category tiles: 4:5 with the category name overlaid bottom-left on a subtle dark scrim (`linear-gradient` allowed **only** here, for text legibility).

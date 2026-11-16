@@ -1,7 +1,7 @@
 // Upload processing (02 §5, 09 §6): decode with sharp (never trust extension or MIME), apply EXIF
 // rotation, strip metadata, and produce WebP variants at 480/960/1600 px. Runs once per upload.
 import sharp, { type Metadata } from "sharp";
-import { IMAGE_VARIANT_WIDTHS } from "@/lib/image-variants";
+import { IMAGE_VARIANT_WIDTHS, LARGEST_VARIANT_WIDTH } from "@/lib/image-variants";
 
 export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
 export const MAX_DIMENSION = 8000;
@@ -45,15 +45,24 @@ export async function processImage(input: Buffer): Promise<ProcessedImage> {
     throw new ImageValidationError(`Images can be at most ${MAX_DIMENSION} px on each side.`);
   }
 
-  // Rotate once using EXIF orientation; re-encoding to WebP drops all metadata (EXIF/GPS).
-  const upright = await sharp(input).rotate().toBuffer({ resolveWithObject: true });
-  const sourceWidth = upright.info.width;
-  const sourceHeight = upright.info.height;
+  // Decode once: apply EXIF rotation and shrink straight to the largest variant width, kept as raw
+  // pixels (ADR-058). Re-encoding the full-resolution original first used far more memory and CPU
+  // on shared hosting. WebP output drops all metadata (EXIF/GPS).
+  const base = await sharp(input, { limitInputPixels: MAX_DIMENSION * MAX_DIMENSION })
+    .rotate()
+    .resize({ width: LARGEST_VARIANT_WIDTH, withoutEnlargement: true })
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const raw = {
+    width: base.info.width,
+    height: base.info.height,
+    channels: base.info.channels,
+  };
 
   const variants: ImageVariant[] = [];
   let largest = { width: 0, height: 0 };
   for (const width of IMAGE_VARIANT_WIDTHS) {
-    const { data, info } = await sharp(upright.data)
+    const { data, info } = await sharp(base.data, { raw })
       .resize({ width, withoutEnlargement: true })
       .webp({ quality: WEBP_QUALITY, effort: 4 })
       .toBuffer({ resolveWithObject: true });
@@ -62,8 +71,8 @@ export async function processImage(input: Buffer): Promise<ProcessedImage> {
   }
 
   return {
-    width: largest.width || sourceWidth,
-    height: largest.height || sourceHeight,
+    width: largest.width || raw.width,
+    height: largest.height || raw.height,
     variants,
   };
 }

@@ -12,6 +12,7 @@ const repo = vi.hoisted(() => ({
   findProductIdBySku: vi.fn(),
   findProductIdBySlug: vi.fn(),
   findProductImage: vi.fn(),
+  findProductStatus: vi.fn(),
   insertProduct: vi.fn(),
   insertProductImage: vi.fn(),
   makeImagePrimary: vi.fn(),
@@ -21,6 +22,7 @@ const repo = vi.hoisted(() => ({
   touchProduct: vi.fn(),
   updateImageAlt: vi.fn(),
   writeProduct: vi.fn(),
+  writeProductStatus: vi.fn(),
 }));
 const media = vi.hoisted(() => ({ storeImage: vi.fn(), discardImage: vi.fn() }));
 vi.mock("next/server", () => ({ connection: async () => undefined }));
@@ -37,7 +39,6 @@ const FORM = {
   description: "",
   regularPrice: "45,500",
   discountPrice: "",
-  colors: "[]",
   specs: "[]",
   sku: "",
   material: "",
@@ -82,7 +83,6 @@ const editRow = (over: Record<string, unknown> = {}) => ({
   updatedAt: new Date(),
   category: { slug: "sofas", isActive: true },
   images: [],
-  colors: [{ name: "Grey", hex: "#808080" }],
   specs: [{ label: "Frame", value: "Oak" }],
   ...over,
 });
@@ -115,15 +115,13 @@ describe("productSchema", () => {
     expect(errorPaths({ shortDescription: "x".repeat(301) })).toContain("shortDescription");
   });
 
-  it("parses colours and specs with per-row errors", () => {
+  it("parses specs with per-row errors", () => {
     const data = input({
-      colors: JSON.stringify([{ name: " Walnut ", hex: "#5c4033" }]),
       specs: JSON.stringify([{ label: "Frame", value: "Mahogany" }]),
     });
-    expect(data.colors).toEqual([{ name: "Walnut", hex: "#5C4033" }]);
     expect(data.specs).toEqual([{ label: "Frame", value: "Mahogany" }]);
-    expect(errorPaths({ colors: JSON.stringify([{ name: "", hex: "red" }]) })).toEqual(
-      expect.arrayContaining(["colors.0.name", "colors.0.hex"]),
+    expect(errorPaths({ specs: JSON.stringify([{ label: "", value: "" }]) })).toEqual(
+      expect.arrayContaining(["specs.0.label", "specs.0.value"]),
     );
     expect(errorPaths({ specs: "not json" })).toContain("specs");
   });
@@ -232,7 +230,7 @@ describe("product admin service", () => {
       slug === "oslo-3-seater-sofa-copy" ? 99 : null,
     );
     expect(await service.duplicateProduct(7)).toEqual({ ok: true, data: { id: 42 } });
-    const [data, children] = repo.insertProduct.mock.calls[0]!;
+    const [data] = repo.insertProduct.mock.calls[0]!;
     expect(data).toMatchObject({
       slug: "oslo-3-seater-sofa-copy-2",
       title: "Oslo 3-Seater Sofa (copy)",
@@ -241,7 +239,6 @@ describe("product admin service", () => {
       publishedAt: null,
       isPopular: true,
     });
-    expect(children.colors).toEqual([{ name: "Grey", hex: "#808080" }]);
     expect(repo.insertProductImage).not.toHaveBeenCalled();
   });
 
@@ -258,6 +255,46 @@ describe("product admin service", () => {
       data: { slug: "oslo-3-seater-sofa" },
     });
     expect(media.discardImage).toHaveBeenCalledTimes(2);
+  });
+
+  describe("status shortcut (ADR-056)", () => {
+    it("publishes a draft and stamps the first publish date", async () => {
+      repo.findProductStatus.mockResolvedValue({
+        slug: "oslo",
+        status: "DRAFT",
+        publishedAt: null,
+      });
+      expect(await service.setProductStatus(7, "PUBLISHED")).toEqual({
+        ok: true,
+        data: { slug: "oslo" },
+      });
+      const [id, status, publishedAt] = repo.writeProductStatus.mock.calls[0]!;
+      expect([id, status]).toEqual([7, "PUBLISHED"]);
+      expect(publishedAt).toBeInstanceOf(Date);
+    });
+
+    it("keeps the publish date when moving back to draft", async () => {
+      const first = new Date("2026-11-01T00:00:00Z");
+      repo.findProductStatus.mockResolvedValue({
+        slug: "oslo",
+        status: "PUBLISHED",
+        publishedAt: first,
+      });
+      await service.setProductStatus(7, "DRAFT");
+      expect(repo.writeProductStatus).toHaveBeenCalledWith(7, "DRAFT", first);
+    });
+
+    it("does nothing when the status is already set, and reports missing products", async () => {
+      repo.findProductStatus.mockResolvedValue({
+        slug: "oslo",
+        status: "DRAFT",
+        publishedAt: null,
+      });
+      await service.setProductStatus(7, "DRAFT");
+      expect(repo.writeProductStatus).not.toHaveBeenCalled();
+      repo.findProductStatus.mockResolvedValue(null);
+      expect(await service.setProductStatus(8, "PUBLISHED")).toMatchObject({ ok: false });
+    });
   });
 
   describe("images", () => {

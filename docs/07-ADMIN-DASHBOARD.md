@@ -34,19 +34,20 @@ Session and security mechanics are in `09-SECURITY-GUIDELINES.md` §2.
 
 ### 3.2 Products
 - **List:** search by title, filter by category/status/flags, and sort by updated/price. Columns: thumb, title, category, price, status, flags (Popular, New), updated. Row actions: Edit, View, Duplicate, Delete (with confirmation). Paginated at 20.
+- **Status switch (ADR-056):** each row has a Draft/Published switch that changes the status straight from the list (optimistic, with a toast; same publish-date rule and cache revalidation as the form).
 - **Create/Edit form** (one page with sections; sticky Save bar):
   1. *Basics*: title, slug (auto, editable, with a warning on change after publish), category, short description (counter 300), full description (Markdown textarea with a toolbar: bold, italic, heading, list, link, and preview tab).
   2. *Pricing*: regular price (blank = Price on request), discount price, with a live preview "৳ 38,675 ~~৳ 45,500~~ -15%".
-  3. *Images*: drag & drop multi-upload (max 5: 1 main + 4 gallery, ADR-041; ≤ 10 MB each, JPEG/PNG/WebP), per-file upload progress, move up/down, "Set as main photo" (primary: cards, listings, sharing), alt text per image (required), and delete. Gallery photos show only on the product page.
-  4. *Colours*: repeatable rows (name + colour picker/hex), reorderable.
-  5. *Specifications*: repeatable label/value rows, reorderable, with quick-add presets per category (e.g. Sofas: Frame, Upholstery, Seating capacity, Cushion, Warranty).
-  6. *Details*: SKU, material, dimensions, made-to-order, keywords (comma-separated synonyms for search).
-  7. *Visibility*: status (Draft/Published), Popular (ranks search and related products), New arrival (badge + homepage New arrivals). Featured and home sort order were removed (ADR-042).
-  8. *SEO* (collapsed): SEO title and description with a counter and a Google-style preview; defaults are derived when blank.
+  3. *Images*: drag & drop multi-upload (max 5: 1 main + 4 gallery, ADR-041; originals up to 40 MB each, shrunk in the browser to ≤ 2400 px before upload (ADR-058), JPEG/PNG/WebP), per-file upload progress, move up/down, "Set as main photo" (primary: cards, listings, sharing), alt text per image (required), and delete. Gallery photos show only on the product page.
+  4. *Specifications*: repeatable label/value rows, reorderable, with quick-add presets per category (e.g. Sofas: Frame, Upholstery, Seating capacity, Cushion, Warranty).
+  5. *Details*: SKU, material, dimensions, made-to-order, keywords (comma-separated synonyms for search).
+  6. *Visibility*: status (Draft/Published), Popular (ranks search and related products), New arrival (badge + homepage New arrivals). Featured and home sort order were removed (ADR-042).
+  7. *SEO* (collapsed): SEO title and description with a counter and a Google-style preview; defaults are derived when blank.
 - Validation errors show inline and in a summary at the top. A failed save keeps the form state.
 - Unsaved-changes guard (`beforeunload`).
 - "Duplicate" copies everything except slug/SKU/images as a Draft.
-- **As built (ADR-034):** photos are added on the edit page after the first save ("Save and add photos"), in a Photos panel that saves on its own, outside the details form. Reorder uses move up/down buttons (not drag), upload progress is a per-file status (waiting / uploading / uploaded / failed) rather than a byte percentage, and new photos get the product title as default alt text. Colours and specs reorder with up/down buttons.
+- **As built (ADR-034):** photos are added on the edit page after the first save ("Save and add photos"), in a Photos panel that saves on its own, outside the details form. Reorder uses move up/down buttons (not drag), upload progress is a per-file status (waiting / uploading / uploaded / failed) rather than a byte percentage, and new photos get the product title as default alt text. Specs reorder with up/down buttons. Colours were removed (ADR-054).
+- **After saving (ADR-054):** creating or editing a product returns to the product list with a toast; photos are added by opening the product from the list.
 
 ### 3.3 Categories
 - List with move up/down buttons (saves `sortOrder`; ADR-033 replaces drag-to-reorder), switches for Active and Show on home, and a product count.
@@ -79,7 +80,7 @@ Session and security mechanics are in `09-SECURITY-GUIDELINES.md` §2.
 
 ### 3.8 Delivery challan (ADR-046)
 - **Route:** `/admin/challan` ("Challan" in the sidebar). Requires admin like every admin page.
-- **Form:** customer name, phone, delivery address; items (product picked from a type-ahead list of all products, or any free text; optional note such as colour; quantity 1–999; up to 10 rows); date (pre-filled from the request time in Dhaka, editable); salesman name. No challan number and no general notes section.
+- **Form:** customer name, phone, delivery address; items (product picked from a type-ahead list of all products, or any free text; optional note such as size or finish; quantity 1–999; up to 10 rows); date (pre-filled from the request time in Dhaka, editable); salesman name. No challan number and no general notes section.
 - **Preview:** a live sheet of exactly one A4 page (210 × 297 mm) in the letterhead style of the shop's printed paper: logo with tagline left; address, "Cell: 01757758388, 01716498858" and "Email: artifexdecoryourdreams@gmail.com" right (`CHALLAN_LETTERHEAD`); brand-red rule; faint logo watermark; "Delivery Challan" (serif, short brand-red accent bar) with Salesman and Date beside it as labelled blocks split by a hairline; "Delivered to" rows with the label left, the value right and a dotted leader between (Customer Name, Phone Number, Customer Address); items table (item · note) with total quantity; customer and salesman signature lines (salesman name under the line); the website on a brand-red band across the foot of the page.
 - **One page only:** the form measures the preview; if the content would run past the page (long address, long item notes or many items) it says "Too much for one A4 page…" and printing is blocked. About 8–10 items fit, depending on the text.
 - **Print:** "Print challan" checks the required fields (name, phone, address, ≥ 1 item, valid quantities, date) and calls `window.print()`. Only the sheet prints (a copy portalled under `<body>`; print CSS hides everything else; named `@page challan`: A4, no margins, background colours kept). Long challans continue on a second page.
@@ -90,7 +91,7 @@ Session and security mechanics are in `09-SECURITY-GUIDELINES.md` §2.
 - Every mutation is a **Server Action** that runs `requireAdmin()` → Zod validation → service → **revalidate tags** → returns `{ ok, error?, fieldErrors? }`.
 - Toast feedback on success or error (a small custom component, no library).
 - Destructive actions use a confirm dialog naming the item.
-- Image uploads go one file per request (keeps memory low on shared hosting); the client queues them with a concurrency of 2.
+- Image uploads go one file per request (keeps memory low on shared hosting); the client queues them with a concurrency of 2. Each photo is resized and re-encoded in the browser first and retried up to twice if the request fails (ADR-058).
 - All lists are server-paginated.
 
 ## 5. Cache revalidation map

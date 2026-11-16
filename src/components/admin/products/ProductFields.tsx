@@ -1,12 +1,12 @@
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
-import { MAX_COLORS, MAX_SPECS } from "@/lib/validation/product";
+import { MAX_SPECS } from "@/lib/validation/product";
 import type { AdminProductRow, CategoryOption } from "@/server/services/product-admin.service";
 import { AdminField, FormSection } from "../AdminForm";
 import { MarkdownEditor } from "../MarkdownEditor";
 import { PricingFields } from "./PricingFields";
-import { ColorsEditor, SpecsEditor } from "./RowsEditor";
+import { SpecsEditor } from "./RowsEditor";
 import { SeoFields } from "../SeoFields";
 
 const CHECK = "text-small flex min-h-11 items-center gap-2";
@@ -99,13 +99,6 @@ export function ProductFields({
         />
       </FormSection>
 
-      <FormSection
-        title="Colours"
-        description="Customers pick one before messaging you on WhatsApp. Leave empty if there's no choice."
-      >
-        <ColorsEditor initial={product?.colors ?? []} max={MAX_COLORS} />
-      </FormSection>
-
       <FormSection title="Specifications" description="Shown as a table on the product page.">
         <SpecsEditor
           initial={product?.specs ?? []}
@@ -180,7 +173,7 @@ export function ProductFields({
         </div>
       </FormSection>
 
-      <details className="border-line bg-surface group rounded-md border">
+      <details className="admin-card group">
         <summary className="text-ink flex min-h-14 cursor-pointer items-center px-5 font-semibold sm:px-6">
           Search engines (optional)
         </summary>

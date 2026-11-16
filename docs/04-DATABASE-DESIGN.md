@@ -6,7 +6,6 @@ MySQL 8 or MariaDB 10.6+ (whichever cPanel provides). Accessed via **Prisma ORM*
 
 ```
 Category 1───* Product 1───* ProductImage
-                     │ 1───* ProductColor
                      │ 1───* ProductSpec
 BlogPost
 HomeHero (singleton)   HomeHeroSlide *   PromoBanner *
@@ -22,7 +21,7 @@ SiteEvent (first-party visit/click counts, ADR-040)
 - Timestamps: `createdAt @default(now())`, `updatedAt @updatedAt` on every content table.
 - Publication: `status ContentStatus @default(DRAFT)`; public queries **always** filter `status = PUBLISHED`.
 - Ordering: `sortOrder Int @default(0)` where admins arrange items manually.
-- Deletes: hard delete with `onDelete: Cascade` for children (images, colours, specs). Image objects are removed from Cloudflare R2 in the service layer after the DB delete succeeds (ADR-014).
+- Deletes: hard delete with `onDelete: Cascade` for children (images, specs). Image objects are removed from Cloudflare R2 in the service layer after the DB delete succeeds (ADR-014).
 - Image columns (`path`, `imagePath`, `coverImagePath`, `ogImagePath`) store the **R2 key base without the width suffix**, e.g. `products/2026/11/ab12cd34ef56`. They never store full URLs, so the media domain can change without a data migration.
 
 ## 3. Prisma schema (target)
@@ -85,7 +84,6 @@ model Product {
   seoTitle          String?        @db.VarChar(70)
   seoDescription    String?        @db.VarChar(170)
   images            ProductImage[]
-  colors            ProductColor[]
   specs             ProductSpec[]
   createdAt         DateTime       @default(now())
   updatedAt         DateTime       @updatedAt
@@ -110,17 +108,6 @@ model ProductImage {
   createdAt  DateTime @default(now())
 
   @@index([productId, sortOrder])
-}
-
-model ProductColor {
-  id         Int     @id @default(autoincrement())
-  productId  Int
-  product    Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  name       String  @db.VarChar(50)     // "Walnut Brown"
-  hex        String  @db.Char(7)         // "#5C4033"
-  sortOrder  Int     @default(0)
-
-  @@index([productId])
 }
 
 model ProductSpec {
@@ -201,7 +188,7 @@ model SiteSetting {                   // singleton, id = 1
   phone                 String  @db.VarChar(30)       // display format
   whatsappNumber        String  @db.VarChar(20)       // digits only, intl format: 8801XXXXXXXXX
   whatsappDefaultMessage String @db.VarChar(300)
-  whatsappProductTemplate String @db.VarChar(300)     // "Hello {business}, I'm interested in {product}{color}. {url}"
+  whatsappProductTemplate String @db.VarChar(300)     // "Hello {business}, I'm interested in {product}. {url}"
   email                 String? @db.VarChar(120)
   addressLine           String  @db.VarChar(255)
   city                  String  @db.VarChar(80)

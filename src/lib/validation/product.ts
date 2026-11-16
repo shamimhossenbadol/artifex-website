@@ -6,7 +6,6 @@ import { optionalText, requiredText } from "./settings";
 export const PRODUCT_SLUG_MAX = 170;
 /** One main photo (cards, listings, sharing) + up to 4 gallery photos for the product page (ADR-041). */
 export const MAX_PRODUCT_IMAGES = 5;
-export const MAX_COLORS = 20;
 export const MAX_SPECS = 40;
 export const ADMIN_PRODUCTS_PER_PAGE = 20;
 const MAX_PRICE = 100_000_000;
@@ -42,19 +41,13 @@ function jsonArray<T extends z.ZodType>(item: T, max: number, label: string) {
     .pipe(z.array(item).max(max, `Up to ${max} ${label}`));
 }
 
-export const colorSchema = z.object({
-  name: z.string().trim().min(1, "Name the colour").max(50, "Keep this under 50 characters"),
-  hex: z
-    .string()
-    .trim()
-    .regex(/^#[0-9a-fA-F]{6}$/, "Use a colour like #5C4033")
-    .transform((v) => v.toUpperCase()),
-});
-
 export const specSchema = z.object({
   label: z.string().trim().min(1, "Add a label").max(60, "Keep this under 60 characters"),
   value: z.string().trim().min(1, "Add a value").max(255, "Keep this under 255 characters"),
 });
+
+/** Status shortcut on the product list (ADR-056). */
+export const productStatusSchema = z.enum(["DRAFT", "PUBLISHED"]);
 
 export const productSchema = z
   .object({
@@ -65,7 +58,6 @@ export const productSchema = z
     description: z.string().trim().max(20_000, "Keep this under 20,000 characters"),
     regularPrice: optionalPrice,
     discountPrice: optionalPrice,
-    colors: jsonArray(colorSchema, MAX_COLORS, "colours"),
     specs: jsonArray(specSchema, MAX_SPECS, "specifications"),
     sku: optionalText(50),
     material: optionalText(120),

@@ -91,7 +91,10 @@ export function AnalyticsPanel({ summary }: { summary: AnalyticsSummary }) {
             aren&apos;t counted.
           </p>
         </div>
-        <nav aria-label="Period" className="border-line flex rounded-md border p-1">
+        <nav
+          aria-label="Period"
+          className="border-line bg-surface shadow-card flex rounded-md border p-1"
+        >
           {ANALYTICS_RANGES.map((range) => (
             <Link
               key={range}
@@ -99,7 +102,7 @@ export function AnalyticsPanel({ summary }: { summary: AnalyticsSummary }) {
               aria-current={range === days ? "page" : undefined}
               className={cn(
                 "text-small inline-flex min-h-11 items-center rounded-sm px-3 font-medium transition-colors",
-                range === days ? "bg-ink text-bg" : "text-ink-soft hover:text-ink",
+                range === days ? "bg-espresso text-bg shadow-card" : "text-ink-soft hover:text-ink",
               )}
             >
               {range} days
@@ -109,31 +112,31 @@ export function AnalyticsPanel({ summary }: { summary: AnalyticsSummary }) {
       </div>
 
       {noData && (
-        <p className="border-line bg-surface text-ink-soft mb-3 rounded-md border px-4 py-3">
+        <p className="admin-card text-ink-soft mb-3 px-4 py-3">
           No visits recorded in the last {days} days yet. Numbers appear here as people browse the
           website.
         </p>
       )}
 
-      <dl className="grid grid-cols-2 gap-3 md:grid-cols-4">
+      <dl className="admin-stagger grid grid-cols-2 gap-3 md:grid-cols-4 lg:gap-4">
         {cards.map((card) => (
-          <div key={card.label} className="border-line bg-surface rounded-md border p-4">
+          <div key={card.label} className="admin-card admin-lift p-4 sm:p-5">
             <dt className="text-small text-muted">
               {card.label}
               {card.hint && <span className="sr-only"> ({card.hint})</span>}
             </dt>
             <dd>
-              <span className="text-h2 mt-1 block tabular-nums">
+              <span className="text-h2 mt-1 block lining-nums tabular-nums">
                 {number.format(card.kpi.value)}
               </span>
               <Change kpi={card.kpi} days={days} />
             </dd>
           </div>
         ))}
-        <div className="border-line bg-surface rounded-md border p-4">
+        <div className="admin-card admin-lift p-4 sm:p-5">
           <dt className="text-small text-muted">Inquiry rate</dt>
           <dd>
-            <span className="text-h2 mt-1 block tabular-nums">
+            <span className="text-h2 mt-1 block lining-nums tabular-nums">
               {summary.inquiryRate === null ? "–" : `${summary.inquiryRate}%`}
             </span>
             <p className="text-small text-muted mt-1">Inquiries per 100 visitors</p>

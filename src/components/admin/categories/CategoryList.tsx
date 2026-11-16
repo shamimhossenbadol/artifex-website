@@ -48,7 +48,7 @@ export function CategoryList({ categories }: { categories: AdminCategoryVM[] }) 
       {categories.map((category, index) => (
         <li
           key={category.id}
-          className="border-line flex flex-col gap-3 rounded-md border p-3 md:flex-row md:items-center"
+          className="admin-card admin-lift flex flex-col gap-3 p-3 md:flex-row md:items-center"
         >
           <div className="flex min-w-0 flex-1 items-center gap-3">
             <div className="bg-sand relative aspect-[4/5] w-14 shrink-0 overflow-hidden rounded-sm">

@@ -23,7 +23,7 @@ export default async function NewProductPage({ searchParams }: PageProps<"/admin
       />
       <AdminPageHeader
         title="Add product"
-        description="Save the details first; you add photos on the next screen."
+        description="Save the details first, then open the product from the list to add its photos."
       />
       <div className="max-w-3xl">
         {categories.length === 0 ? (
@@ -33,8 +33,8 @@ export default async function NewProductPage({ searchParams }: PageProps<"/admin
         ) : (
           <AdminForm
             action={createProductAction}
-            submitLabel="Save and add photos"
-            redirectTo="/admin/products/{id}"
+            submitLabel="Save product"
+            redirectTo="/admin/products"
             guardUnsaved
           >
             <ProductFields

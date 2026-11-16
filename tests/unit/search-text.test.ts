@@ -2,16 +2,15 @@ import { describe, expect, it } from "vitest";
 import { buildSearchText, effectivePrice } from "@/lib/search-text";
 
 describe("buildSearchText", () => {
-  it("joins and lowercases title, category, keywords, material and colours", () => {
+  it("joins and lowercases title, category, keywords, and material", () => {
     expect(
       buildSearchText({
         title: "Milano  Sofa",
         categoryName: "Sofas",
         keywords: "couch, settee",
         material: "Teak",
-        colorNames: ["Walnut Brown"],
       }),
-    ).toBe("milano sofa sofas couch settee teak walnut brown");
+    ).toBe("milano sofa sofas couch settee teak");
   });
 
   it("skips empty parts and caps the length at 1000", () => {

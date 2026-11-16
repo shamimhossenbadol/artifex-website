@@ -25,7 +25,7 @@ Customers in Bangladesh usually discover furniture on Facebook and then inquire 
 - Public site: Home, All Products, Category listing, Product detail, Search, Blog list/detail, About, Contact & Location.
 - WhatsApp inquiry (product-specific and general).
 - Admin dashboard with a **single predefined admin account** (seeded from env). The password can be changed in the panel, and there's a CLI reset for lockouts.
-- Admin management of products, categories, images, colours, specs, blog posts, homepage content (hero, promo banners, homepage categories), and site settings (contact, WhatsApp, address, map, hours, social links, default SEO).
+- Admin management of products, categories, images, specs, blog posts, homepage content (hero, promo banners, homepage categories), and site settings (contact, WhatsApp, address, map, hours, social links, default SEO).
 - SEO: metadata, Open Graph, sitemap, robots, JSON-LD.
 
 ### Out of scope (explicit)

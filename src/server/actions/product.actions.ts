@@ -3,7 +3,7 @@
 import { updateTag } from "next/cache";
 import { invalid, type ActionResult } from "@/lib/action-result";
 import { idSchema } from "@/lib/validation/home";
-import { imageAltSchema, productSchema } from "@/lib/validation/product";
+import { imageAltSchema, productSchema, productStatusSchema } from "@/lib/validation/product";
 import { requireAdmin } from "@/server/services/auth.service";
 import type { SaveResult } from "@/server/services/home-admin.service";
 import { pickFile } from "@/server/services/media.service";
@@ -16,6 +16,7 @@ import {
   moveImage,
   setImageAlt,
   setPrimaryImage,
+  setProductStatus,
   updateProduct,
   type AdminProductImage,
 } from "@/server/services/product-admin.service";
@@ -62,7 +63,7 @@ export async function createProductAction(
   return {
     ok: true,
     data: { id: result.data.id },
-    message: "Product created. Now add its photos.",
+    message: "Product created. Open it to add photos.",
   };
 }
 
@@ -89,6 +90,22 @@ export async function duplicateProductAction(id: number): Promise<ActionResult<{
   if (!result.ok) return fail(result);
   // A draft copy isn't public; only the admin counts change.
   return { ok: true, data: result.data, message: "Copy created as a draft." };
+}
+
+/** Publish/unpublish toggle on the product list (ADR-056). */
+export async function setProductStatusAction(id: number, status: string): Promise<ActionResult> {
+  await requireAdmin();
+  const parsedId = idSchema.safeParse(id);
+  if (!parsedId.success) return { ok: false, error: "Unknown product." };
+  const parsedStatus = productStatusSchema.safeParse(status);
+  if (!parsedStatus.success) return { ok: false, error: "Choose Draft or Published." };
+  const result = await setProductStatus(parsedId.data, parsedStatus.data);
+  if (!result.ok) return fail(result);
+  revalidateProduct(result.data.slug);
+  return {
+    ok: true,
+    message: parsedStatus.data === "PUBLISHED" ? "Product published." : "Product moved to drafts.",
+  };
 }
 
 export async function deleteProductAction(id: number): Promise<ActionResult> {

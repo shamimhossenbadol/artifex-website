@@ -57,7 +57,6 @@ model Product {
   seoTitle          String?        @db.VarChar(70)
   seoDescription    String?        @db.VarChar(170)
   images            ProductImage[]
-  colors            ProductColor[]
   specs             ProductSpec[]
   createdAt         DateTime       @default(now())
   updatedAt         DateTime       @updatedAt
@@ -82,17 +81,6 @@ model ProductImage {
   createdAt  DateTime @default(now())
 
   @@index([productId, sortOrder])
-}
-
-model ProductColor {
-  id         Int     @id @default(autoincrement())
-  productId  Int
-  product    Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  name       String  @db.VarChar(50)     // "Walnut Brown"
-  hex        String  @db.Char(7)         // "#5C4033"
-  sortOrder  Int     @default(0)
-
-  @@index([productId])
 }
 
 model ProductSpec {
@@ -173,7 +161,7 @@ model SiteSetting {                   // singleton, id = 1
   phone                 String  @db.VarChar(30)       // display format
   whatsappNumber        String  @db.VarChar(20)       // digits only, intl format: 8801XXXXXXXXX
   whatsappDefaultMessage String @db.VarChar(300)
-  whatsappProductTemplate String @db.VarChar(300)     // "Hello {business}, I'm interested in {product}{color}. {url}"
+  whatsappProductTemplate String @db.VarChar(300)     // "Hello {business}, I'm interested in {product}. {url}"
   email                 String? @db.VarChar(120)
   addressLine           String  @db.VarChar(255)
   city                  String  @db.VarChar(80)

@@ -50,11 +50,7 @@ export default async function EditProductPage({ params }: PageProps<"/admin/prod
       />
       <div className="flex max-w-3xl flex-col gap-8">
         {/* Photos save on their own, so they sit outside the details form. */}
-        <section
-          id="photos"
-          aria-labelledby="photos-title"
-          className="border-line bg-surface rounded-md border p-5 sm:p-6"
-        >
+        <section id="photos" aria-labelledby="photos-title" className="admin-card p-5 sm:p-6">
           <h2 id="photos-title" className="text-ink text-base font-semibold">
             Photos
           </h2>
@@ -62,11 +58,18 @@ export default async function EditProductPage({ params }: PageProps<"/admin/prod
             Up to {MAX_PRODUCT_IMAGES} photos. The <strong>main photo</strong> is shown on product
             cards, in listings and when the product is shared. The others are the{" "}
             <strong>gallery</strong> (other angles, close-ups), shown only on the product page.
+            Every photo is shown <strong>square (1:1)</strong>, so square photos look best; other
+            shapes are trimmed at the edges.
           </p>
           <ProductImages productId={product.id} images={product.images} max={MAX_PRODUCT_IMAGES} />
         </section>
 
-        <AdminForm action={updateProductAction} submitLabel="Save product" guardUnsaved>
+        <AdminForm
+          action={updateProductAction}
+          submitLabel="Save product"
+          redirectTo="/admin/products"
+          guardUnsaved
+        >
           <ProductFields product={product} categories={categories} />
         </AdminForm>
       </div>

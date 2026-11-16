@@ -8,8 +8,10 @@ import { cn } from "@/lib/utils";
 import { fieldError } from "./FormMessage";
 import { useAdminFormState } from "./AdminForm";
 import type { ActionResult } from "@/lib/action-result";
+import { MAX_ORIGINAL_BYTES } from "@/lib/prepare-upload";
 
-const MAX_BYTES = 10 * 1024 * 1024;
+// Big originals are fine: AdminForm shrinks the photo in the browser before sending (ADR-058).
+const MAX_BYTES = MAX_ORIGINAL_BYTES;
 const ACCEPT = "image/jpeg,image/png,image/webp";
 
 type ImageFieldProps = {
@@ -29,7 +31,7 @@ export function ImageField({
   label,
   currentPath,
   currentAlt = "",
-  hint = "JPEG, PNG or WebP, up to 10 MB. Large photos are resized automatically.",
+  hint = "JPEG, PNG or WebP, up to 40 MB. Large photos are resized automatically.",
   aspect = "aspect-[16/9]",
   required,
 }: ImageFieldProps) {
@@ -85,7 +87,7 @@ export function ImageField({
           if (file.size > MAX_BYTES || !ACCEPT.split(",").includes(file.type)) {
             setLocalError(
               file.size > MAX_BYTES
-                ? "Images must be 10 MB or smaller."
+                ? "Images must be 40 MB or smaller."
                 : "Use a JPEG, PNG or WebP image.",
             );
             event.target.value = "";

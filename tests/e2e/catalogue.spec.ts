@@ -81,15 +81,14 @@ test.describe("product detail (F1.2–F1.4, F3)", () => {
     expect(product.offers).toMatchObject({ priceCurrency: "BDT", price: 125000 });
   });
 
-  test("selected colour goes into the WhatsApp message", async ({ page }) => {
+  test("the WhatsApp message names the product and links to it", async ({ page }) => {
     await page.goto(SOFA);
     const cta = page.getByRole("link", { name: "Message on WhatsApp" });
     await expect(cta).toHaveAttribute("href", /wa\.me\/\d+\?text=/);
 
-    await page.getByRole("button", { name: "Forest Green" }).click();
-    await expect(page.getByText("Colour: Forest Green")).toBeVisible();
     const text = new URL((await cta.getAttribute("href"))!).searchParams.get("text");
-    expect(text).toContain("Signature L-Shape Sofa (Colour: Forest Green)");
+    expect(text).toContain("Signature L-Shape Sofa");
+    expect(text).not.toContain("Colour");
     expect(text).toMatch(/https?:\/\/[^ ]+\/products\/demo-signature-l-shape-sofa/);
   });
 

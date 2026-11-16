@@ -21,7 +21,7 @@ async function LoginGate({ searchParams }: Pick<PageProps<"/admin/login">, "sear
 export default function LoginPage({ searchParams }: PageProps<"/admin/login">) {
   return (
     <main className="flex min-h-dvh items-center justify-center px-4 py-12">
-      <div className="border-line bg-surface w-full max-w-sm rounded-md border p-6 sm:p-8">
+      <div className="admin-card animate-admin-pop w-full max-w-sm p-6 sm:p-8">
         <Image src={wordmark} alt="Artifex Furniture" className="mx-auto h-10 w-auto" />
         <h1 className="text-h3 mt-6 text-center">Admin sign in</h1>
         <div className="mt-6">

@@ -5,7 +5,12 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 
 ## [Unreleased]
 
+### Removed
+- 2026-11-16 — Product colours are gone everywhere: no colour rows in the admin product form, no colour swatches on product pages, no colour in the WhatsApp message, and the `ProductColor` database table is dropped by a migration (ADR-054).
+
 ### Fixed
+- 2026-11-16 — Admin image uploads: some photos failed with a connection error while others worked. Photos are now resized (max 2400 px) and re-encoded in the browser before upload, failed requests are retried automatically up to twice, and the server processes images with much less memory. Large originals up to 40 MB can be chosen (ADR-058).
+- 2026-11-16 — Product page on desktop: the main photo used a 4:3 frame that cut off the top and bottom of square product photos. Product images are now square (1:1) everywhere: product page, thumbnails, cards, search results and the admin photo preview (ADR-057).
 - 2026-11-15 — Deploys no longer fail at the seed step after the temporary admin password secret is deleted: the seed treats an empty secret as not set, and the deploy's "Run the seed" option is now off by default (tick it only when new categories or settings must be created).
 - 2026-11-13 — Phones: the homepage was wider than the screen (it could slide sideways); "not found" pages for missing products or posts showed the header and footer twice; the header logo appeared late on every page (ADR-044).
 - 2026-11-13 — Mobile menu and search overlay could vanish if opened in the first moment after a page started loading (when the full header streamed in, it replaced them). They now stay open (ADR-043); this also fixes the flaky mobile tests in CI.
@@ -17,6 +22,8 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 - 2026-11-12 — Test site showed a blank white page after the Phase 2 deploy: the deploy bundle was missing Turbopack's Prisma alias. Packaging now recreates and verifies it, CI boots the real bundle, and the deploy health check requires a complete page (ADR-023).
 
 ### Changed
+- 2026-11-16 — Admin product list: each product has a Draft/Published switch, so you can publish or unpublish without opening the edit form (ADR-056).
+- 2026-11-16 — Admin: a more premium look (ADR-055): Manrope font, a fixed dark espresso sidebar that no longer scrolls with the page, champagne-gold accents, softer rounded cards with gentle shadows, and subtle animations (pages fade in, cards lift on hover, sidebar items and stats appear one after another, toasts pop in). Saving a new or edited product now returns to the product list (ADR-054).
 - 2026-11-15 — Phones: homepage sections are 32 px apart instead of 64 px, and the floating Messenger/WhatsApp buttons no longer show on the homepage (ADR-053).
 - 2026-11-15 — Phones: the same space between all homepage sections; the "Not sure what fits your space?" section is now an inset card like the story; no location icon in the footer (ADR-052).
 - 2026-11-15 — Phones: the hero title and description sit over the photo again, with the buttons below it; the slider dots are closer together and lower (ADR-051).

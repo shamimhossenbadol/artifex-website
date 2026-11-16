@@ -74,8 +74,8 @@ export function ProductTemplateField({
         hint={
           <>
             Sent from the “Ask on WhatsApp” button on product pages. Placeholders:{" "}
-            <code>{"{business}"}</code>, <code>{"{product}"}</code>, <code>{"{color}"}</code>,{" "}
-            <code>{"{price}"}</code>, <code>{"{url}"}</code>.
+            <code>{"{business}"}</code>, <code>{"{product}"}</code>, <code>{"{price}"}</code>,{" "}
+            <code>{"{url}"}</code>.
           </>
         }
       >

@@ -48,7 +48,7 @@ export function Gallery({ images, title }: { images: GalleryImage[]; title: stri
 
   if (count === 0) {
     return (
-      <div className="-mx-4 aspect-square sm:-mx-6 lg:mx-0 lg:aspect-[4/3]">
+      <div className="-mx-4 aspect-square sm:-mx-6 lg:mx-0">
         <ImagePlaceholder />
       </div>
     );
@@ -69,7 +69,7 @@ export function Gallery({ images, title }: { images: GalleryImage[]; title: stri
           {images.map((image, index) => (
             <div
               key={image.id}
-              className="bg-sand relative aspect-square w-full shrink-0 snap-center lg:aspect-[4/3]"
+              className="bg-sand relative aspect-square w-full shrink-0 snap-center"
               aria-roledescription="slide"
               aria-label={`${index + 1} of ${count}`}
             >

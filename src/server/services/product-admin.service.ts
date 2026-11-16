@@ -1,4 +1,4 @@
-// Product admin (07 §3.2): list, create/edit (with colours and specs), duplicate, delete, and
+// Product admin (07 §3.2): list, create/edit (with specs), duplicate, delete, and
 // per-image actions. Images are uploaded one per request (07 §4) after the product exists.
 import { connection } from "next/server";
 import { escapeLike } from "@/lib/search";
@@ -20,6 +20,7 @@ import {
   findProductIdBySku,
   findProductIdBySlug,
   findProductImage,
+  findProductStatus,
   insertProduct,
   insertProductImage,
   makeImagePrimary,
@@ -29,6 +30,7 @@ import {
   touchProduct,
   updateImageAlt,
   writeProduct,
+  writeProductStatus,
   type AdminProductListRow,
   type AdminProductRow,
   type CategoryOption,
@@ -142,7 +144,6 @@ function toData(
       categoryName,
       keywords: input.keywords,
       material: input.material,
-      colorNames: input.colors.map((c) => c.name),
     }),
     seoTitle: input.seoTitle,
     seoDescription: input.seoDescription,
@@ -192,6 +193,24 @@ export async function updateProduct(
   return { ok: true, data: { oldSlug: current.slug, newSlug: input.slug } };
 }
 
+/**
+ * Publish or unpublish from the product list without opening the form (ADR-056). The first
+ * publish stamps publishedAt; going back to draft keeps it (same rule as the form).
+ */
+export async function setProductStatus(
+  id: number,
+  status: "DRAFT" | "PUBLISHED",
+): Promise<SaveResult<{ slug: string }>> {
+  const current = await findProductStatus(id);
+  if (!current) return { ok: false, error: "This product no longer exists." };
+  if (current.status !== status) {
+    const publishedAt =
+      status === "PUBLISHED" ? (current.publishedAt ?? new Date()) : current.publishedAt;
+    await writeProductStatus(id, status, publishedAt);
+  }
+  return { ok: true, data: { slug: current.slug } };
+}
+
 /** "Duplicate" copies everything except slug, SKU and images, as a draft (07 §3.2). */
 export async function duplicateProduct(id: number): Promise<SaveResult<{ id: number }>> {
   const source = await findProductForEdit(id);
@@ -213,7 +232,6 @@ export async function duplicateProduct(id: number): Promise<SaveResult<{ id: num
     description: source.description,
     regularPrice: source.regularPrice,
     discountPrice: source.discountPrice,
-    colors: source.colors,
     specs: source.specs,
     sku: null,
     material: source.material,

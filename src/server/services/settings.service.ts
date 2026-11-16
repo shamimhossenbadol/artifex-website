@@ -16,7 +16,7 @@ export const FALLBACK_SETTINGS: SiteSettings = {
   phone: "",
   whatsappNumber: "",
   whatsappDefaultMessage: `Hello ${SITE_NAME}, I'd like to know more about your furniture.`,
-  whatsappProductTemplate: "Hello {business}, I'm interested in {product}{color}. {url}",
+  whatsappProductTemplate: "Hello {business}, I'm interested in {product}. {url}",
   email: null,
   addressLine: "",
   city: "Dhaka",

@@ -1,8 +1,7 @@
 "use client";
-// Admin navigation links with the active section highlighted (07 §2).
+// Admin navigation links with the active section highlighted (07 §2, ADR-055).
 import {
   ClipboardList,
-  ExternalLink,
   FolderTree,
   House,
   LayoutDashboard,
@@ -14,6 +13,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import type { CSSProperties } from "react";
 import { cn } from "@/lib/utils";
 
 export const ADMIN_NAV: { href: string; label: string; Icon: LucideIcon }[] = [
@@ -27,8 +27,10 @@ export const ADMIN_NAV: { href: string; label: string; Icon: LucideIcon }[] = [
   { href: "/admin/account", label: "Account", Icon: UserRound },
 ];
 
-const ITEM =
-  "flex min-h-11 items-center gap-3 rounded-md px-3 text-sm font-medium transition-colors";
+/** Shared look for sidebar rows (nav links, View site, Log out) on the espresso sidebar. */
+export const SIDEBAR_ITEM =
+  "admin-nav-link flex h-[clamp(2.25rem,5.4vh,2.75rem)] w-full items-center gap-3 rounded-md px-3 text-[13.5px] font-medium";
+export const SIDEBAR_IDLE = "text-espresso-muted hover:bg-espresso-soft hover:text-bg";
 
 /**
  * The nav, highlighting the current section. usePathname() is request data under Cache
@@ -53,34 +55,30 @@ export function AdminNavLinks({
 
   return (
     <nav aria-label="Admin">
-      <ul className="flex flex-col gap-1">
-        {ADMIN_NAV.map(({ href, label, Icon }) => (
-          <li key={href}>
-            <Link
-              href={href}
-              onClick={onNavigate}
-              aria-current={isActive(href) ? "page" : undefined}
-              className={cn(
-                ITEM,
-                isActive(href) ? "bg-ink text-bg" : "text-ink-soft hover:bg-sand hover:text-ink",
-              )}
-            >
-              <Icon aria-hidden strokeWidth={1.5} className="size-5" />
-              {label}
-            </Link>
-          </li>
-        ))}
-        <li>
-          <a
-            href="/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={cn(ITEM, "text-ink-soft hover:bg-sand hover:text-ink")}
-          >
-            <ExternalLink aria-hidden strokeWidth={1.5} className="size-5" />
-            View site
-          </a>
-        </li>
+      <ul className="flex flex-col gap-0.5">
+        {ADMIN_NAV.map(({ href, label, Icon }, index) => {
+          const active = isActive(href);
+          return (
+            <li key={href} className="animate-admin-nav" style={{ "--i": index } as CSSProperties}>
+              <Link
+                href={href}
+                onClick={onNavigate}
+                aria-current={active ? "page" : undefined}
+                className={cn(
+                  SIDEBAR_ITEM,
+                  active ? "bg-espresso-soft text-bg shadow-card" : SIDEBAR_IDLE,
+                )}
+              >
+                <Icon
+                  aria-hidden
+                  strokeWidth={1.5}
+                  className={cn("size-[18px] shrink-0", active && "text-gold")}
+                />
+                {label}
+              </Link>
+            </li>
+          );
+        })}
       </ul>
     </nav>
   );

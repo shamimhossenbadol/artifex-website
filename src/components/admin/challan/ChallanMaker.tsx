@@ -122,7 +122,7 @@ export function ChallanMaker({
           print();
         }}
       >
-        <section className="border-line bg-surface flex flex-col gap-5 rounded-md border p-5">
+        <section className="admin-card flex flex-col gap-5 p-5">
           <h2 className="text-h3">Customer</h2>
           <Field label="Name">
             <Input
@@ -152,7 +152,7 @@ export function ChallanMaker({
           </Field>
         </section>
 
-        <section className="border-line bg-surface flex flex-col gap-4 rounded-md border p-5">
+        <section className="admin-card flex flex-col gap-4 p-5">
           <div className="flex items-baseline justify-between gap-3">
             <h2 className="text-h3">Items</h2>
             <p className="text-small text-muted tabular-nums">
@@ -205,7 +205,7 @@ export function ChallanMaker({
                         value={item.note}
                         onChange={(e) => setItem(item.key, { note: e.target.value })}
                         maxLength={120}
-                        placeholder="Colour, size or finish"
+                        placeholder="Size or finish"
                         autoComplete="off"
                       />
                     </Field>
@@ -239,7 +239,7 @@ export function ChallanMaker({
           </p>
         </section>
 
-        <section className="border-line bg-surface flex flex-col gap-5 rounded-md border p-5">
+        <section className="admin-card flex flex-col gap-5 p-5">
           <h2 className="text-h3">Details</h2>
           <Field label="Date">
             <Input type="date" value={draft.date} onChange={(e) => set("date", e.target.value)} />

@@ -249,20 +249,21 @@ test("products: create a draft, publish it, duplicate and delete", async ({ page
   await page.getByLabel("Regular price (৳)").fill("20000");
   await page.getByLabel("Discount price (৳, optional)").fill("25000");
   await expect(page.getByText("Shown on the website as")).toBeVisible();
-  await page.getByRole("button", { name: "Save and add photos" }).click();
+  await page.getByRole("button", { name: "Save product" }).click();
   // Server validation: the discount must be lower; the form keeps what was typed.
   await expect(page.getByText(/must be lower than the regular price/).first()).toBeVisible();
   await expect(page.getByLabel("Title", { exact: true })).toHaveValue("E2E Walnut Bench");
 
   await page.getByLabel("Discount price (৳, optional)").fill("18000");
-  await page.getByRole("button", { name: "Add colour" }).click();
-  await page.getByLabel("Name of colour 1").fill("Walnut");
   await page.getByRole("button", { name: "Fabric" }).click(); // Curtains preset
   await page.getByLabel("Value of “Fabric”").fill("Solid walnut");
-  await page.getByRole("button", { name: "Save and add photos" }).click();
+  await page.getByRole("button", { name: "Save product" }).click();
+  // Saving goes back to the catalogue list (ADR-054); photos are added on the edit page.
+  await expect(page).toHaveURL(/\/admin\/products$/);
+  await expect(page.getByText("Product created.").first()).toBeVisible();
+  await page.getByRole("link", { name: "E2E Walnut Bench" }).first().click();
   await expect(page).toHaveURL(/\/admin\/products\/\d+$/);
   await expect(page.getByRole("heading", { name: "Photos" })).toBeVisible();
-  await expect(shown(page.getByLabel("Name of colour “Walnut”"))).toHaveValue("Walnut");
 
   // A draft isn't public.
   const editUrl = page.url();
@@ -284,12 +285,28 @@ test("products: create a draft, publish it, duplicate and delete", async ({ page
   await page.getByLabel("Status").selectOption("PUBLISHED");
   await page.getByRole("button", { name: "Save product" }).click();
   await expect(page.getByText("Product saved.").first()).toBeVisible();
+  await expect(page).toHaveURL(/\/admin\/products$/);
   await page.goto("/products/e2e-walnut-bench");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("E2E Walnut Bench");
   await expect(page.getByText("Solid walnut")).toBeVisible();
 
-  // Filter the list, duplicate, then delete both.
+  // The list's status switch unpublishes and republishes without opening the form (ADR-056).
   await page.goto("/admin/products?q=E2E+Walnut");
+  await page.waitForLoadState("networkidle");
+  const statusSwitch = page.getByRole("switch", { name: "Published: “E2E Walnut Bench”" });
+  await expect(statusSwitch).toHaveAttribute("aria-checked", "true");
+  await statusSwitch.click();
+  await expect(page.getByText("Product moved to drafts.").first()).toBeVisible();
+  await expect(statusSwitch).toHaveAttribute("aria-checked", "false");
+  await page.goto("/products/e2e-walnut-bench");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("We couldn't find that page");
+  await page.goto("/admin/products?q=E2E+Walnut");
+  await page.waitForLoadState("networkidle");
+  await statusSwitch.click();
+  await expect(page.getByText("Product published.").first()).toBeVisible();
+  await expect(statusSwitch).toHaveAttribute("aria-checked", "true");
+
+  // Filter the list, duplicate, then delete both.
   await page.getByRole("button", { name: "Duplicate “E2E Walnut Bench”" }).click();
   await expect(page).toHaveURL(/\/admin\/products\/\d+$/);
   await expect(shown(page.getByLabel("Title", { exact: true }))).toHaveValue(

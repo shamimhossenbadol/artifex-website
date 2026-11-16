@@ -14,21 +14,9 @@ type DemoProduct = {
   isMadeToOrder?: boolean;
   isNewArrival?: boolean;
   isPopular?: boolean;
-  colors?: [string, string][];
   specs?: [string, string][];
   keywords?: string;
 };
-
-const WOODS: [string, string][] = [
-  ["Walnut Brown", "#5C4033"],
-  ["Natural Teak", "#B68A5A"],
-  ["Ebony", "#2B2622"],
-];
-const FABRICS: [string, string][] = [
-  ["Linen Beige", "#D8CBB3"],
-  ["Slate Grey", "#6E6E6A"],
-  ["Forest Green", "#3F5A47"],
-];
 
 const HANDMADE: DemoProduct[] = [
   {
@@ -40,7 +28,6 @@ const HANDMADE: DemoProduct[] = [
     dimensions: "W 280 × D 180 × H 85 cm",
     isPopular: true,
     isNewArrival: true,
-    colors: FABRICS,
     specs: [
       ["Seating capacity", "5–6 people"],
       ["Frame", "Kiln-dried mahogany"],
@@ -56,7 +43,6 @@ const HANDMADE: DemoProduct[] = [
     material: "Teak frame, velvet",
     dimensions: "W 210 × D 90 × H 82 cm",
     isPopular: true,
-    colors: FABRICS,
     specs: [["Seating capacity", "3 people"]],
     keywords: "couch, settee",
   },
@@ -67,7 +53,6 @@ const HANDMADE: DemoProduct[] = [
     discountPrice: 82800,
     material: "Solid oak",
     dimensions: "L 180 × W 90 × H 76 cm",
-    colors: WOODS,
     specs: [
       ["Seats", "6"],
       ["Top", "Solid oak, oil finish"],
@@ -81,10 +66,6 @@ const HANDMADE: DemoProduct[] = [
     material: "K9 crystal, brushed brass",
     dimensions: "Ø 80 × H 95 cm (custom sizes available)",
     isMadeToOrder: true,
-    colors: [
-      ["Brushed Brass", "#B08D57"],
-      ["Polished Chrome", "#C9CCCE"],
-    ],
     specs: [
       ["Lights", "12 × E14 (LED compatible)"],
       ["Drop", "Adjustable chain up to 150 cm"],
@@ -98,10 +79,6 @@ const HANDMADE: DemoProduct[] = [
     regularPrice: 28500,
     material: "Ash wood, bouclé",
     isNewArrival: true,
-    colors: [
-      ["Ivory Bouclé", "#EEE8DC"],
-      ["Charcoal", "#3A3A38"],
-    ],
   },
   {
     title: "Halo Brass Ring Chandelier",
@@ -125,7 +102,6 @@ const HANDMADE: DemoProduct[] = [
     discountPrice: 119000,
     material: "Mahogany, upholstered headboard",
     dimensions: "King (76 × 80 in)",
-    colors: FABRICS,
     specs: [
       ["Size", "King"],
       ["Storage", "Hydraulic lift-up"],
@@ -189,14 +165,10 @@ export async function seedDemoCatalogue(db: PrismaClient): Promise<void> {
           categoryName: category.name,
           keywords: p.keywords,
           material: p.material,
-          colorNames: p.colors?.map(([name]) => name),
         }),
         status: "PUBLISHED",
         // Spread publish dates so "Newest" ordering is stable and meaningful.
         publishedAt: new Date(now - index * 3600_000),
-        colors: {
-          create: (p.colors ?? []).map(([name, hex], sortOrder) => ({ name, hex, sortOrder })),
-        },
         specs: {
           create: (p.specs ?? []).map(([label, value], sortOrder) => ({ label, value, sortOrder })),
         },

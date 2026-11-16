@@ -46,9 +46,9 @@ Sections with no content are **hidden**, never left empty.
 - Pagination: numbered links (`?page=2`) with Prev/Next, 24 per page. No infinite scroll (bad for SEO and the back button).
 
 ### Product detail
-- Mobile order: gallery → title/category → price → colours → WhatsApp CTA → short description → specs → full description → related.
+- Mobile order: gallery → title/category → price → WhatsApp CTA → short description → specs → full description → related.
 - Desktop: two columns (gallery 7/12, info 5/12, info column sticky).
-- Info block: breadcrumbs (they name the category; no separate category eyebrow), title (h1), price, "Made to order" badge on its own line with its note below, colour swatches, **WhatsApp and Messenger buttons (full width, lg)**, a secondary "Call us" link, short description, then quick facts (material, dimensions).
+- Info block: breadcrumbs (they name the category; no separate category eyebrow), title (h1), price, "Made to order" badge on its own line with its note below, **WhatsApp and Messenger buttons (full width, lg)**, a secondary "Call us" link, short description, then quick facts (material, dimensions).
 - Phones: the gallery starts directly under the header (no top padding) and runs edge to edge.
 - Below: tabs or stacked sections for *Description* and *Specifications* (stacked on mobile, no tabs; tabs are allowed on desktop).
 - Related products: 4 from the same category (excluding the current one), falling back to popular.
@@ -84,7 +84,7 @@ Sections with no content are **hidden**, never left empty.
 - Semantic landmarks (`header`, `nav`, `main`, `footer`), one `h1` per page, and heading order without skipped levels.
 - Every image has meaningful `alt` (the admin is required to provide it; it defaults to the product title + "– view n").
 - Focus is visible everywhere (walnut ring). There's a skip-to-content link, and tap targets are ≥ 44×44 px.
-- Colour isn't the only signal: discount uses colour **and** strike-through **and** the badge text; swatches have text names.
+- Colour isn't the only signal: discount uses colour **and** strike-through **and** the badge text.
 - Gallery: thumbnails are buttons with `aria-label="View image 3 of 6"`, and the arrow keys work in the viewer.
 - Forms (admin): labels tied to inputs, errors linked via `aria-describedby`, and errors announced with `aria-live`.
 - Respect `prefers-reduced-motion`.

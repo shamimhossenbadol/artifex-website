@@ -40,13 +40,17 @@ export function SeoFields({
   const [fallback, setFallback] = useState({ title: "", description: "", slug });
   const anchor = useRef<HTMLDivElement>(null);
 
-  // Mirror the form's title, summary and slug for the preview's defaults.
+  // The fields are uncontrolled, so text typed before the page finished loading is never wiped
+  // (ADR-060). Counters and the preview read the live values from the form: on mount (which picks up
+  // early typing) and on every input. Also mirrors the title, summary and slug for the defaults.
   useEffect(() => {
     const form = anchor.current?.closest("form");
     if (!form) return;
     const read = () => {
       const get = (name: string) =>
         (form.elements.namedItem(name) as HTMLInputElement | null)?.value ?? "";
+      setTitle(get("seoTitle"));
+      setDescription(get(descriptionName));
       setFallback({
         title: get("title"),
         description: get(summaryField),
@@ -56,7 +60,7 @@ export function SeoFields({
     read();
     form.addEventListener("input", read);
     return () => form.removeEventListener("input", read);
-  }, [slug, summaryField]);
+  }, [slug, summaryField, descriptionName]);
 
   const shownTitle = title || fallback.title || "Title";
   const shownDescription = description || (descriptionRequired ? "" : fallback.description);
@@ -69,12 +73,7 @@ export function SeoFields({
         label="SEO title"
         hint={`${title.length}/70 · Leave blank to use the title.`}
       >
-        <Input
-          name="seoTitle"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          maxLength={70}
-        />
+        <Input name="seoTitle" defaultValue={seoTitle ?? ""} maxLength={70} />
       </AdminField>
       <AdminField
         name={descriptionName}
@@ -88,8 +87,7 @@ export function SeoFields({
         <Textarea
           name={descriptionName}
           rows={3}
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          defaultValue={seoDescription ?? ""}
           maxLength={descriptionMax}
           required={descriptionRequired}
         />

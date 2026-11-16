@@ -22,6 +22,11 @@ export type ChallanDraft = {
   customerAddress: string;
   salesmanName: string;
   items: ChallanItem[];
+  /** Optional driver / vehicle block under the items (ADR-066); off by default. */
+  driverEnabled: boolean;
+  driverName: string;
+  driverPhone: string;
+  vehicleNumber: string;
 };
 
 /** Business details printed in the letterhead. */

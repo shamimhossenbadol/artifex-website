@@ -41,6 +41,10 @@ function newDraft(at: Date): ChallanDraft {
     customerAddress: "",
     salesmanName: "",
     items: [emptyItem()],
+    driverEnabled: false,
+    driverName: "",
+    driverPhone: "",
+    vehicleNumber: "",
   };
 }
 
@@ -94,7 +98,7 @@ export function ChallanMaker({
   const problems = [
     ...challanProblems(draft),
     ...(overflows
-      ? ["Too much for one A4 page: remove an item or shorten the address or item notes."]
+      ? ["Too much for one A4 page: remove an item, shorten the address or item notes, or turn off driver details."]
       : []),
   ];
   const set = <K extends keyof ChallanDraft>(key: K, value: ChallanDraft[K]) =>
@@ -255,6 +259,53 @@ export function ChallanMaker({
               autoComplete="off"
             />
           </Field>
+        </section>
+
+        <section className="admin-card flex flex-col gap-4 p-5">
+          <h2 className="text-h3">Driver</h2>
+          <label className="text-small flex min-h-11 items-center gap-2">
+            <input
+              type="checkbox"
+              checked={draft.driverEnabled}
+              onChange={(e) => set("driverEnabled", e.target.checked)}
+              className="accent-ink size-4"
+            />
+            Print driver details under the items
+          </label>
+          {draft.driverEnabled && (
+            <>
+              <p className="text-small text-muted -mt-2">
+                All optional: empty lines print blank, to fill in by hand.
+              </p>
+              <Field label="Driver name">
+                <Input
+                  value={draft.driverName}
+                  onChange={(e) => set("driverName", e.target.value)}
+                  maxLength={60}
+                  autoComplete="off"
+                />
+              </Field>
+              <Field label="Driver phone">
+                <Input
+                  type="tel"
+                  inputMode="tel"
+                  value={draft.driverPhone}
+                  onChange={(e) => set("driverPhone", e.target.value)}
+                  maxLength={30}
+                  autoComplete="off"
+                />
+              </Field>
+              <Field label="Vehicle number">
+                <Input
+                  value={draft.vehicleNumber}
+                  onChange={(e) => set("vehicleNumber", e.target.value)}
+                  maxLength={40}
+                  placeholder="Dhaka Metro-Ta 11-2233"
+                  autoComplete="off"
+                />
+              </Field>
+            </>
+          )}
         </section>
 
         {(showProblems || overflows) && problems.length > 0 && (

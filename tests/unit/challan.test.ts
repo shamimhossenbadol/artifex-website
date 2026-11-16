@@ -25,6 +25,10 @@ const ready: ChallanDraft = {
   customerAddress: "House 12, Uttara",
   salesmanName: "Karim",
   items: [item("Signature L-Shape Sofa", "1"), item("Dining chair", "6")],
+  driverEnabled: false,
+  driverName: "",
+  driverPhone: "",
+  vehicleNumber: "",
 };
 
 describe("challan dates", () => {

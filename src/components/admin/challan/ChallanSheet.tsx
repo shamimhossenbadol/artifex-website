@@ -35,6 +35,31 @@ function LeaderRow({
   );
 }
 
+/** "Driver name / Abdul Malek" on a dotted line (blank when empty, to fill in by hand). */
+function DriverField({
+  label,
+  valueClassName,
+  children,
+}: {
+  label: string;
+  valueClassName?: string;
+  children: string;
+}) {
+  return (
+    <div className="min-w-0">
+      <dt className="text-small text-muted">{label}</dt>
+      <dd
+        className={cn(
+          "text-ink border-muted mt-1 min-h-[7mm] border-b break-words border-dotted pb-0.5 font-medium",
+          valueClassName,
+        )}
+      >
+        {children}
+      </dd>
+    </div>
+  );
+}
+
 /** Id of the on-screen preview sheet, measured by the form to keep everything on one page. */
 export const CHALLAN_PREVIEW_ID = "challan-preview-sheet";
 
@@ -61,7 +86,7 @@ export function ChallanSheet({
   return (
     <article
       id={id}
-      aria-label="Delivery challan"
+      aria-label="Delivery challan / gate pass"
       className={cn(
         "challan-sheet bg-surface text-ink relative isolate flex h-[297mm] w-[210mm] flex-col overflow-hidden px-[16mm] pt-[14mm] pb-[12mm]",
         className,
@@ -78,8 +103,8 @@ export function ChallanSheet({
 
       {/* Letterhead */}
       <header className="flex items-start justify-between gap-8">
-        <Image src={fullLogo} alt={business.name} loading="eager" className="h-[20mm] w-auto" />
-        <div className="text-small text-ink-soft max-w-[105mm] pt-1 text-right leading-relaxed">
+        <Image src={fullLogo} alt={business.name} loading="eager" className="h-[24mm] w-auto" />
+        <div className="text-body text-ink-soft max-w-[110mm] pt-1 text-right leading-relaxed">
           {business.address && <p>{business.address}</p>}
           {business.phones.length > 0 && <p>Cell: {business.phones.join(", ")}</p>}
           <p>Email: {business.email}</p>
@@ -88,12 +113,12 @@ export function ChallanSheet({
       <div aria-hidden className="border-brand mt-4 border-t-2" />
 
       {/* Title with a brand-red accent; salesman and date as labelled blocks with a hairline. */}
-      <div className="mt-7 flex items-end justify-between gap-8">
-        <div>
-          <h2 className="text-h2 leading-none">Delivery Challan</h2>
+      <div className="mt-7 flex items-end justify-between gap-6">
+        <div className="min-w-0">
+          <h2 className="text-h3 leading-tight whitespace-nowrap">Delivery Challan / Gate Pass</h2>
           <div aria-hidden className="bg-brand mt-3 h-[0.7mm] w-[14mm]" />
         </div>
-        <dl className="flex items-stretch">
+        <dl className="flex shrink-0 items-stretch">
           <div className="pr-6 text-right">
             <dt className={LABEL}>Salesman</dt>
             <dd className="text-body text-ink mt-1.5 font-semibold">{draft.salesmanName || "—"}</dd>
@@ -172,6 +197,21 @@ export function ChallanSheet({
           </tfoot>
         )}
       </table>
+
+      {/* Optional driver / vehicle details (ADR-066): one compact row; empty values stay blank
+          above the dotted line so they can be written in by hand. */}
+      {draft.driverEnabled && (
+        <section className="border-line mt-5 border-y py-3">
+          <p className={LABEL}>Driver &amp; vehicle</p>
+          <dl className="mt-2 grid grid-cols-3 gap-6">
+            <DriverField label="Driver name">{draft.driverName}</DriverField>
+            <DriverField label="Driver phone" valueClassName="tabular-nums">
+              {draft.driverPhone}
+            </DriverField>
+            <DriverField label="Vehicle number">{draft.vehicleNumber}</DriverField>
+          </dl>
+        </section>
+      )}
 
       {/* Signatures, pushed to the bottom of the page (room above the lines to sign). */}
       <section className="mt-auto pt-14">

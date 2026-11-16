@@ -438,6 +438,16 @@ test("challan: fill, preview, print only the sheet, then the form clears", async
   await expect(preview.getByText("E2E Customer")).toBeVisible();
   await expect(preview.getByText("Signature L-Shape Sofa")).toBeVisible();
   await expect(preview.getByText(/^Email: /)).toBeVisible();
+  await expect(preview.getByText("Delivery Challan / Gate Pass")).toBeVisible();
+
+  // Driver details are optional (ADR-066): off by default, printed under the items when on.
+  await expect(preview.getByText("Driver & vehicle")).toHaveCount(0);
+  await page.getByLabel("Print driver details under the items").check();
+  await page.getByLabel("Driver name").fill("E2E Driver");
+  await page.getByLabel("Vehicle number").fill("Dhaka Metro-Ta 11-2233");
+  await expect(preview.getByText("Driver & vehicle")).toBeVisible();
+  await expect(preview.getByText("E2E Driver")).toBeVisible();
+  await expect(preview.getByText("Dhaka Metro-Ta 11-2233")).toBeVisible();
 
   // In print, only the portalled sheet is shown (the admin chrome is hidden).
   await page.emulateMedia({ media: "print" });

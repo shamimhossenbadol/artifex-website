@@ -100,7 +100,9 @@ test.describe("product detail (F1.2–F1.4, F3)", () => {
     await page.goto(SOFA);
     const bar = page.locator("[data-hide-whatsapp-fab]");
     await expect(bar).toHaveAttribute("aria-hidden", "true");
-    // Scroll well past the main button (the page is short since ADR-060/061).
+    // The page is short until the related products stream in (ADR-060/061/064/065): wait for
+    // them, then scroll well past the main button.
+    await expect(page.locator("section[aria-labelledby=related] article")).toHaveCount(4);
     await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
     await expect(bar).toHaveAttribute("aria-hidden", "false");
     // The floating buttons give way to the product's own bar, which has Messenger too (ADR-044).

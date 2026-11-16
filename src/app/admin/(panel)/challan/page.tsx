@@ -14,7 +14,7 @@ export default async function ChallanPage() {
     <>
       <AdminPageHeader
         title="Delivery challan"
-        description="Fill in the customer and items, check the preview, then print. Nothing is saved: the form clears after printing."
+        description="Fill in the customer and items, check the preview, then print. Nothing is saved; the form stays filled until you press Clear."
       />
       <ChallanMaker business={business} products={products} issuedAt={issuedAt} />
     </>

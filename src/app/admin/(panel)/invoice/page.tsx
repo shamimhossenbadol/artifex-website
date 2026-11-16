@@ -17,7 +17,7 @@ export default async function InvoicePage() {
     <>
       <AdminPageHeader
         title="Invoice"
-        description="Fill in the customer, items and payment, check the preview, then print. Nothing is saved: the form clears after printing."
+        description="Fill in the customer, items and payment, check the preview, then print. Nothing is saved; the form stays filled until you press Clear."
       />
       <InvoiceMaker business={business} products={products} issuedAt={issuedAt} />
     </>

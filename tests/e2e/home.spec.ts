@@ -21,13 +21,22 @@ test("shows the sections in order and hides empty ones", async ({ page }) => {
   const sections = page.locator("main section h2");
   await expect(sections.first()).toBeVisible();
   const titles = await sections.allInnerTexts();
-  expect(titles).toEqual([
-    "Collections",
-    "New arrivals",
+  // Category rails (ADR-072) sit between New arrivals and the story, in category order, only for
+  // categories with products (the demo has none in Curtains; an admin e2e test may add one briefly).
+  expect(titles.slice(0, 2)).toEqual(["Collections", "New arrivals"]);
+  expect(titles.slice(-3)).toEqual([
     "Decor your dreams",
     "Not sure what fits your space? Talk to us.",
     "Ideas for your home",
   ]);
+  const rails = titles.slice(2, -3);
+  expect(rails.slice(0, 2)).toEqual(["Sofas", "Dining Tables"]);
+  for (const name of rails) {
+    expect(["Sofas", "Dining Tables", "Chairs", "Beds", "Curtains", "Chandeliers"]).toContain(name);
+  }
+  await expect(
+    page.locator("section[aria-labelledby=rail-sofas] a", { hasText: "View all" }),
+  ).toHaveAttribute("href", "/categories/sofas");
   // No promo banners are seeded, so that section is hidden, not left empty.
   await expect(page.getByRole("region", { name: "Offers" })).toHaveCount(0);
 });

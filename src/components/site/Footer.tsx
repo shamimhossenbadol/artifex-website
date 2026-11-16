@@ -17,8 +17,9 @@ const PILL =
  * Compact footer (ADR-035, ADR-049, ADR-050, ADR-061): from md, brand (logo, two-line description,
  * social icons) and contact (address, phone and WhatsApp buttons, email) in two columns, then a
  * quiet line with © and the developer credit. Phones show only logo → address → email → social
- * icons, centred and compact (ADR-064: no rule under the logo, tight gaps), and the credit (no
- * description, no © line). Navigation lives in the header.
+ * icons, centred and compact (ADR-064: no rule under the logo, tight gaps), then © and the credit
+ * (no description). Phone product pages hide the © and credit bar (ADR-071). Navigation lives
+ * in the header.
  */
 export async function Footer() {
   const settings = await getSiteSettings();
@@ -117,8 +118,8 @@ export async function Footer() {
       <div className="border-line border-t max-md:[body:has([data-product-bar])_&]:hidden">
         {/* © on the left and the credit on the right; on phones the credit sits below. */}
         <Container className="text-small text-muted flex flex-col items-center gap-0 py-2 text-center sm:flex-row sm:justify-between sm:gap-4 sm:py-3 sm:text-left">
-          {/* No copyright line on phones (ADR-061). */}
-          <p className="hidden sm:block sm:py-1">
+          {/* Shown on every page; the whole bar is hidden on phone product pages only (ADR-071). */}
+          <p className="pt-1 sm:py-1">
             © {new Date().getFullYear()} {settings.businessName}. All rights reserved.
           </p>
           <p>

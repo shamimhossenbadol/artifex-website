@@ -9,7 +9,7 @@ import {
   findHomeHero,
   type PromoBannerRow,
 } from "@/server/repositories/home.repo";
-import { findNewArrivals } from "@/server/repositories/product.repo";
+import { findCategoryRails, findNewArrivals } from "@/server/repositories/product.repo";
 import { categoryHref, toCardVM, type ProductCardVM } from "./catalog.service";
 
 export const RAIL_SIZE = 8;
@@ -28,6 +28,13 @@ export type HomeHeroVM = {
 };
 
 export type HomeCategoryVM = { name: string; slug: string; href: string; imagePath: string | null };
+/** A homepage rail for one category (ADR-072). */
+export type CategoryRailVM = {
+  slug: string;
+  name: string;
+  href: string;
+  products: ProductCardVM[];
+};
 export type PromoBannerVM = Omit<PromoBannerRow, "startsAt" | "endsAt" | "id"> & { id: number };
 
 /** Safe internal or https links only (09 §3). */
@@ -81,6 +88,20 @@ async function loadNewArrivals(): Promise<ProductCardVM[]> {
   return (await findNewArrivals(RAIL_SIZE)).map(toCardVM);
 }
 
+async function loadCategoryRails(): Promise<CategoryRailVM[]> {
+  "use cache";
+  cacheTag("products", "categories", "home");
+  cacheLife("hours");
+  return (await findCategoryRails(RAIL_SIZE))
+    .filter((c) => c.products.length > 0)
+    .map((c) => ({
+      slug: c.slug,
+      name: c.name,
+      href: categoryHref(c.slug),
+      products: c.products.map(toCardVM),
+    }));
+}
+
 async function loadBanners(): Promise<PromoBannerRow[]> {
   "use cache";
   cacheTag("home");
@@ -111,6 +132,12 @@ export async function getHomeCategories(): Promise<HomeCategoryVM[]> {
 export async function getNewArrivals(): Promise<ProductCardVM[]> {
   await connection();
   return safely("newArrivals", [], loadNewArrivals);
+}
+
+/** One rail per active category that has published products, in the admin's order (ADR-072). */
+export async function getCategoryRails(): Promise<CategoryRailVM[]> {
+  await connection();
+  return safely("categoryRails", [], loadCategoryRails);
 }
 
 /** Banners that are active and inside their date window right now (max 2, F6). */

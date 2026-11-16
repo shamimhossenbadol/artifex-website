@@ -572,5 +572,17 @@ Format: each ADR has a number, date, status (Accepted / Superseded by ADR-x / Pr
 ### ADR-071 — No developer credit on phone product pages
 **Date:** 2026-11-16 · **Status:** Accepted
 **Context:** The owner asked to remove "Developed by …" from the product page on phones.
-**Decision:** Below md, on pages with the product's sticky bar (`data-product-bar`, i.e. product pages), the footer's bottom bar is hidden; on phones it only holds the credit (the © line is already hidden there, ADR-061). Other pages, tablets and desktop keep it.
+**Decision:** Below md, on pages with the product's sticky bar (`data-product-bar`, i.e. product pages), the footer's bottom bar (© line and developer credit) is hidden. Every other page shows both on phones too: this reverses ADR-061's "no © line on phones" (the owner clarified that only the product page drops them). Tablets and desktop are unchanged.
 **Consequences:** No new token or dependency. 05 is updated.
+
+### ADR-072 — Homepage rail for each category with products
+**Date:** 2026-11-16 · **Status:** Accepted
+**Context:** The homepage only had the New arrivals rail (the Featured / Most loved rails were removed in ADR-035). The owner wants a product list for each category (Sofas, Dining, Beds, Curtains…) when it has items.
+**Decision:** After New arrivals, the homepage shows one `ProductRail` per active category that has published products, in the admin's category order: the category name as the title, "View all" to the category page, up to 8 products (Popular first, then newest). Categories without published products are skipped, so a rail appears as soon as a category gets items. One query (`findCategoryRails`: categories with their top products), cached under the products, categories and home tags, so product and category saves refresh it. On phones the rails use the standard 32 px section gap (ADR-053) and scroll sideways like New arrivals; on desktop stacked category rails use 48 px top/bottom padding instead of 96 px.
+**Consequences:** A product can appear in both New arrivals and its category rail. The homepage gets longer as categories fill up; images are lazy, so the cost is mostly HTML. 05 and 06 are updated.
+
+### ADR-073 — Challan and invoice keep the form after printing
+**Date:** 2026-11-16 · **Status:** Accepted
+**Context:** The challan (ADR-046) and the invoice (ADR-067) cleared the form when the print dialog closed ("print and vanish"). The owner wants the form kept after printing, to reprint or adjust; both pages already have a Clear button for starting over.
+**Decision:** The `afterprint` reset is removed from both makers. Printing leaves the form as it is; only "Clear" empties it. Nothing is stored either way (no server, no browser storage), so leaving or reloading the page still starts fresh. This supersedes the "clears after printing" part of ADR-046 and ADR-067.
+**Consequences:** No new dependency. The e2e tests check that the form is kept after printing and emptied by Clear. 07 is updated.

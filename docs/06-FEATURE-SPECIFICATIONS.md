@@ -89,7 +89,7 @@ Format: `Intl.NumberFormat('en-IN')` grouping with the `৳` prefix (BD uses lak
 
 ## F6. Homepage content
 
-- Hero (singleton text over up to 5 slide photos in a manual slider, ADR-039), promo banners (active and within `startsAt`–`endsAt`, max 2 shown), categories with `showOnHome`, the New arrivals rail (flagged, or newest if none are flagged; max 8), plus the latest 3 posts. The Featured and Most loved rails were removed (ADR-035, ADR-042).
+- Hero (singleton text over up to 5 slide photos in a manual slider, ADR-039), promo banners (active and within `startsAt`–`endsAt`, max 2 shown), categories with `showOnHome`, the New arrivals rail, then one rail per active category with published products (admin order, up to 8, Popular first; ADR-072) (flagged, or newest if none are flagged; max 8), plus the latest 3 posts. The Featured and Most loved rails were removed (ADR-035, ADR-042).
 - All of it is managed in admin (07). The whole home page is cached under tags `home`, `products`, `categories`, `blog`, and `settings`.
 
 ---

@@ -1,7 +1,8 @@
 "use client";
 // Delivery challan maker (07 §3.8, ADR-046). Everything lives in this component's memory: nothing
 // is sent to the server, saved, or kept in browser storage. Print shows only the A4 sheet (a copy
-// portalled under <body>, see globals.css), and the form clears itself after printing.
+// portalled under <body>, see globals.css), and the form stays filled after printing
+// until "Clear" (ADR-073).
 import { Plus, Printer, RotateCcw, Trash2 } from "lucide-react";
 import { useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
@@ -72,15 +73,7 @@ export function ChallanMaker({
     () => false,
   );
 
-  // "Print and vanish": once the print dialog closes, start a fresh challan.
-  useEffect(() => {
-    const reset = () => {
-      setDraft(newDraft(new Date()));
-      setShowProblems(false);
-    };
-    window.addEventListener("afterprint", reset);
-    return () => window.removeEventListener("afterprint", reset);
-  }, []);
+  // Printing keeps the form (ADR-073): reprint or adjust freely; "Clear" starts a new challan.
 
   useEffect(() => {
     const container = previewRef.current;
@@ -339,7 +332,8 @@ export function ChallanMaker({
           </Button>
         </div>
         <p className="text-small text-muted">
-          Nothing is saved: the challan exists only on this page and clears after printing.
+          Nothing is saved: the challan exists only on this page. Printing keeps the form; use Clear
+          to start a new one.
         </p>
       </form>
 

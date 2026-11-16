@@ -86,6 +86,8 @@ Answer these by editing this list. Agents: use the **default** until an answer i
 
 Add one line per session, newest first: `YYYY-MM-DD — summary — files touched`.
 
+- 2026-11-16 — ADR-073: afterprint reset removed from ChallanMaker and InvoiceMaker; only Clear empties the form; e2e updated. Not committed/deployed — src/components/admin/{challan/ChallanMaker,invoice/InvoiceMaker}.tsx, src/app/admin/(panel)/{challan,invoice}/page.tsx, tests/e2e/admin-auth.spec.ts, docs
+- 2026-11-16 — ADR-072: homepage category rails (findCategoryRails one query, cached products/categories/home; md:py-12 for stacked rails). ADR-071 corrected: © line visible on phones again except product pages. Not checked in a browser (other session's dev server). Not committed/deployed — src/server/{repositories/product.repo,services/home.service}.ts, src/app/(site)/page.tsx, src/components/home/ProductRail.tsx, src/components/site/Footer.tsx, tests/e2e/home.spec.ts, docs
 - 2026-11-16 — ADR-071: footer bottom bar hidden below md on pages with data-product-bar. Not committed/deployed — src/components/site/Footer.tsx, docs
 - 2026-11-16 — CI on a2566f9 failed: mobile sticky-bar e2e scrolled before streamed sections were revealed (snapshot: html scrollTop 299; the related-card count includes hidden, not-yet-revealed cards). Test now scrolls in a toPass loop. ADR-070: ci.yml no longer runs on push to main (Deploy runs CI), one run per deploy — tests/e2e/catalogue.spec.ts, .github/workflows/ci.yml, docs/10
 - 2026-11-16 — ADR-069: quote buttons "Ask for price on …", card line mentions the Uttara showroom. Not committed/deployed (with ADR-067/068) — src/components/product/{CustomQuoteCard,ProductInquiry}.tsx, docs

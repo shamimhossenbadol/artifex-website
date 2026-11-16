@@ -114,6 +114,29 @@ export async function findNewArrivals(take: number): Promise<ProductCardRow[]> {
   });
 }
 
+/**
+ * Homepage category rails (ADR-072): every active category in the admin's order, each with up to
+ * `take` published products (Popular first, then newest). One query; empty categories come back
+ * with no products and are dropped by the caller.
+ */
+export async function findCategoryRails(take: number) {
+  return db.category.findMany({
+    where: { isActive: true },
+    orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      products: {
+        where: { status: "PUBLISHED" },
+        orderBy: [{ isPopular: "desc" }, { publishedAt: "desc" }, { id: "desc" }],
+        take,
+        select: PRODUCT_CARD_SELECT,
+      },
+    },
+  });
+}
+
 export const SEARCH_CANDIDATE_LIMIT = 200;
 
 /**

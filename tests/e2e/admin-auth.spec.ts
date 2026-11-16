@@ -410,7 +410,9 @@ test("dashboard shows visitor KPIs; the Pixel ID is validated and loads the pixe
 
 // --- ADR-046: delivery challan. Built in the browser, printed, then cleared; nothing is stored. ---
 
-test("challan: fill, preview, print only the sheet, then the form clears", async ({ page }) => {
+test("challan: fill, preview, print only the sheet, keep the form, clear on demand", async ({
+  page,
+}) => {
   await signIn(page, EMAIL!, NEW_PASSWORD);
   await expect(page).toHaveURL(/\/admin$/);
   await page.goto("/admin/challan");
@@ -458,15 +460,17 @@ test("challan: fill, preview, print only the sheet, then the form clears", async
 
   await page.getByRole("button", { name: "Print challan" }).click();
   expect(await page.evaluate(() => (window as unknown as { printed: number }).printed)).toBe(1);
-  // "Print and vanish": the browser fires afterprint when the dialog closes.
+  // Printing keeps the form (ADR-073); only Clear empties it.
   await page.evaluate(() => window.dispatchEvent(new Event("afterprint")));
+  await expect(page.getByLabel("Name", { exact: true })).toHaveValue("E2E Customer");
+  await page.getByRole("button", { name: "Clear" }).click();
   await expect(page.getByLabel("Name", { exact: true })).toHaveValue("");
   await expect(preview.getByText("E2E Customer")).toHaveCount(0);
 });
 
 // --- ADR-067: invoice. Same flow as the challan: built in the browser, printed, then cleared. ---
 
-test("invoice: items × prices, discount and advance, print only the sheet, then clear", async ({
+test("invoice: items × prices, discount and advance, print only the sheet, keep the form", async ({
   page,
 }) => {
   await signIn(page, EMAIL!, NEW_PASSWORD);
@@ -514,6 +518,9 @@ test("invoice: items × prices, discount and advance, print only the sheet, then
 
   await page.getByRole("button", { name: "Print invoice" }).click();
   expect(await page.evaluate(() => (window as unknown as { printed: number }).printed)).toBe(1);
+  // Printing keeps the form (ADR-073); only Clear empties it.
   await page.evaluate(() => window.dispatchEvent(new Event("afterprint")));
+  await expect(page.getByLabel("Name", { exact: true })).toHaveValue("E2E Invoice Customer");
+  await page.getByRole("button", { name: "Clear" }).click();
   await expect(page.getByLabel("Name", { exact: true })).toHaveValue("");
 });

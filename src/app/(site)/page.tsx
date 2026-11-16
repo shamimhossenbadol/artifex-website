@@ -21,6 +21,7 @@ import {
 } from "@/lib/seo";
 import { getLatestPosts } from "@/server/services/blog.service";
 import {
+  getCategoryRails,
   getHomeCategories,
   getHomeHero,
   getNewArrivals,
@@ -53,10 +54,11 @@ async function HeroSection() {
 
 /** Everything below the hero, fetched in parallel; empty sections render nothing (F6). */
 async function HomeSections() {
-  const [settings, categories, newArrivals, banners, posts] = await Promise.all([
+  const [settings, categories, newArrivals, categoryRails, banners, posts] = await Promise.all([
     getSiteSettings(),
     getHomeCategories(),
     getNewArrivals(),
+    getCategoryRails(),
     getPromoBanners(),
     getLatestPosts(3),
   ]);
@@ -93,6 +95,18 @@ async function HomeSections() {
         link={{ href: "/products", label: "View all" }}
         tinted
       />
+      {/* One rail per category with products (ADR-072), in the admin's category order. */}
+      {categoryRails.map((rail) => (
+        <ProductRail
+          key={rail.slug}
+          id={`rail-${rail.slug}`}
+          title={rail.name}
+          products={rail.products}
+          link={{ href: rail.href, label: "View all" }}
+          // Stacked rails: half the usual desktop padding so they don't drift apart.
+          className="md:py-12"
+        />
+      ))}
       <BrandIntro text={settings.aboutShort} />
       <PromoBanners banners={banners} />
       <WhatsAppBand

@@ -1,8 +1,8 @@
 "use client";
 // Invoice maker (07 §3.9, ADR-067), built like the delivery challan: everything lives in this
 // component's memory. Nothing is sent to the server, saved, or kept in browser storage. Print
-// shows only the A4 sheet (a copy portalled under <body>, see globals.css), and the form clears
-// itself after printing.
+// shows only the A4 sheet (a copy portalled under <body>, see globals.css), and the form stays
+// filled after printing until "Clear" (ADR-073).
 import { Plus, Printer, RotateCcw, Trash2 } from "lucide-react";
 import { useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
@@ -78,15 +78,7 @@ export function InvoiceMaker({
     () => false,
   );
 
-  // "Print and vanish": once the print dialog closes, start a fresh invoice.
-  useEffect(() => {
-    const reset = () => {
-      setDraft(newDraft(new Date()));
-      setShowProblems(false);
-    };
-    window.addEventListener("afterprint", reset);
-    return () => window.removeEventListener("afterprint", reset);
-  }, []);
+  // Printing keeps the form (ADR-073): reprint or adjust freely; "Clear" starts a new invoice.
 
   useEffect(() => {
     const container = previewRef.current;
@@ -360,8 +352,8 @@ export function InvoiceMaker({
           </Button>
         </div>
         <p className="text-small text-muted">
-          Nothing is saved: the invoice exists only on this page and clears after printing. Use
-          “Save as PDF” in the print dialog to keep a copy.
+          Nothing is saved: the invoice exists only on this page. Printing keeps the form; use Clear
+          to start a new one. Use “Save as PDF” in the print dialog to keep a copy.
         </p>
       </form>
 

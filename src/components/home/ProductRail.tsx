@@ -15,6 +15,7 @@ export function ProductRail({
   products,
   link,
   tinted = false,
+  className,
 }: {
   id: string;
   eyebrow?: string;
@@ -23,6 +24,7 @@ export function ProductRail({
   link?: { href: string; label: string };
   /** Alternate section background (03 §1 sand) to separate neighbouring rails. */
   tinted?: boolean;
+  className?: string;
 }) {
   if (products.length === 0) return null;
   return (
@@ -33,6 +35,7 @@ export function ProductRail({
         // inside the sand and sits 32 px below the previous section.
         "reveal md:py-24",
         tinted ? "rail-tinted bg-sand mt-8 py-8 md:mt-0" : "pt-8",
+        className,
       )}
     >
       <Container>

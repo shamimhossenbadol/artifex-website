@@ -15,8 +15,10 @@ test.describe("Journal (F4)", () => {
   test("lists posts with the newest featured", async ({ page }) => {
     await page.goto("/blog");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Journal");
-    await expect(page.locator("main article")).toHaveCount(4);
-    await expect(page.locator("main article").first().getByRole("heading")).toHaveText(
+    // The admin journal e2e test may briefly publish an "E2E …" post in parallel: ignore it.
+    const posts = page.locator("main article").filter({ hasNotText: "E2E" });
+    await expect(posts).toHaveCount(4);
+    await expect(posts.first().getByRole("heading")).toHaveText(
       "How to choose the right sofa size for a Dhaka flat",
     );
   });

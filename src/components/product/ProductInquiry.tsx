@@ -20,6 +20,8 @@ type ProductInquiryProps = {
   phone: string | null;
   telHref: string | null;
   messengerHref: string | null;
+  /** No fixed price (ADR-063): the buttons ask for a quote and sit right under the quote card. */
+  quote?: boolean;
 };
 
 export function ProductInquiry({
@@ -32,7 +34,9 @@ export function ProductInquiry({
   phone,
   telHref,
   messengerHref,
+  quote = false,
 }: ProductInquiryProps) {
+  const verb = quote ? "Get a quote on" : "Message on";
   const [showBar, setShowBar] = useState(false);
   const ctaRef = useRef<HTMLDivElement>(null);
 
@@ -72,17 +76,17 @@ export function ProductInquiry({
 
   return (
     <>
-      <div ref={ctaRef} className="mt-8 flex flex-col gap-3">
+      <div ref={ctaRef} className={cn("flex flex-col gap-3", quote ? "mt-5" : "mt-8")}>
         {whatsappHref && (
           <ButtonLink href={whatsappHref} external variant="whatsapp" size="lg" fullWidth>
             <WhatsAppIcon className="size-5" />
-            Message on WhatsApp
+            {verb} WhatsApp
           </ButtonLink>
         )}
         {messengerHref && (
           <ButtonLink href={messengerHref} external variant="messenger" size="lg" fullWidth>
             <MessengerIcon className="size-5" />
-            Message on Messenger
+            {verb} Messenger
           </ButtonLink>
         )}
         {telHref && (
@@ -117,7 +121,7 @@ export function ProductInquiry({
                 className="bg-messenger hover:bg-ink inline-flex size-11 shrink-0 items-center justify-center rounded-md text-white transition-colors"
               >
                 <MessengerIcon className="size-5" />
-                <span className="sr-only">Message on Messenger</span>
+                <span className="sr-only">{verb} Messenger</span>
               </a>
             )}
             {whatsappHref && (

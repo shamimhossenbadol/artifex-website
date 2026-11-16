@@ -28,7 +28,7 @@ export function PricingFields({
         <AdminField
           name="regularPrice"
           label="Regular price (৳)"
-          hint="Leave blank to show “Price on request”."
+          hint="Leave blank when the price depends on the customer’s choices: the product page then shows a “Priced to your design” quote card instead of a price."
         >
           <Input
             name="regularPrice"
@@ -52,7 +52,14 @@ export function PricingFields({
       </div>
       <div className="bg-bg rounded-md px-4 py-3" aria-live="polite">
         <p className="text-small text-muted mb-1">Shown on the website as</p>
-        <Price regularPrice={regularAmount} discountPrice={discountAmount} showBadge />
+        {regularAmount === null ? (
+          // ADR-063: no price → the product page shows the custom-quote card.
+          <p className="text-ink font-medium">
+            “Priced to your design” quote card (no price shown)
+          </p>
+        ) : (
+          <Price regularPrice={regularAmount} discountPrice={discountAmount} showBadge />
+        )}
       </div>
     </>
   );

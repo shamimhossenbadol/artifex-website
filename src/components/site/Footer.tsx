@@ -17,7 +17,8 @@ const PILL =
  * Compact footer (ADR-035, ADR-049, ADR-050, ADR-061): from md, brand (logo, two-line description,
  * social icons) and contact (address, phone and WhatsApp buttons, email) in two columns, then a
  * quiet line with © and the developer credit. Phones show only logo → address → email → social
- * icons, centred, and the credit (no description, no © line). Navigation lives in the header.
+ * icons, centred and compact (ADR-064: no rule under the logo, tight gaps), and the credit (no
+ * description, no © line). Navigation lives in the header.
  */
 export async function Footer() {
   const settings = await getSiteSettings();
@@ -40,7 +41,7 @@ export async function Footer() {
               href={href}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-ink-soft hover:text-walnut border-line bg-surface inline-flex size-11 items-center justify-center rounded-full border transition-colors md:border-0 md:bg-transparent"
+              className="text-ink-soft hover:text-walnut border-line bg-surface inline-flex size-10 items-center justify-center rounded-full border transition-colors md:size-11 md:border-0 md:bg-transparent"
             >
               <Icon />
               <span className="sr-only">
@@ -54,8 +55,8 @@ export async function Footer() {
 
   return (
     <footer className="border-line bg-sand border-t">
-      <Container className="flex flex-col items-center gap-6 py-8 text-center md:grid md:grid-cols-[1.2fr_1fr] md:items-start md:gap-12 md:py-10 md:text-left">
-        <div className="flex flex-col items-center gap-3 md:items-start">
+      <Container className="flex flex-col items-center gap-3 py-6 text-center md:grid md:grid-cols-[1.2fr_1fr] md:items-start md:gap-12 md:py-10 md:text-left">
+        <div className="flex flex-col items-center md:items-start md:gap-3">
           <Logo variant="full" className="h-11" />
           {description && (
             <p className="text-ink-soft text-small line-clamp-2 hidden max-w-sm md:block">
@@ -65,10 +66,7 @@ export async function Footer() {
           {socialList("hidden md:-my-1 md:-ml-2.5 md:flex md:gap-0")}
         </div>
 
-        {/* Phones: a short walnut rule between the brand and the contact details. */}
-        <div aria-hidden className="bg-walnut/50 -my-1 h-px w-10 md:hidden" />
-
-        <address className="flex flex-col items-center gap-1 not-italic md:items-start md:gap-3">
+        <address className="flex flex-col items-center not-italic md:items-start md:gap-3">
           {address && (
             <p className="text-ink-soft text-small flex max-w-xs flex-col items-center gap-1 md:max-w-none md:flex-row md:items-start md:gap-2">
               <MapPin
@@ -97,7 +95,7 @@ export async function Footer() {
           {settings.email && (
             <a
               href={`mailto:${settings.email}`}
-              className="text-ink-soft hover:text-ink text-small inline-flex min-h-11 items-center gap-2 underline-offset-4 hover:underline md:min-h-0"
+              className="text-ink-soft hover:text-ink text-small inline-flex min-h-8 items-center gap-2 underline-offset-4 hover:underline md:min-h-0"
             >
               <Mail
                 aria-hidden
@@ -110,12 +108,12 @@ export async function Footer() {
         </address>
 
         {/* Phones (ADR-061): logo → address → email → social icons. */}
-        {socialList("flex gap-2 md:hidden")}
+        {socialList("-mt-1 flex gap-2 md:hidden")}
       </Container>
 
       <div className="border-line border-t">
         {/* © on the left and the credit on the right; on phones the credit sits below. */}
-        <Container className="text-small text-muted flex flex-col items-center gap-0 py-3 text-center sm:flex-row sm:justify-between sm:gap-4 sm:text-left">
+        <Container className="text-small text-muted flex flex-col items-center gap-0 py-2 text-center sm:flex-row sm:justify-between sm:gap-4 sm:py-3 sm:text-left">
           {/* No copyright line on phones (ADR-061). */}
           <p className="hidden sm:block sm:py-1">
             © {new Date().getFullYear()} {settings.businessName}. All rights reserved.
@@ -127,7 +125,7 @@ export async function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               data-no-track
-              className="text-ink-soft hover:text-ink inline-flex min-h-11 items-center underline-offset-4 hover:underline sm:min-h-0"
+              className="text-ink-soft hover:text-ink inline-flex min-h-8 items-center underline-offset-4 hover:underline sm:min-h-0"
             >
               {DEVELOPER.name}
             </a>

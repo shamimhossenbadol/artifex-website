@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { Gallery } from "@/components/product/Gallery";
 import { ProductGrid } from "@/components/product/ProductGrid";
+import { CustomQuoteCard } from "@/components/product/CustomQuoteCard";
 import { ProductInquiry } from "@/components/product/ProductInquiry";
 import { PreviewBanner } from "@/components/site/PreviewBanner";
 import { TrackProductView } from "@/components/site/SiteTracker";
@@ -63,7 +64,8 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
 
 function priceLabel(regular: number | null, discount: number | null): string {
   const info = getPriceInfo(regular, discount);
-  return info.kind === "onRequest" ? "Price on request" : formatBDT(info.price);
+  // No fixed price: the mobile bar and the {price} placeholder say "Custom quote" (ADR-063).
+  return info.kind === "onRequest" ? "Custom quote" : formatBDT(info.price);
 }
 
 async function ProductDetail({ params, searchParams }: Props) {
@@ -116,21 +118,29 @@ async function ProductDetail({ params, searchParams }: Props) {
 
         <div className="lg:col-span-5">
           <div className="lg:sticky lg:top-24">
+            {/* Phones skip the visible path (ADR-065); the BreadcrumbList JSON-LD stays for search. */}
             <Breadcrumbs
+              className="hidden md:block"
               items={[
                 { label: "Home", href: "/" },
                 { label: product.category.name, href: product.category.href },
                 { label: product.title },
               ]}
             />
-            <h1 className="text-h1 mt-4">{product.title}</h1>
-            <Price
-              regularPrice={product.regularPrice}
-              discountPrice={product.discountPrice}
-              showBadge
-              className="mt-4"
-            />
-            {product.isMadeToOrder && (
+            <h1 className="text-h1 md:mt-4">{product.title}</h1>
+            {price.kind === "onRequest" ? (
+              // No fixed price (most made-to-order pieces): a quote card replaces "Price on
+              // request" and the Made to order badge (ADR-063).
+              <CustomQuoteCard className="mt-5" />
+            ) : (
+              <Price
+                regularPrice={product.regularPrice}
+                discountPrice={product.discountPrice}
+                showBadge
+                className="mt-4"
+              />
+            )}
+            {product.isMadeToOrder && price.kind !== "onRequest" && (
               <div className="text-small mt-4 flex flex-col items-start gap-1.5">
                 <Badge>Made to order</Badge>
                 <p>Sizes and finishes can be tailored to your space.</p>
@@ -147,6 +157,7 @@ async function ProductDetail({ params, searchParams }: Props) {
               phone={phone}
               telHref={telHref}
               messengerHref={toMessengerUrl(settings.facebookUrl)}
+              quote={price.kind === "onRequest"}
             />
           </div>
         </div>

@@ -25,7 +25,7 @@ Each feature lists its **behaviour**, **data source**, and **acceptance criteria
 |---|---|
 | `regularPrice` only | `৳ 45,500` |
 | `regularPrice` + `discountPrice` | **`৳ 38,675`** (sale colour), then `৳ 45,500` struck through, then badge `-15%` |
-| `regularPrice = null` | "Price on request" with WhatsApp emphasised |
+| `regularPrice = null` | Product page: the compact **custom-quote card** ("Priced to your design", one line, three short points) with "Get a quote on WhatsApp/Messenger" buttons (ADR-063). Cards and search: "Price on request". |
 Format: `Intl.NumberFormat('en-IN')` grouping with the `৳` prefix (BD uses lakh grouping, e.g. `৳ 1,25,000`).
 
 ### F1.4 Colours

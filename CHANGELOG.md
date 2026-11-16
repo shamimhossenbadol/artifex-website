@@ -23,6 +23,8 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 - 2026-11-12 — Test site showed a blank white page after the Phase 2 deploy: the deploy bundle was missing Turbopack's Prisma alias. Packaging now recreates and verifies it, CI boots the real bundle, and the deploy health check requires a complete page (ADR-023).
 
 ### Changed
+- 2026-11-16 — Phones: the product page no longer shows the Home / Category / Product path above the title (ADR-065).
+- 2026-11-16 — Product page: products without a fixed price show a "Priced to your design" quote card (made to your size, your fabric and finish, free quote) with "Get a quote on WhatsApp/Messenger" buttons, instead of "Price on request" and a separate Made to order badge (ADR-063). Phones: a more compact footer, with no line under the logo and tighter spacing (ADR-064).
 - 2026-11-16 — Admin product form: the Quick add specification buttons are gone; add rows with "Add specification". Dining Tables still start with their default rows (ADR-062).
 - 2026-11-16 — Phones: the footer shows just the logo, address, email and social icons (no description or copyright line). Product page: no "Description" heading (the text starts under the line), less space above the line and before the related products, which are now titled "You may also like" (ADR-061).
 - 2026-11-16 — Product page: shows only the full description and specifications; the short description and quick facts under the buttons are gone. In the admin, the short description is now the required **SEO description** in the Search engines section (Google and link previews only); any SEO description already typed replaces it (ADR-060).

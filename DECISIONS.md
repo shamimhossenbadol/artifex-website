@@ -517,3 +517,21 @@ Format: each ADR has a number, date, status (Accepted / Superseded by ADR-x / Pr
 **Context:** The owner asked to remove the Quick add specification buttons from the add/edit product page.
 **Decision:** The specs editor no longer shows Quick add buttons; rows are added with "Add specification" (type the label and value). The per-category quick-add lists and `specPresetsFor` are removed. Default rows for Dining Tables (ADR-059) stay; a removed default row is added back with "Add specification". This supersedes the quick-add part of 07 §3.2 and of ADR-059.
 **Consequences:** Less code in the product form. The e2e test adds its specification row by hand.
+
+### ADR-063 — Custom-quote card instead of "Price on request" on the product page
+**Date:** 2026-11-16 · **Status:** Accepted
+**Context:** Most Artifex products have no fixed price: they're made to the customer's size, fabric and finish, so the price fields are usually left empty. The product page then showed a bare "Price on request" line and, separately, a "Made to order" badge. The owner asked for something more premium that invites the customer to ask for a price based on their customisation.
+**Decision:** When `regularPrice` is empty, the product page shows `CustomQuoteCard` in place of the price and the Made to order badge: a **compact** sand card (about 130 px tall on a phone) with a walnut accent bar, serif heading "Priced to your design", one line ("Made to order: message us for a quote based on your customisation.") and three short points with icons on one line (Your size · Fabric & finish · Free quote). The buttons right below it read "Get a quote on WhatsApp" / "Get a quote on Messenger" (also the mobile sticky bar), and the mobile bar and the `{price}` message placeholder say "Custom quote". Products with a price are unchanged (price display, plus the Made to order badge line when that box is ticked). Listing cards and search keep the short "Price on request"; JSON-LD keeps omitting the offer. The admin Regular price hint and the "Shown on the website as" preview explain that a blank price shows the quote card. The Made to order checkbox stays for priced products.
+**Consequences:** No new token or dependency (lucide icons Ruler, Palette, BadgeCheck). The card stays flat, like the rest of the public site. 05, 06 and 03 are updated.
+
+### ADR-064 — Compact phone footer
+**Date:** 2026-11-16 · **Status:** Accepted
+**Context:** After ADR-061 the owner found the phone footer still too tall: a decorative rule under the logo, extra space between lines, and space above and below the social icons.
+**Decision:** Phones only: the walnut rule under the logo is removed; the footer's vertical gaps go from 24 px to 12 px and its padding from 32 px to 24 px; address and email have no extra gap and the email row is 32 px tall (was 44 px); social icons are 40 px circles (44 px from md) with a small negative top margin; the credit bar is 8 px top/bottom with a 32 px link row. Tap targets stay at least 32 px (WCAG 2.5.8 asks for 24 px). md+ is unchanged.
+**Consequences:** No new token or dependency. 05 is updated.
+
+### ADR-065 — No breadcrumbs on the phone product page
+**Date:** 2026-11-16 · **Status:** Accepted
+**Context:** The owner asked to remove the browsing path (Home / Category / Product) from the product page on phones.
+**Decision:** On the product page the visible breadcrumbs are hidden below md (`hidden md:block`) and the title moves up to sit right under the gallery gap; from md they show as before. The BreadcrumbList JSON-LD is unchanged, so search engines still get the path. The category stays reachable from the header menu.
+**Consequences:** No new token or dependency. 05 is updated.

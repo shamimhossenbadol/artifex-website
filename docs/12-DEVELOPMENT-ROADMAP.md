@@ -100,6 +100,8 @@ Each phase ends with a short manual review of the phase's acceptance checks.
 - [x] One SEO description per product; product page shows only full description and specs (ADR-060)
 - [x] Phone footer trimmed, product page spacing, single-photo gallery fix (ADR-061)
 - [x] Quick add specification buttons removed (ADR-062)
+- [x] Custom-quote card for products without a price (ADR-063); compact phone footer (ADR-064)
+- [x] No breadcrumbs on the phone product page (ADR-065)
 
 ## Phase 8 — SEO, security & performance hardening
 - [x] `sitemap.ts`, `robots.ts`, canonical audit (ADR-037) — [ ] OG image check in the Facebook Sharing Debugger (owner, after the domain is final)

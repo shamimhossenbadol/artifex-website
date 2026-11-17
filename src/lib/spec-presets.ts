@@ -18,8 +18,23 @@ const DINING_TABLE_SPECS = [
   "Usage",
 ];
 
+const SOFA_SPECS = [
+  "Product Type",
+  "Frame Material",
+  "Upholstery",
+  "Foam",
+  "Legs",
+  "Seating Configuration",
+  "Seater Dimensions",
+  "1 Seater Dimensions",
+  "Sofa Width",
+  "Pillow Filling",
+  "Pillow Quantity",
+];
+
 const DEFAULTS: Record<string, string[]> = {
-  "dining-tables": DINING_TABLE_SPECS,
+  sofas: SOFA_SPECS, // ADR-075
+  "dining-tables": DINING_TABLE_SPECS, // ADR-059
 };
 
 /** Rows a new product in this category starts with (empty values). */

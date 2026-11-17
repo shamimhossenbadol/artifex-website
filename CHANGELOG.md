@@ -33,6 +33,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 - 2026-11-12 — Test site showed a blank white page after the Phase 2 deploy: the deploy bundle was missing Turbopack's Prisma alias. Packaging now recreates and verifies it, CI boots the real bundle, and the deploy health check requires a complete page (ADR-023).
 
 ### Changed
+- 2026-11-17 — Admin product form: new Sofas products start with 11 default specifications (Product Type, Frame Material, Upholstery, Foam, Legs, Seating Configuration, Seater Dimensions, 1 Seater Dimensions, Sofa Width, Pillow Filling, Pillow Quantity) (ADR-075).
 - 2026-11-16 — Admin challan and invoice: printing no longer clears the form; press Clear to start a new one (ADR-073).
 - 2026-11-16 — Phones: the product page footer no longer shows the © line and developer credit; every other page shows both again (ADR-071).
 - 2026-11-16 — Deploys: one GitHub Actions run per deploy; CI no longer also runs separately on every push to main (ADR-070).

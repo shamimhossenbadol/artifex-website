@@ -592,3 +592,9 @@ Format: each ADR has a number, date, status (Accepted / Superseded by ADR-x / Pr
 **Context:** Meta ads will drive WhatsApp and Messenger inquiries. Product-page WhatsApp links already pre-fill the product name and URL, but the Messenger link (`m.me/<page>`) didn't say which product the visitor was looking at, so staff couldn't tell where a Messenger chat started.
 **Decision:** `toMessengerUrl` takes an optional `ref`, added as `?ref=<ref>` to m.me links only (never to fallback Facebook URLs), and only when it matches `^[a-z0-9-]{1,64}$`. Product pages pass `product-<slug>` (cut to 64 characters). Other pages keep the plain m.me link. The Contact Pixel event and first-party click counting are unchanged (they classify by host).
 **Consequences:** No new dependency, no schema change. Messenger passes the ref to the Page inbox for new conversations. Unit tests cover the ref rules.
+
+### ADR-075 — Default specification rows for Sofas
+**Date:** 2026-11-17 · **Status:** Accepted
+**Context:** The owner wants sofas to start with a standard set of specifications, as dining tables do (ADR-059).
+**Decision:** `defaultSpecsFor("sofas")` returns Product Type, Frame Material, Upholstery, Foam, Legs, Seating Configuration, Seater Dimensions, 1 Seater Dimensions, Sofa Width, Pillow Filling, Pillow Quantity. Same rules as dining tables: a new Sofas product (or switching to Sofas while the rows are still empty) gets these rows; any can be removed; every row that stays needs a value; existing products are never auto-filled.
+**Consequences:** Copy/config only. 07 is updated.

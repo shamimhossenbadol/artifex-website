@@ -145,12 +145,31 @@ describe("adminProductQuerySchema", () => {
 });
 
 describe("defaultSpecsFor", () => {
-  it("gives dining tables twelve default rows, other categories none (ADR-059)", () => {
+  it("gives dining tables twelve default rows (ADR-059)", () => {
     const dining = defaultSpecsFor("dining-tables");
     expect(dining).toHaveLength(12);
     expect(dining[0]).toBe("Product Name");
     expect(dining).toContain("Number of Chairs");
-    expect(defaultSpecsFor("sofas")).toEqual([]);
+  });
+
+  it("gives sofas eleven default rows (ADR-075)", () => {
+    expect(defaultSpecsFor("sofas")).toEqual([
+      "Product Type",
+      "Frame Material",
+      "Upholstery",
+      "Foam",
+      "Legs",
+      "Seating Configuration",
+      "Seater Dimensions",
+      "1 Seater Dimensions",
+      "Sofa Width",
+      "Pillow Filling",
+      "Pillow Quantity",
+    ]);
+  });
+
+  it("gives other categories no default rows", () => {
+    expect(defaultSpecsFor("beds")).toEqual([]);
     expect(defaultSpecsFor(null)).toEqual([]);
   });
 });

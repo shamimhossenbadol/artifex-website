@@ -86,6 +86,7 @@ Answer these by editing this list. Agents: use the **default** until an answer i
 
 Add one line per session, newest first: `YYYY-MM-DD — summary — files touched`.
 
+- 2026-11-17 — Fix: saving a product with Price range or No price failed ("expected string, received undefined"); missing price fields now count as blank — src/lib/validation/product.ts, tests/unit/admin-products.test.ts
 - 2026-11-17 — ADR-076: price range option (Product.maxPrice + migration; admin price type Fixed / Range / No price; Price component, cards, search, product page, sticky bar, WhatsApp {price}, Pixel value = lowest, JSON-LD AggregateOffer); unit tests. Not browser-checked (no local DB); not committed/deployed — prisma/, src/lib/{format,seo}.ts, src/lib/validation/product.ts, src/components/{ui/Price,admin/products/*}.tsx, src/server/*, tests/unit/*, docs
 - 2026-11-17 — ADR-075: Sofas default specs (11 rows) in spec-presets; unit test — src/lib/spec-presets.ts, tests/unit/admin-products.test.ts, docs
 - 2026-11-17 — ADR-074: product ref on product-page Messenger links; unit tests. Live check with Playwright: Meta Pixel sends PageView, ViewContent and Contact correctly. Noted: the CSP blocks the Cloudflare Web Analytics beacon (Cloudflare injects it; turn off Web Analytics/RUM in Cloudflare or allow its hosts) and some newer fbevents endpoints (*.a.run.app, *.on.aws); core Pixel events are unaffected — src/lib/messenger.ts, src/app/(site)/products/[slug]/page.tsx, tests/unit/messenger.test.ts, DECISIONS.md, CHANGELOG.md

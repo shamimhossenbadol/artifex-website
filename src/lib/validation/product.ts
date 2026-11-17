@@ -29,10 +29,14 @@ const checkbox = z
   .optional()
   .transform((v) => v === "on");
 
-/** Whole Taka; blank → null. Accepts "45,500" and "৳ 45 500". */
+/**
+ * Whole Taka; blank → null. Accepts "45,500" and "৳ 45 500". A missing field counts as blank:
+ * the form only sends the inputs of the chosen price type (ADR-076).
+ */
 const optionalPrice = z
   .string()
-  .trim()
+  .optional()
+  .transform((v) => (v ?? "").trim())
   .transform((v) => v.replace(/[৳,\s]/g, ""))
   .refine((v) => v === "" || /^\d+$/.test(v), "Use whole Taka, numbers only")
   .transform((v) => (v === "" ? null : Number(v)))
@@ -73,7 +77,7 @@ export const productSchema = z
     priceType: z.enum(PRICE_TYPES, { error: "Choose how the price is shown" }).default("fixed"),
     regularPrice: optionalPrice,
     discountPrice: optionalPrice,
-    maxPrice: optionalPrice.optional().transform((v) => v ?? null),
+    maxPrice: optionalPrice,
     specs: jsonArray(specSchema, MAX_SPECS, "specifications"),
     isMadeToOrder: checkbox,
     keywords: optionalText(255),

@@ -112,6 +112,23 @@ describe("productSchema", () => {
     expect(input({ maxPrice: "60000" }).maxPrice).toBeNull();
   });
 
+  it("accepts a form that only sends the fields of the chosen price type", () => {
+    // Object.fromEntries(formData) has no key for inputs that were not rendered.
+    const without = (...keys: string[]) =>
+      Object.fromEntries(Object.entries(FORM).filter(([k]) => !keys.includes(k)));
+    const range = productSchema.safeParse({
+      ...without("discountPrice"),
+      priceType: "range",
+      maxPrice: "60000",
+    });
+    expect(range.success && range.data.maxPrice).toBe(60000);
+    const quote = productSchema.safeParse({
+      ...without("regularPrice", "discountPrice"),
+      priceType: "quote",
+    });
+    expect(quote.success && quote.data.regularPrice).toBeNull();
+  });
+
   it("requires both ends of a range, high above low", () => {
     expect(errorPaths({ priceType: "range", regularPrice: "", maxPrice: "60000" })).toContain(
       "regularPrice",

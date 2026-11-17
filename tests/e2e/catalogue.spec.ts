@@ -107,11 +107,12 @@ test.describe("product detail (F1.2–F1.4, F3)", () => {
       await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
       await expect(bar).toHaveAttribute("aria-hidden", "false", { timeout: 1000 });
     }).toPass({ timeout: 15_000 });
-    // The floating buttons give way to the product's own bar, which has Messenger too (ADR-044).
+    // The floating buttons give way to the product's own bar, which has Messenger too (ADR-044),
+    // tagged with the product so the Page inbox shows where the chat started (ADR-074).
     await expect(page.getByRole("link", { name: /Chat with .* on WhatsApp/ })).toBeHidden();
     await expect(bar.getByRole("link", { name: "Message on Messenger" })).toHaveAttribute(
       "href",
-      "https://m.me/artifexfurniturebd",
+      /^https:\/\/m\.me\/artifexfurniturebd\?ref=product-[a-z0-9-]+$/,
     );
   });
 

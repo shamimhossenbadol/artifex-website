@@ -211,6 +211,7 @@ export function SearchDialog() {
                   <Price
                     regularPrice={product.regularPrice}
                     discountPrice={product.discountPrice}
+                    maxPrice={product.maxPrice}
                     className="shrink-0 text-right [&_.text-price]:text-base"
                   />
                 </Link>

@@ -9,6 +9,18 @@ export const MAX_PRODUCT_IMAGES = 5;
 export const MAX_SPECS = 40;
 export const ADMIN_PRODUCTS_PER_PAGE = 20;
 const MAX_PRICE = 100_000_000;
+/** How a product's price is shown (ADR-076). */
+export const PRICE_TYPES = ["fixed", "range", "quote"] as const;
+export type PriceType = (typeof PRICE_TYPES)[number];
+
+/** The price type a saved product was entered with. */
+export function initialPriceType(p: {
+  regularPrice: number | null;
+  maxPrice: number | null;
+}): PriceType {
+  if (p.regularPrice === null) return "quote";
+  return p.maxPrice !== null ? "range" : "fixed";
+}
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
@@ -57,8 +69,11 @@ export const productSchema = z
     // The SEO description (ADR-060): Google and link previews only, not shown on the product page.
     shortDescription: requiredText(300, "SEO description"),
     description: z.string().trim().max(20_000, "Keep this under 20,000 characters"),
+    // ADR-076: fixed price (optional discount), a price range, or no price (custom quote).
+    priceType: z.enum(PRICE_TYPES, { error: "Choose how the price is shown" }).default("fixed"),
     regularPrice: optionalPrice,
     discountPrice: optionalPrice,
+    maxPrice: optionalPrice.optional().transform((v) => v ?? null),
     specs: jsonArray(specSchema, MAX_SPECS, "specifications"),
     isMadeToOrder: checkbox,
     keywords: optionalText(255),
@@ -67,8 +82,28 @@ export const productSchema = z
     isNewArrival: checkbox,
     seoTitle: optionalText(70),
   })
-  .transform(({ slug, ...rest }) => ({
+  .superRefine((v, ctx) => {
+    if (v.priceType === "range") {
+      if (v.regularPrice === null) {
+        ctx.addIssue({ code: "custom", message: "Add the lowest price", path: ["regularPrice"] });
+      }
+      if (v.maxPrice === null) {
+        ctx.addIssue({ code: "custom", message: "Add the highest price", path: ["maxPrice"] });
+      } else if (v.regularPrice !== null && v.maxPrice <= v.regularPrice) {
+        ctx.addIssue({
+          code: "custom",
+          message: "The highest price must be above the lowest price",
+          path: ["maxPrice"],
+        });
+      }
+    }
+  })
+  // Keep only the fields that belong to the chosen price type.
+  .transform(({ slug, priceType, regularPrice, discountPrice, maxPrice, ...rest }) => ({
     ...rest,
+    regularPrice: priceType === "quote" ? null : regularPrice,
+    discountPrice: priceType === "fixed" ? discountPrice : null,
+    maxPrice: priceType === "range" ? maxPrice : null,
     slug: slugify(slug || rest.title, PRODUCT_SLUG_MAX),
   }))
   .refine((v) => SLUG_PATTERN.test(v.slug), {

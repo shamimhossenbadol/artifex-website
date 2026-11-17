@@ -20,7 +20,7 @@
 Rendered by a `<JsonLd data={…} />` component (`JSON.stringify` with `<` escaped as `<`).
 - **Organization + WebSite** (home): name, logo, sameAs (Facebook, Instagram), plus `SearchAction` → `/search?q={search_term_string}`.
 - **FurnitureStore** (LocalBusiness) on home + contact: address, geo, telephone, openingHoursSpecification, url, image.
-- **Product** (detail): name, image[], description, sku (from an optional "SKU" spec row, ADR-059), brand "Artifex Furniture", category, `offers` { priceCurrency `BDT`, price (effective), availability `InStock` (or `PreOrder` if made to order), url }. When the price is on request, omit `offers`.
+- **Product** (detail): name, image[], description, sku (from an optional "SKU" spec row, ADR-059), brand "Artifex Furniture", category, `offers` { priceCurrency `BDT`, price (effective), availability `InStock` (or `PreOrder` if made to order), url }. For a price range, `offers` is an `AggregateOffer` { priceCurrency `BDT`, lowPrice, highPrice, offerCount 1, availability, url } (ADR-076). When the price is on request, omit `offers`.
 - **BreadcrumbList** on category, product, and blog post pages.
 - **Article / BlogPosting** on posts: headline, image, datePublished, dateModified, author { name }, publisher.
 

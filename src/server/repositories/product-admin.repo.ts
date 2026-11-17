@@ -10,6 +10,7 @@ const ADMIN_ROW_SELECT = {
   status: true,
   regularPrice: true,
   discountPrice: true,
+  maxPrice: true,
   isPopular: true,
   isNewArrival: true,
   updatedAt: true,
@@ -90,6 +91,7 @@ const EDIT_SELECT = {
   description: true,
   regularPrice: true,
   discountPrice: true,
+  maxPrice: true,
   isMadeToOrder: true,
   isPopular: true,
   isNewArrival: true,
@@ -125,6 +127,7 @@ export type ProductData = {
   description: string;
   regularPrice: number | null;
   discountPrice: number | null;
+  maxPrice: number | null;
   effectivePrice: number | null;
   isMadeToOrder: boolean;
   isPopular: boolean;

@@ -11,7 +11,7 @@
 |---|---|
 | **Current phase** | Phase 8: SEO, security & performance hardening (in progress; Phase 7 done, 7f skipped) |
 | **Overall state** | ✅ Phase 1 complete. Code is on GitHub (`shamimhossenbadol/artifex-website`, private); CI is green. ✅ **First deploy succeeded 2026-11-12**: https://artifex.codespherestudio.site serves the placeholder page with security headers (via Cloudflare). Migration applied; seed created 7 categories, settings, hero and the admin (`mustChangePassword = 1`); backup saved in `~/backups`. |
-| **Last updated** | 2026-11-16 |
+| **Last updated** | 2026-11-17 |
 | **Next action** | LIVE at https://artifexfurniturebd.com. Owner: add products, category photos and the Facebook Pixel ID; Search Console + Meta domain verification; delete the old test site (owner's call: no redirect). Agent: check the occasional "failed to get redirect response … 127.0.0.1:3000" server log line (Server Action redirects under Passenger); accessibility pass (Phase 8). |
 
 ## Phase overview
@@ -86,6 +86,7 @@ Answer these by editing this list. Agents: use the **default** until an answer i
 
 Add one line per session, newest first: `YYYY-MM-DD — summary — files touched`.
 
+- 2026-11-17 — ADR-076: price range option (Product.maxPrice + migration; admin price type Fixed / Range / No price; Price component, cards, search, product page, sticky bar, WhatsApp {price}, Pixel value = lowest, JSON-LD AggregateOffer); unit tests. Not browser-checked (no local DB); not committed/deployed — prisma/, src/lib/{format,seo}.ts, src/lib/validation/product.ts, src/components/{ui/Price,admin/products/*}.tsx, src/server/*, tests/unit/*, docs
 - 2026-11-17 — ADR-075: Sofas default specs (11 rows) in spec-presets; unit test — src/lib/spec-presets.ts, tests/unit/admin-products.test.ts, docs
 - 2026-11-17 — ADR-074: product ref on product-page Messenger links; unit tests. Live check with Playwright: Meta Pixel sends PageView, ViewContent and Contact correctly. Noted: the CSP blocks the Cloudflare Web Analytics beacon (Cloudflare injects it; turn off Web Analytics/RUM in Cloudflare or allow its hosts) and some newer fbevents endpoints (*.a.run.app, *.on.aws); core Pixel events are unaffected — src/lib/messenger.ts, src/app/(site)/products/[slug]/page.tsx, tests/unit/messenger.test.ts, DECISIONS.md, CHANGELOG.md
 - 2026-11-16 — ADR-073: afterprint reset removed from ChallanMaker and InvoiceMaker; only Clear empties the form; e2e updated. Not committed/deployed — src/components/admin/{challan/ChallanMaker,invoice/InvoiceMaker}.tsx, src/app/admin/(panel)/{challan,invoice}/page.tsx, tests/e2e/admin-auth.spec.ts, docs

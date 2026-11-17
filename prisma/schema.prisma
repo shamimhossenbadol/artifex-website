@@ -43,6 +43,7 @@ model Product {
   description       String         @db.Text            // Markdown
   regularPrice      Int?                                // null => "Price on request"
   discountPrice     Int?                                // must be < regularPrice (validated)
+  maxPrice          Int?                                // set => price range regularPrice–maxPrice, no discount (ADR-076)
   effectivePrice    Int?                                // denormalised: discountPrice ?? regularPrice (price sort)
   isMadeToOrder     Boolean        @default(false)
   isPopular         Boolean        @default(false)

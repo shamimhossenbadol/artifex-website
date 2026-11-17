@@ -109,6 +109,7 @@ Each phase ends with a short manual review of the phase's acceptance checks.
 - [x] Homepage rail per category with products (ADR-072)
 - [x] Challan and invoice keep the form after printing (ADR-073)
 - [x] Sofa default specifications (ADR-075)
+- [x] Price range option for products (ADR-076)
 
 ## Phase 8 — SEO, security & performance hardening
 - [x] `sitemap.ts`, `robots.ts`, canonical audit (ADR-037) — [ ] OG image check in the Facebook Sharing Debugger (owner, after the domain is final)

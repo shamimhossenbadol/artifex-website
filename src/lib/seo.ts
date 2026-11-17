@@ -164,17 +164,24 @@ export type ProductJsonLdInput = {
   categoryName: string;
   regularPrice: number | null;
   discountPrice: number | null;
+  maxPrice?: number | null;
   isMadeToOrder: boolean;
   imagePaths: string[];
 };
 
-/** Product with an Offer in BDT; no offer when the price is on request (08 §2). */
+/**
+ * Product with an Offer in BDT, or an AggregateOffer (low/high) for a price range (ADR-076);
+ * no offer when the price is on request (08 §2).
+ */
 export function productJsonLd(
   p: ProductJsonLdInput,
   siteUrl: string = SITE_URL,
   mediaUrl?: string,
 ): JsonLdObject {
-  const price = getPriceInfo(p.regularPrice, p.discountPrice);
+  const price = getPriceInfo(p.regularPrice, p.discountPrice, p.maxPrice ?? null);
+  const availability = p.isMadeToOrder
+    ? "https://schema.org/PreOrder"
+    : "https://schema.org/InStock";
   const url = absoluteUrl(p.path, siteUrl);
   return {
     "@context": "https://schema.org",
@@ -190,16 +197,26 @@ export function productJsonLd(
       : {}),
     ...(price.kind === "onRequest"
       ? {}
-      : {
-          offers: {
-            "@type": "Offer",
-            priceCurrency: "BDT",
-            price: price.price,
-            availability: p.isMadeToOrder
-              ? "https://schema.org/PreOrder"
-              : "https://schema.org/InStock",
-            url,
-          },
-        }),
+      : price.kind === "range"
+        ? {
+            offers: {
+              "@type": "AggregateOffer",
+              priceCurrency: "BDT",
+              lowPrice: price.min,
+              highPrice: price.max,
+              offerCount: 1,
+              availability,
+              url,
+            },
+          }
+        : {
+            offers: {
+              "@type": "Offer",
+              priceCurrency: "BDT",
+              price: price.price,
+              availability,
+              url,
+            },
+          }),
   };
 }

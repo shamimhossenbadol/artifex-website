@@ -15,7 +15,7 @@ export type SearchSuggestions = {
   query: string;
   products: Pick<
     ProductCardVM,
-    "title" | "href" | "regularPrice" | "discountPrice" | "image" | "categoryName"
+    "title" | "href" | "regularPrice" | "discountPrice" | "maxPrice" | "image" | "categoryName"
   >[];
   categories: { name: string; href: string }[];
 };
@@ -50,6 +50,7 @@ export async function getSearchSuggestions(rawQuery: string): Promise<SearchSugg
       href: p.href,
       regularPrice: p.regularPrice,
       discountPrice: p.discountPrice,
+      maxPrice: p.maxPrice,
       image: p.image,
       categoryName: p.categoryName,
     })),

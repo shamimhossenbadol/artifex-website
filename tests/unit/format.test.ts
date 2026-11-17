@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatBDT, getPriceInfo } from "@/lib/format";
+import { formatBDT, getPriceInfo, lowestPrice, priceText } from "@/lib/format";
 
 describe("formatBDT", () => {
   it("uses lakh grouping with the Taka sign", () => {
@@ -28,8 +28,33 @@ describe("getPriceInfo", () => {
     });
   });
 
+  it("returns a range when the max price is above the regular price (ADR-076)", () => {
+    expect(getPriceInfo(40000, null, 60000)).toEqual({ kind: "range", min: 40000, max: 60000 });
+    // A range never shows a discount.
+    expect(getPriceInfo(40000, 30000, 60000)).toEqual({ kind: "range", min: 40000, max: 60000 });
+  });
+
+  it("ignores a max price that is not above the regular price", () => {
+    expect(getPriceInfo(40000, null, 40000)).toEqual({ kind: "regular", price: 40000 });
+    expect(getPriceInfo(null, null, 60000)).toEqual({ kind: "onRequest" });
+  });
+
   it("ignores a discount that is not lower than the regular price", () => {
     expect(getPriceInfo(1000, 1000)).toEqual({ kind: "regular", price: 1000 });
     expect(getPriceInfo(1000, 1200)).toEqual({ kind: "regular", price: 1000 });
+  });
+});
+
+describe("priceText and lowestPrice", () => {
+  it("formats each kind on one line", () => {
+    expect(priceText(getPriceInfo(40000, null, 60000))).toBe("৳ 40,000 – ৳ 60,000");
+    expect(priceText(getPriceInfo(45500, 38675))).toBe("৳ 38,675");
+    expect(priceText(getPriceInfo(null, null))).toBeNull();
+  });
+
+  it("returns the lowest shown price", () => {
+    expect(lowestPrice(getPriceInfo(40000, null, 60000))).toBe(40000);
+    expect(lowestPrice(getPriceInfo(45500, 38675))).toBe(38675);
+    expect(lowestPrice(getPriceInfo(null, null))).toBeNull();
   });
 });

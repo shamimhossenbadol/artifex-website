@@ -17,7 +17,7 @@ type ProductCardProps = {
 
 /** Square image, title, category and price; the whole card is one link (03 §5). */
 export function ProductCard({ product, preload = false }: ProductCardProps) {
-  const price = getPriceInfo(product.regularPrice, product.discountPrice);
+  const price = getPriceInfo(product.regularPrice, product.discountPrice, product.maxPrice);
 
   return (
     <article className="group">
@@ -48,6 +48,7 @@ export function ProductCard({ product, preload = false }: ProductCardProps) {
           <Price
             regularPrice={product.regularPrice}
             discountPrice={product.discountPrice}
+            maxPrice={product.maxPrice}
             className="mt-1"
           />
         </div>

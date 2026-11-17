@@ -598,3 +598,9 @@ Format: each ADR has a number, date, status (Accepted / Superseded by ADR-x / Pr
 **Context:** The owner wants sofas to start with a standard set of specifications, as dining tables do (ADR-059).
 **Decision:** `defaultSpecsFor("sofas")` returns Product Type, Frame Material, Upholstery, Foam, Legs, Seating Configuration, Seater Dimensions, 1 Seater Dimensions, Sofa Width, Pillow Filling, Pillow Quantity. Same rules as dining tables: a new Sofas product (or switching to Sofas while the rows are still empty) gets these rows; any can be removed; every row that stays needs a value; existing products are never auto-filled.
 **Consequences:** Copy/config only. 07 is updated.
+
+### ADR-076 — Price range option for products
+**Date:** 2026-11-17 · **Status:** Accepted
+**Context:** The owner wants to show a price range for some products instead of the exact price, without falling back to "no price" (the custom-quote card).
+**Decision:** New nullable column `Product.maxPrice`. The admin Pricing section has a price type: **Fixed price** (price + optional discount, as before), **Price range** ("From" stored in `regularPrice`, "To" in `maxPrice`, which must be higher) or **No price** (custom-quote card, ADR-063). Validation keeps only the fields of the chosen type, so a range never has a discount and a fixed price never has a `maxPrice`. `getPriceInfo` returns `{ kind: "range", min, max }` when `maxPrice > regularPrice`; it shows as `৳ 40,000 – ৳ 60,000` on cards, search, the admin list, the product page, the phone sticky bar and the WhatsApp `{price}` placeholder. `effectivePrice` (sorting) is the lowest price; the Pixel ViewContent value is the lowest price; JSON-LD uses an `AggregateOffer` (lowPrice/highPrice).
+**Consequences:** One additive migration (`20261117000000_product_price_range`); existing products are unchanged (fixed or no price). No new dependency. 04, 06, 07 and 08 are updated.

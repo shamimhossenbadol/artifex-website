@@ -35,6 +35,7 @@ export type ProductCardVM = {
   categoryName: string;
   regularPrice: number | null;
   discountPrice: number | null;
+  maxPrice: number | null;
   isNewArrival: boolean;
   isMadeToOrder: boolean;
   image: ProductImageVM | null;
@@ -82,6 +83,7 @@ export function toCardVM(row: ProductCardRow): ProductCardVM {
     categoryName: row.category.name,
     regularPrice: row.regularPrice,
     discountPrice: row.discountPrice,
+    maxPrice: row.maxPrice,
     isNewArrival: row.isNewArrival,
     isMadeToOrder: row.isMadeToOrder,
     image: image ? { ...image } : null,

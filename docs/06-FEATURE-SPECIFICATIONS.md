@@ -25,6 +25,7 @@ Each feature lists its **behaviour**, **data source**, and **acceptance criteria
 |---|---|
 | `regularPrice` only | `৳ 45,500` |
 | `regularPrice` + `discountPrice` | **`৳ 38,675`** (sale colour), then `৳ 45,500` struck through, then badge `-15%` |
+| `regularPrice` + `maxPrice` (price range, ADR-076) | `৳ 40,000 – ৳ 60,000` everywhere (cards, search, product page, phone sticky bar, WhatsApp `{price}`). No discount on a range. Price sort uses the lowest price. |
 | `regularPrice = null` | Product page: the compact **custom-quote card** ("Priced to your design", one line, three short points) with "Ask for price on WhatsApp/Messenger" buttons (ADR-063, ADR-069). Cards and search: "Price on request". |
 Format: `Intl.NumberFormat('en-IN')` grouping with the `৳` prefix (BD uses lakh grouping, e.g. `৳ 1,25,000`).
 

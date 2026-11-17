@@ -113,6 +113,7 @@ export default function StyleguidePage() {
         <div className="mt-6 flex flex-col gap-4">
           <Price regularPrice={45500} />
           <Price regularPrice={45500} discountPrice={38675} showBadge />
+          <Price regularPrice={40000} maxPrice={60000} />
           <Price regularPrice={null} />
         </div>
       </Section>

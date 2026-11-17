@@ -1,6 +1,6 @@
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
-import { MAX_SPECS } from "@/lib/validation/product";
+import { MAX_SPECS, initialPriceType } from "@/lib/validation/product";
 import type { AdminProductRow, CategoryOption } from "@/server/services/product-admin.service";
 import { AdminField, FormSection } from "../AdminForm";
 import { MarkdownEditor } from "../MarkdownEditor";
@@ -98,6 +98,8 @@ export function ProductFields({
         <PricingFields
           regularPrice={product?.regularPrice ?? null}
           discountPrice={product?.discountPrice ?? null}
+          maxPrice={product?.maxPrice ?? null}
+          defaultType={product ? initialPriceType(product) : "fixed"}
         />
       </FormSection>
 

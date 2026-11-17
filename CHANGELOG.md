@@ -6,6 +6,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 ## [Unreleased]
 
 ### Added
+- 2026-11-17 — Products can show a **price range** (e.g. `৳ 40,000 – ৳ 60,000`) instead of a fixed price. Admin → Product → Pricing now offers Fixed price, Price range or No price. New nullable `Product.maxPrice` column (migration `20261117000000_product_price_range`) (ADR-076).
 - 2026-11-17 — Product pages: the "Ask on Messenger" link now carries the product (`m.me/<page>?ref=product-<slug>`), so the Page inbox shows which product a chat started from (ADR-074).
 
 ### Added

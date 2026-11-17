@@ -16,7 +16,7 @@ import { JsonLd } from "@/components/ui/JsonLd";
 import { Markdown } from "@/components/ui/Markdown";
 import { Price } from "@/components/ui/Price";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { formatBDT, getPriceInfo } from "@/lib/format";
+import { getPriceInfo, lowestPrice, priceText, type PriceInfo } from "@/lib/format";
 import { productMessengerRef, toMessengerUrl } from "@/lib/messenger";
 import { absoluteImageUrl, absoluteUrl, breadcrumbJsonLd, productJsonLd } from "@/lib/seo";
 import { slugSchema } from "@/lib/validation/catalog";
@@ -62,10 +62,9 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   };
 }
 
-function priceLabel(regular: number | null, discount: number | null): string {
-  const info = getPriceInfo(regular, discount);
+function priceLabel(info: PriceInfo): string {
   // No fixed price: the mobile bar and the {price} placeholder say "Custom quote" (ADR-063).
-  return info.kind === "onRequest" ? "Custom quote" : formatBDT(info.price);
+  return priceText(info) ?? "Custom quote";
 }
 
 async function ProductDetail({ params, searchParams }: Props) {
@@ -78,17 +77,13 @@ async function ProductDetail({ params, searchParams }: Props) {
   // The JSON-LD SKU comes from an optional "SKU" specification row (ADR-059).
   const specByLabel = (label: string) =>
     product.specs.find((s) => s.label.trim().toLowerCase() === label);
-  const price = getPriceInfo(product.regularPrice, product.discountPrice);
+  const price = getPriceInfo(product.regularPrice, product.discountPrice, product.maxPrice);
 
   return (
     <>
       {preview && <PreviewBanner editHref={`/admin/products/${product.id}`} />}
       {!preview && (
-        <TrackProductView
-          slug={product.slug}
-          name={product.title}
-          price={price.kind === "onRequest" ? null : price.price}
-        />
+        <TrackProductView slug={product.slug} name={product.title} price={lowestPrice(price)} />
       )}
       <JsonLd
         data={[
@@ -100,6 +95,7 @@ async function ProductDetail({ params, searchParams }: Props) {
             categoryName: product.category.name,
             regularPrice: product.regularPrice,
             discountPrice: product.discountPrice,
+            maxPrice: product.maxPrice,
             isMadeToOrder: product.isMadeToOrder,
             imagePaths: product.images.map((i) => i.path),
           }),
@@ -136,6 +132,7 @@ async function ProductDetail({ params, searchParams }: Props) {
               <Price
                 regularPrice={product.regularPrice}
                 discountPrice={product.discountPrice}
+                maxPrice={product.maxPrice}
                 showBadge
                 className="mt-4"
               />
@@ -153,7 +150,7 @@ async function ProductDetail({ params, searchParams }: Props) {
               business={settings.businessName}
               productTitle={product.title}
               productUrl={absoluteUrl(product.href)}
-              priceLabel={priceLabel(product.regularPrice, product.discountPrice)}
+              priceLabel={priceLabel(price)}
               phone={phone}
               telHref={telHref}
               messengerHref={toMessengerUrl(

@@ -5,6 +5,8 @@ import { Badge } from "./Badge";
 type PriceProps = {
   regularPrice: number | null;
   discountPrice?: number | null;
+  /** Set for a price range (ADR-076): shows "regularPrice – maxPrice". */
+  maxPrice?: number | null;
   /** Show the "-15%" badge next to a discounted price (cards show it on the image instead). */
   showBadge?: boolean;
   className?: string;
@@ -17,13 +19,25 @@ type PriceProps = {
 export function Price({
   regularPrice,
   discountPrice = null,
+  maxPrice = null,
   showBadge = false,
   className,
 }: PriceProps) {
-  const info = getPriceInfo(regularPrice, discountPrice);
+  const info = getPriceInfo(regularPrice, discountPrice, maxPrice);
 
   if (info.kind === "onRequest") {
     return <p className={cn("text-price text-ink", className)}>Price on request</p>;
+  }
+  if (info.kind === "range") {
+    return (
+      <p className={cn("text-price text-ink", className)}>
+        <span className="sr-only">Price range </span>
+        <span className="whitespace-nowrap">{formatBDT(info.min)}</span>
+        <span aria-hidden> – </span>
+        <span className="sr-only"> to </span>
+        <span className="whitespace-nowrap">{formatBDT(info.max)}</span>
+      </p>
+    );
   }
   if (info.kind === "regular") {
     return <p className={cn("text-price text-ink", className)}>{formatBDT(info.price)}</p>;

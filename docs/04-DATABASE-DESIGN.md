@@ -70,6 +70,7 @@ model Product {
   description       String         @db.Text            // Markdown
   regularPrice      Int?                                // null => "Price on request"
   discountPrice     Int?                                // must be < regularPrice (validated)
+  maxPrice          Int?                                // set => price range regularPrice–maxPrice, no discount (ADR-076)
   effectivePrice    Int?                                // denormalised: discountPrice ?? regularPrice (price sort, ADR-025)
   isMadeToOrder     Boolean        @default(false)
   isPopular         Boolean        @default(false)     // ranks search results and related products
@@ -243,6 +244,7 @@ model SiteEvent {                     // first-party, cookieless visit/click cou
 
 ## 4. Business rules enforced in services
 
+- Price type (ADR-076): **fixed** (`regularPrice`, optional `discountPrice`), **range** (`regularPrice` = lowest, `maxPrice` = highest, strictly greater; `discountPrice` null) or **no price** (all null). The service stores only the fields of the chosen type, so `maxPrice` is null unless it is a range.
 - `discountPrice` is only allowed when `regularPrice` is set, and it must be strictly less than it. The discount percentage shown is `round((1 - discount/regular) * 100)`.
 - Exactly one `isPrimary` image per product. If it's deleted, the next image by `sortOrder` becomes primary. A product can't be published without at least one image.
 - `searchText` is recomputed on every product create/update and on category rename (batch update).

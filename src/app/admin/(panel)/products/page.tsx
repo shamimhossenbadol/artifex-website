@@ -181,6 +181,7 @@ export default async function ProductsAdminPage({ searchParams }: PageProps<"/ad
                   <Price
                     regularPrice={p.regularPrice}
                     discountPrice={p.discountPrice}
+                    maxPrice={p.maxPrice}
                     className="text-small md:w-44 md:justify-end md:text-right"
                   />
                   <ProductStatusToggle id={p.id} title={p.title} status={p.status} />

@@ -55,6 +55,16 @@ describe("productJsonLd", () => {
     );
   });
 
+  it("uses an AggregateOffer for a price range (ADR-076)", () => {
+    const ld = productJsonLd({ ...product, regularPrice: 40000, maxPrice: 60000 }, SITE, MEDIA);
+    expect(ld.offers).toMatchObject({
+      "@type": "AggregateOffer",
+      priceCurrency: "BDT",
+      lowPrice: 40000,
+      highPrice: 60000,
+    });
+  });
+
   it("omits the offer when the price is on request", () => {
     const ld = productJsonLd({ ...product, regularPrice: null, discountPrice: null }, SITE, MEDIA);
     expect(ld.offers).toBeUndefined();

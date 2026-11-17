@@ -64,6 +64,7 @@ const editRow = (over: Record<string, unknown> = {}) => ({
   description: "",
   regularPrice: 45500,
   discountPrice: null,
+  maxPrice: null,
   isMadeToOrder: false,
   isPopular: true,
   isNewArrival: false,
@@ -91,6 +92,35 @@ describe("productSchema", () => {
 
   it("allows Price on request", () => {
     expect(input({ regularPrice: "" }).regularPrice).toBeNull();
+    const quote = input({ priceType: "quote", discountPrice: "100" });
+    expect(quote.regularPrice).toBeNull();
+    expect(quote.discountPrice).toBeNull();
+    expect(quote.maxPrice).toBeNull();
+  });
+
+  it("parses a price range and drops the discount (ADR-076)", () => {
+    const data = input({
+      priceType: "range",
+      regularPrice: "40,000",
+      maxPrice: "60000",
+      discountPrice: "1",
+    });
+    expect(data.regularPrice).toBe(40000);
+    expect(data.maxPrice).toBe(60000);
+    expect(data.discountPrice).toBeNull();
+    // A fixed price never keeps a max price.
+    expect(input({ maxPrice: "60000" }).maxPrice).toBeNull();
+  });
+
+  it("requires both ends of a range, high above low", () => {
+    expect(errorPaths({ priceType: "range", regularPrice: "", maxPrice: "60000" })).toContain(
+      "regularPrice",
+    );
+    expect(errorPaths({ priceType: "range", maxPrice: "" })).toContain("maxPrice");
+    expect(errorPaths({ priceType: "range", regularPrice: "60000", maxPrice: "40000" })).toContain(
+      "maxPrice",
+    );
+    expect(errorPaths({ priceType: "other" })).toContain("priceType");
   });
 
   it("rejects bad prices", () => {

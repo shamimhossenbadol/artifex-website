@@ -586,3 +586,9 @@ Format: each ADR has a number, date, status (Accepted / Superseded by ADR-x / Pr
 **Context:** The challan (ADR-046) and the invoice (ADR-067) cleared the form when the print dialog closed ("print and vanish"). The owner wants the form kept after printing, to reprint or adjust; both pages already have a Clear button for starting over.
 **Decision:** The `afterprint` reset is removed from both makers. Printing leaves the form as it is; only "Clear" empties it. Nothing is stored either way (no server, no browser storage), so leaving or reloading the page still starts fresh. This supersedes the "clears after printing" part of ADR-046 and ADR-067.
 **Consequences:** No new dependency. The e2e tests check that the form is kept after printing and emptied by Clear. 07 is updated.
+
+### ADR-074 — Product ref on product-page Messenger links
+**Date:** 2026-11-17 · **Status:** Accepted
+**Context:** Meta ads will drive WhatsApp and Messenger inquiries. Product-page WhatsApp links already pre-fill the product name and URL, but the Messenger link (`m.me/<page>`) didn't say which product the visitor was looking at, so staff couldn't tell where a Messenger chat started.
+**Decision:** `toMessengerUrl` takes an optional `ref`, added as `?ref=<ref>` to m.me links only (never to fallback Facebook URLs), and only when it matches `^[a-z0-9-]{1,64}$`. Product pages pass `product-<slug>` (cut to 64 characters). Other pages keep the plain m.me link. The Contact Pixel event and first-party click counting are unchanged (they classify by host).
+**Consequences:** No new dependency, no schema change. Messenger passes the ref to the Page inbox for new conversations. Unit tests cover the ref rules.

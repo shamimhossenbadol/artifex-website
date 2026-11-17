@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { toMessengerUrl } from "@/lib/messenger";
+import { productMessengerRef, toMessengerUrl } from "@/lib/messenger";
 
 describe("toMessengerUrl", () => {
   it("maps a page username to m.me", () => {
@@ -35,5 +35,31 @@ describe("toMessengerUrl", () => {
     expect(toMessengerUrl("not a url")).toBeNull();
     expect(toMessengerUrl("http://www.facebook.com/artifex")).toBeNull();
     expect(toMessengerUrl("javascript:alert(1)")).toBeNull();
+  });
+
+  it("adds a valid ref to m.me links only (ADR-074)", () => {
+    expect(toMessengerUrl("https://www.facebook.com/artifexfurniturebd", "product-oria")).toBe(
+      "https://m.me/artifexfurniturebd?ref=product-oria",
+    );
+    expect(toMessengerUrl("https://www.facebook.com/profile.php?id=61550000000000", "p-x")).toBe(
+      "https://m.me/61550000000000?ref=p-x",
+    );
+    const groups = "https://www.facebook.com/groups/12345";
+    expect(toMessengerUrl(groups, "product-x")).toBe(groups);
+  });
+
+  it("ignores an invalid or empty ref", () => {
+    const page = "https://www.facebook.com/artifexfurniturebd";
+    expect(toMessengerUrl(page, "Bad Ref&x=1")).toBe("https://m.me/artifexfurniturebd");
+    expect(toMessengerUrl(page, "")).toBe("https://m.me/artifexfurniturebd");
+  });
+});
+
+describe("productMessengerRef", () => {
+  it("prefixes the slug and keeps it within 64 characters", () => {
+    expect(productMessengerRef("oria-corner-sofa")).toBe("product-oria-corner-sofa");
+    const ref = productMessengerRef("a".repeat(56) + "-bcdef");
+    expect(ref.length).toBeLessThanOrEqual(64);
+    expect(ref.endsWith("-")).toBe(false);
   });
 });

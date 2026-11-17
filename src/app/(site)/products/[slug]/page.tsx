@@ -17,7 +17,7 @@ import { Markdown } from "@/components/ui/Markdown";
 import { Price } from "@/components/ui/Price";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { formatBDT, getPriceInfo } from "@/lib/format";
-import { toMessengerUrl } from "@/lib/messenger";
+import { productMessengerRef, toMessengerUrl } from "@/lib/messenger";
 import { absoluteImageUrl, absoluteUrl, breadcrumbJsonLd, productJsonLd } from "@/lib/seo";
 import { slugSchema } from "@/lib/validation/catalog";
 import {
@@ -156,7 +156,10 @@ async function ProductDetail({ params, searchParams }: Props) {
               priceLabel={priceLabel(product.regularPrice, product.discountPrice)}
               phone={phone}
               telHref={telHref}
-              messengerHref={toMessengerUrl(settings.facebookUrl)}
+              messengerHref={toMessengerUrl(
+                settings.facebookUrl,
+                productMessengerRef(product.slug),
+              )}
               quote={price.kind === "onRequest"}
             />
           </div>

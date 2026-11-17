@@ -6,6 +6,9 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 ## [Unreleased]
 
 ### Added
+- 2026-11-17 — Product pages: the "Ask on Messenger" link now carries the product (`m.me/<page>?ref=product-<slug>`), so the Page inbox shows which product a chat started from (ADR-074).
+
+### Added
 - 2026-11-16 — Homepage: a product rail for each category that has products (Sofas, Dining Tables, Beds, Curtains…), after New arrivals, each with "View all" (ADR-072).
 - 2026-11-16 — Admin → Invoice: print customer invoices on the same letterhead as the delivery challan. Items with quantity, unit and unit price (line totals calculated), optional discount and advance, amount due, optional invoice number; one A4 page, nothing stored (ADR-067).
 

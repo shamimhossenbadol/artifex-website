@@ -1,7 +1,8 @@
 // The printable invoice (ADR-067): the same letterhead, watermark and red website band as the
 // delivery challan (print/Letterhead.tsx), then the customer, an itemised table (qty × unit
-// price), the totals (subtotal, optional discount and advance, due) and signatures. Exactly one
-// A4 page for both the on-screen preview and the print copy; it renders the form and keeps nothing.
+// price), the totals (subtotal, optional discount and advance, due) and the authorised signature.
+// Exactly one A4 page for both the on-screen preview and the print copy; it renders the form and
+// keeps nothing. The form decides where the signature goes (ADR-080).
 import {
   filledInvoiceItems,
   formatAmount,
@@ -10,6 +11,7 @@ import {
   lineTotal,
   parseAmount,
   type InvoiceDraft,
+  type SignaturePlacement,
 } from "@/lib/invoice";
 import { cn } from "@/lib/utils";
 import {
@@ -83,13 +85,23 @@ export function InvoiceSheet({
   business,
   id,
   className,
+  signature = "bottom",
 }: {
   draft: InvoiceDraft;
   business: LetterheadBusiness;
   id?: string;
   className?: string;
+  /** "bottom" of the page, or "beside" the totals when the items fill the page (ADR-080). */
+  signature?: SignaturePlacement;
 }) {
   const items = filledInvoiceItems(draft.items);
+  const beside = signature === "beside" && items.length > 0;
+  const signatureBlock = (
+    <div data-invoice-signature className="border-ink w-[70mm] shrink-0 border-t pt-1.5">
+      <p className="text-small text-ink font-medium">Authorised signature</p>
+      <p className="text-small text-muted">{business.name}</p>
+    </div>
+  );
   const totals = invoiceTotals(draft);
   const date = formatInvoiceDate(draft.date);
 
@@ -197,27 +209,26 @@ export function InvoiceSheet({
         </tbody>
       </table>
 
-      {/* Totals, right-aligned under the amount columns. */}
+      {/* Totals, right-aligned under the amount columns. When the items fill the page, the
+          signature sits on their left, its line level with the bottom of the totals (ADR-080). */}
       {items.length > 0 && (
-        <dl className="mt-2 ml-auto w-[76mm]">
-          <TotalRow label="Subtotal" value={totals.subtotal} />
-          {totals.discount > 0 && <TotalRow label="Discount" value={totals.discount} minus />}
-          {totals.advance > 0 && <TotalRow label="Advance paid" value={totals.advance} minus />}
-          <div className="border-ink mt-1 border-t" />
-          <TotalRow label="Amount due" value={totals.due} strong />
-        </dl>
+        <div className={cn("mt-2 flex items-end justify-between gap-8", beside && "pb-3")}>
+          {beside && signatureBlock}
+          <dl data-invoice-totals className="ml-auto w-[76mm]">
+            <TotalRow label="Subtotal" value={totals.subtotal} />
+            {totals.discount > 0 && <TotalRow label="Discount" value={totals.discount} minus />}
+            {totals.advance > 0 && <TotalRow label="Advance paid" value={totals.advance} minus />}
+            <div className="border-ink mt-1 border-t" />
+            <TotalRow label="Amount due" value={totals.due} strong />
+          </dl>
+        </div>
       )}
 
-      {/* Authorised signature only, on the left, pushed to the bottom (room above the line to
-          sign) with little space below it (ADR-078). */}
-      <section className="mt-auto pt-10">
-        <div className="border-ink w-[70mm] border-t pt-1.5">
-          <p className="text-small text-ink font-medium">Authorised signature</p>
-          <p className="text-small text-muted">{business.name}</p>
-        </div>
-      </section>
+      {/* Otherwise the authorised signature is on the left at the foot of the page, with room
+          above the line to sign and little space below it (ADR-078). */}
+      {!beside && <section className="mt-auto pt-10">{signatureBlock}</section>}
 
-      <SheetFooterBand website={business.website} className="mt-3" />
+      <SheetFooterBand website={business.website} className={beside ? "mt-auto" : "mt-3"} />
     </article>
   );
 }

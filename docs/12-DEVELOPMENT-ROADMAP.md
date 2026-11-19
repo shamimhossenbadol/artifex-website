@@ -112,6 +112,7 @@ Each phase ends with a short manual review of the phase's acceptance checks.
 - [x] Price range option for products (ADR-076)
 - [x] Invoice: 15 items fit one A4 page; Print measures the sheet (ADR-077)
 - [x] Compact invoice heading, customer block and signature (ADR-078)
+- [x] Invoice signature moves with the number of items (ADR-080)
 
 ## Phase 8 — SEO, security & performance hardening
 - [x] `sitemap.ts`, `robots.ts`, canonical audit (ADR-037) — [ ] OG image check in the Facebook Sharing Debugger (owner, after the domain is final)

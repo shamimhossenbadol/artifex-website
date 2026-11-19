@@ -570,10 +570,31 @@ test("invoice: 15 items print on one page, an overfull sheet is stopped at Print
   }
   await expect(page.getByRole("button", { name: "Add item" })).toBeDisabled();
 
-  // The 11th row used to trigger the warning; 15 ordinary rows now fit.
+  // The 11th row used to trigger the warning; 15 ordinary rows now fit, with the signature at
+  // the bottom of the page.
+  const preview = page.getByRole("region", { name: "Preview" });
+  const signatureBesideTotals = preview.locator(
+    "div:has(> [data-invoice-totals]) > [data-invoice-signature]",
+  );
   await expect(overflow).toHaveCount(0);
+  await expect(preview.locator("[data-invoice-signature]")).toHaveCount(1);
+  await expect(signatureBesideTotals).toHaveCount(0);
   await page.getByRole("button", { name: "Print invoice" }).click();
   expect(await printed()).toBe(1);
+
+  // A few wrapping descriptions fill the page: the signature moves beside the totals (ADR-080)
+  // and the invoice still prints.
+  for (let i = 0; i < 4; i++) {
+    await page
+      .getByLabel(`Item ${i + 1}`, { exact: true })
+      .fill(
+        `Solid wood dining chair ${i + 1}, hand-carved back, walnut finish, premium fabric seat`,
+      );
+  }
+  await expect(signatureBesideTotals).toHaveCount(1);
+  await expect(overflow).toHaveCount(0);
+  await page.getByRole("button", { name: "Print invoice" }).click();
+  expect(await printed()).toBe(2);
 
   // Descriptions long enough to wrap onto several lines overflow the page: Print warns instead.
   for (let i = 0; i < 15; i++) {
@@ -585,5 +606,5 @@ test("invoice: 15 items print on one page, an overfull sheet is stopped at Print
   }
   await page.getByRole("button", { name: "Print invoice" }).click();
   await expect(overflow).toBeVisible();
-  expect(await printed()).toBe(1);
+  expect(await printed()).toBe(2);
 });

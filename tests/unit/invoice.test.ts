@@ -4,6 +4,7 @@ import {
   MAX_INVOICE_ITEMS,
   formatAmount,
   invoicePrintProblems,
+  nextSignaturePlacement,
   invoiceProblems,
   invoiceTotals,
   lineTotal,
@@ -142,5 +143,21 @@ describe("invoicePrintProblems (ADR-077)", () => {
       "Add the customer's name.",
       INVOICE_OVERFLOW_PROBLEM,
     ]);
+  });
+});
+
+describe("nextSignaturePlacement (ADR-080)", () => {
+  const fits = { overflows: false, freeSpace: 300, bottomRoom: 100 };
+  it("keeps the signature at the bottom while the page has room", () => {
+    expect(nextSignaturePlacement("bottom", fits)).toBe("bottom");
+  });
+  it("moves it beside the totals when the page overflows", () => {
+    expect(nextSignaturePlacement("bottom", { ...fits, overflows: true })).toBe("beside");
+    expect(nextSignaturePlacement("beside", { ...fits, overflows: true })).toBe("beside");
+  });
+  it("moves back to the bottom only when the bottom block fits with a buffer", () => {
+    expect(nextSignaturePlacement("beside", fits)).toBe("bottom");
+    expect(nextSignaturePlacement("beside", { ...fits, freeSpace: 104 })).toBe("beside");
+    expect(nextSignaturePlacement("beside", { ...fits, freeSpace: 108 })).toBe("bottom");
   });
 });

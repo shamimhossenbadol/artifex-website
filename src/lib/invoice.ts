@@ -114,6 +114,29 @@ export function invoiceProblems(draft: InvoiceDraft): string[] {
   return problems;
 }
 
+/**
+ * Where the authorised signature prints (ADR-080): "bottom" of the page while there's room, or
+ * "beside" the totals (on their left) when the items fill the page.
+ */
+export type SignaturePlacement = "bottom" | "beside";
+
+/** Extra room required before moving back to the bottom, so the layout never flip-flops. */
+const SIGNATURE_MOVE_BUFFER = 8;
+
+/**
+ * Next placement from a measurement of the preview: at the bottom, an overflow moves the
+ * signature beside the totals; beside the totals, it moves back once the free space under the
+ * totals (`freeSpace`, px) holds the bottom signature block (`bottomRoom`, px) with a buffer.
+ */
+export function nextSignaturePlacement(
+  current: SignaturePlacement,
+  m: { overflows: boolean; freeSpace: number; bottomRoom: number },
+): SignaturePlacement {
+  if (current === "bottom") return m.overflows ? "beside" : "bottom";
+  if (m.overflows) return "beside";
+  return m.freeSpace >= m.bottomRoom + SIGNATURE_MOVE_BUFFER ? "bottom" : "beside";
+}
+
 /** Shown when the measured sheet runs past one A4 page (ADR-077). */
 export const INVOICE_OVERFLOW_PROBLEM =
   "Too much for one A4 page: remove an item or shorten long descriptions or the address.";

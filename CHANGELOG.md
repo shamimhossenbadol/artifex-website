@@ -6,6 +6,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 ## [Unreleased]
 
 ### Changed
+- 2026-11-19 — Admin → Invoice: the authorised signature now adapts to the items. It stays at the bottom of the page while there is room and moves up beside the totals when the items fill the page, so more or longer rows fit before the "Too much for one A4 page" warning (ADR-080).
 - 2026-11-19 — Admin → Dashboard: the visitor & inquiry numbers can now be shown for **Today** and **Yesterday** (Dhaka days), next to 7, 30 and 90 days. Today compares with the same time yesterday; Yesterday with the day before (ADR-079).
 - 2026-11-19 — Admin → Invoice: more compact sheet. Less space at the top, a bigger "Invoice" title without the red line and with the invoice no. and date on the same line, no "Bill to" heading, no line between the customer and the items, and only the authorised signature (on the left), closer to the red band. About 30 mm stays free with 15 items (ADR-078).
 

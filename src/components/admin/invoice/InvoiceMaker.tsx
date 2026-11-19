@@ -5,7 +5,7 @@
 // filled after printing until "Clear" (ADR-073).
 import { Plus, Printer, RotateCcw, Trash2 } from "lucide-react";
 import { useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
-import { createPortal } from "react-dom";
+import { createPortal, flushSync } from "react-dom";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
 import { Input } from "@/components/ui/Input";
@@ -19,8 +19,10 @@ import {
   invoicePrintProblems,
   invoiceTotals,
   lineTotal,
+  nextSignaturePlacement,
   type InvoiceDraft,
   type InvoiceItem,
+  type SignaturePlacement,
 } from "@/lib/invoice";
 import type { ChallanProductOption } from "@/server/services/challan.service";
 import { sheetOverflows, type LetterheadBusiness } from "../print/Letterhead";
@@ -55,8 +57,34 @@ function newDraft(at: Date): InvoiceDraft {
 
 const subscribeNothing = () => () => {};
 
-/** True when the on-screen preview sheet runs past one A4 page. */
-const previewOverflows = () => sheetOverflows(document.getElementById(INVOICE_PREVIEW_ID));
+/** Space the bottom signature needs besides its own block: 40 px to sign above the line, 12 px
+ * above the red band (InvoiceSheet). */
+const BOTTOM_SIGNATURE_EXTRA = 52;
+
+/**
+ * Measures the on-screen preview (in sheet px, whatever the preview zoom): whether it runs past
+ * one A4 page, the free space between the totals and the red band, and the room the signature
+ * needs at the bottom of the page (ADR-077, ADR-080).
+ */
+function measurePreview() {
+  const sheet = document.getElementById(INVOICE_PREVIEW_ID);
+  if (!sheet) return null;
+  const scale =
+    sheet.offsetHeight > 0 ? sheet.getBoundingClientRect().height / sheet.offsetHeight : 1;
+  const totals = sheet.querySelector("[data-invoice-totals]");
+  const footer = sheet.querySelector("footer");
+  const signature = sheet.querySelector("[data-invoice-signature]");
+  const freeSpace =
+    totals && footer
+      ? (footer.getBoundingClientRect().top - totals.getBoundingClientRect().bottom) / scale
+      : Number.POSITIVE_INFINITY;
+  const signatureHeight = signature ? signature.getBoundingClientRect().height / scale : 0;
+  return {
+    overflows: sheetOverflows(sheet),
+    freeSpace,
+    bottomRoom: BOTTOM_SIGNATURE_EXTRA + signatureHeight,
+  };
+}
 
 export function InvoiceMaker({
   business,
@@ -74,6 +102,10 @@ export function InvoiceMaker({
   const [showProblems, setShowProblems] = useState(false);
   // The invoice is exactly one A4 page: the preview is measured to make sure everything fits.
   const [overflows, setOverflows] = useState(false);
+  // The signature sits at the bottom of the page, or beside the totals when the items fill the
+  // page (ADR-080). The ref is the value the measurements compare against.
+  const [signature, setSignature] = useState<SignaturePlacement>("bottom");
+  const signatureRef = useRef<SignaturePlacement>("bottom");
   const previewRef = useRef<HTMLDivElement>(null);
   const alertRef = useRef<HTMLUListElement>(null);
   const isBrowser = useSyncExternalStore(
@@ -87,7 +119,18 @@ export function InvoiceMaker({
   useEffect(() => {
     const container = previewRef.current;
     if (!container) return;
-    const measure = () => setOverflows(previewOverflows());
+    const measure = () => {
+      const m = measurePreview();
+      if (!m) return;
+      const next = nextSignaturePlacement(signatureRef.current, m);
+      if (next !== signatureRef.current) {
+        // The re-render changes the preview, so the observer measures again with the new layout.
+        signatureRef.current = next;
+        setSignature(next);
+        return;
+      }
+      setOverflows(m.overflows);
+    };
     // Text edits re-measure; so do the web fonts arriving and window resizes, which change the
     // layout without touching the DOM (ADR-077).
     const observer = new MutationObserver(measure);
@@ -120,7 +163,16 @@ export function InvoiceMaker({
   function print() {
     // Measure the sheet now, not the last observed state, so Print never sends a sheet that
     // doesn't fit one A4 page (ADR-077).
-    const overflowsNow = previewOverflows();
+    let m = measurePreview();
+    if (m?.overflows && signatureRef.current === "bottom") {
+      // Try the signature beside the totals first (ADR-080), then measure that layout.
+      flushSync(() => {
+        signatureRef.current = "beside";
+        setSignature("beside");
+      });
+      m = measurePreview();
+    }
+    const overflowsNow = m?.overflows ?? false;
     setOverflows(overflowsNow);
     if (invoicePrintProblems(draft, overflowsNow).length > 0) {
       setShowProblems(true);
@@ -377,6 +429,7 @@ export function InvoiceMaker({
           <InvoiceSheet
             id={INVOICE_PREVIEW_ID}
             draft={draft}
+            signature={signature}
             business={business}
             className="mx-auto xl:[zoom:0.72] 2xl:[zoom:0.9]"
           />
@@ -387,7 +440,7 @@ export function InvoiceMaker({
       {isBrowser &&
         createPortal(
           <div id={INVOICE_PRINT_ROOT_ID}>
-            <InvoiceSheet draft={draft} business={business} />
+            <InvoiceSheet draft={draft} business={business} signature={signature} />
           </div>,
           document.body,
         )}

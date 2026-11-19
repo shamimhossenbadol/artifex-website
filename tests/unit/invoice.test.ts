@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
+  INVOICE_OVERFLOW_PROBLEM,
+  MAX_INVOICE_ITEMS,
   formatAmount,
+  invoicePrintProblems,
   invoiceProblems,
   invoiceTotals,
   lineTotal,
@@ -122,5 +125,22 @@ describe("invoiceProblems", () => {
     expect(invoiceProblems(draft({ discount: "50000" }))).toContain(
       "The discount is more than the subtotal.",
     );
+  });
+});
+
+describe("invoicePrintProblems (ADR-077)", () => {
+  it("blocks printing only when the measured sheet overflows one A4 page", () => {
+    const full = draft({
+      items: Array.from({ length: MAX_INVOICE_ITEMS }, (_, i) => item({ key: i + 1 })),
+    });
+    expect(invoicePrintProblems(full, false)).toEqual([]);
+    expect(invoicePrintProblems(full, true)).toEqual([INVOICE_OVERFLOW_PROBLEM]);
+  });
+
+  it("lists the form problems first, then the overflow", () => {
+    expect(invoicePrintProblems(draft({ customerName: "" }), true)).toEqual([
+      "Add the customer's name.",
+      INVOICE_OVERFLOW_PROBLEM,
+    ]);
   });
 });

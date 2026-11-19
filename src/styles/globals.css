@@ -509,6 +509,23 @@ dialog.drawer.admin-sidebar::backdrop {
   size: A4;
   margin: 0;
 }
+/*
+ * The sheets always use the md+ type scale, whatever the window width (ADR-077). The type
+ * utilities step down below 48rem, and the print viewport can be narrower than the page, so
+ * without this the measured preview and the printed page could break lines differently.
+ */
+.challan-sheet .text-small {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+.challan-sheet .text-body {
+  font-size: 1rem;
+  line-height: 1.625rem;
+}
+.challan-sheet .text-h3 {
+  font-size: 1.625rem;
+  line-height: 2rem;
+}
 @media print {
   body:has(> #challan-print-root) > :not(#challan-print-root),
   body:has(> #invoice-print-root) > :not(#invoice-print-root) {

@@ -113,3 +113,15 @@ export function invoiceProblems(draft: InvoiceDraft): string[] {
   if (!formatChallanDate(draft.date)) problems.push("Choose the date.");
   return problems;
 }
+
+/** Shown when the measured sheet runs past one A4 page (ADR-077). */
+export const INVOICE_OVERFLOW_PROBLEM =
+  "Too much for one A4 page: remove an item or shorten long descriptions or the address.";
+
+/**
+ * Everything that blocks printing: the form problems plus the one-page check. `overflows` is the
+ * sheet measured at that moment (the form measures it again when Print is clicked, ADR-077).
+ */
+export function invoicePrintProblems(draft: InvoiceDraft, overflows: boolean): string[] {
+  return [...invoiceProblems(draft), ...(overflows ? [INVOICE_OVERFLOW_PROBLEM] : [])];
+}

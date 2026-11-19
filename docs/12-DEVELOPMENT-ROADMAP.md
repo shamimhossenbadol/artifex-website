@@ -110,6 +110,7 @@ Each phase ends with a short manual review of the phase's acceptance checks.
 - [x] Challan and invoice keep the form after printing (ADR-073)
 - [x] Sofa default specifications (ADR-075)
 - [x] Price range option for products (ADR-076)
+- [x] Invoice: 15 items fit one A4 page; Print measures the sheet (ADR-077)
 
 ## Phase 8 — SEO, security & performance hardening
 - [x] `sitemap.ts`, `robots.ts`, canonical audit (ADR-037) — [ ] OG image check in the Facebook Sharing Debugger (owner, after the domain is final)

@@ -24,24 +24,29 @@ import {
 /** Id of the on-screen preview sheet, measured by the form to keep everything on one page. */
 export const INVOICE_PREVIEW_ID = "invoice-preview-sheet";
 
-const TH = "text-small px-2.5 py-2 font-semibold";
-const TD = "px-2.5 py-1.5";
+const TH = "text-small px-2.5 py-1.5 font-semibold";
+// Compact rows (ADR-077): 15 items, the totals and the signatures fit one A4 page.
+const TD = "px-2.5 py-1 leading-tight";
 
 /** "Name ........ Abu Kashem": label left, value right, a dotted leader between. */
 function LeaderRow({
   label,
   valueClassName,
+  className,
   children,
 }: {
   label: string;
   valueClassName?: string;
+  className?: string;
   children: string;
 }) {
   return (
-    <div className="flex items-baseline gap-3">
+    <div className={cn("flex min-w-0 items-baseline gap-3", className)}>
       <dt className="text-small text-muted shrink-0">{label}</dt>
       <span aria-hidden className="border-muted min-w-[10mm] flex-1 border-b border-dotted" />
-      <dd className={cn("text-ink max-w-[120mm] text-right", valueClassName)}>{children || "—"}</dd>
+      <dd className={cn("text-ink max-w-[120mm] min-w-0 text-right", valueClassName)}>
+        {children || "—"}
+      </dd>
     </div>
   );
 }
@@ -62,7 +67,7 @@ function TotalRow({
     <div
       className={cn(
         "flex items-baseline justify-between gap-6 px-2.5",
-        strong ? "bg-sand text-ink py-2 font-semibold" : "py-1",
+        strong ? "bg-sand text-ink py-1.5 font-semibold" : "py-0.5",
       )}
     >
       <dt className={strong ? "text-body" : "text-small text-ink-soft"}>{label}</dt>
@@ -94,7 +99,7 @@ export function InvoiceSheet({
       <SheetLetterhead business={business} />
 
       {/* Title with a brand-red accent; invoice number and date as labelled blocks. */}
-      <div className="mt-7 flex items-end justify-between gap-6">
+      <div className="mt-5 flex items-end justify-between gap-6">
         <div className="min-w-0">
           <h2 className="text-h3 leading-tight">Invoice</h2>
           <div aria-hidden className="bg-brand mt-3 h-[0.7mm] w-[14mm]" />
@@ -118,10 +123,15 @@ export function InvoiceSheet({
       </div>
 
       {/* Bill to */}
-      <section className="border-line mt-5 border-y py-3.5">
+      <section className="border-line mt-4 border-y py-3">
         <p className={SHEET_LABEL}>Bill to</p>
-        <dl className="mt-2.5 flex flex-col gap-1.5">
-          <LeaderRow label="Customer Name" valueClassName="font-semibold">
+        {/* Name and phone share a line to leave room for 15 items (ADR-077). */}
+        <dl className="mt-2 grid grid-cols-[3fr_2fr] gap-x-8 gap-y-1.5">
+          <LeaderRow
+            label="Customer Name"
+            valueClassName="font-semibold"
+            className={draft.customerPhone.trim() ? undefined : "col-span-2"}
+          >
             {draft.customerName}
           </LeaderRow>
           {draft.customerPhone.trim() && (
@@ -130,7 +140,7 @@ export function InvoiceSheet({
             </LeaderRow>
           )}
           {draft.customerAddress.trim() && (
-            <LeaderRow label="Address" valueClassName="whitespace-pre-line">
+            <LeaderRow label="Address" valueClassName="whitespace-pre-line" className="col-span-2">
               {draft.customerAddress}
             </LeaderRow>
           )}
@@ -138,7 +148,7 @@ export function InvoiceSheet({
       </section>
 
       {/* Items */}
-      <table className="mt-5 w-full border-collapse text-left">
+      <table className="mt-4 w-full border-collapse text-left">
         <thead>
           <tr className="bg-sand text-ink">
             <th scope="col" className={cn(TH, "w-[11mm]")}>
@@ -176,9 +186,7 @@ export function InvoiceSheet({
               return (
                 <tr key={item.key} className="border-line text-small border-b align-top">
                   <td className={cn(TD, "text-muted tabular-nums")}>{index + 1}</td>
-                  <td className={cn(TD, "text-ink leading-snug font-medium")}>
-                    {item.description}
-                  </td>
+                  <td className={cn(TD, "text-ink font-medium")}>{item.description}</td>
                   <td className={cn(TD, "text-ink text-right tabular-nums")}>
                     {qty !== null && Number.isFinite(qty) ? formatAmount(qty) : "—"}
                   </td>
@@ -198,7 +206,7 @@ export function InvoiceSheet({
 
       {/* Totals, right-aligned under the amount columns. */}
       {items.length > 0 && (
-        <dl className="mt-3 ml-auto w-[76mm]">
+        <dl className="mt-2 ml-auto w-[76mm]">
           <TotalRow label="Subtotal" value={totals.subtotal} />
           {totals.discount > 0 && <TotalRow label="Discount" value={totals.discount} minus />}
           {totals.advance > 0 && <TotalRow label="Advance paid" value={totals.advance} minus />}
@@ -208,7 +216,7 @@ export function InvoiceSheet({
       )}
 
       {/* Signatures, pushed to the bottom of the page (room above the lines to sign). */}
-      <section className="mt-auto pt-12">
+      <section className="mt-auto pt-10">
         <div className="grid grid-cols-2 gap-16">
           <div className="border-ink border-t pt-2">
             <p className="text-small text-ink font-medium">Customer&apos;s signature</p>
@@ -220,7 +228,7 @@ export function InvoiceSheet({
         </div>
       </section>
 
-      <SheetFooterBand website={business.website} />
+      <SheetFooterBand website={business.website} className="mt-6" />
     </article>
   );
 }

@@ -6,6 +6,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 ## [Unreleased]
 
 ### Fixed
+- 2026-11-19 — Admin → Invoice: the "Too much for one A4 page" warning appeared at 11 items. The sheet is tighter so 15 ordinary items (with discount and advance) fit one A4 page, and "Print invoice" now measures the sheet when clicked and shows the warning instead of printing an overfull page. The printable sheets also keep the same text sizes on narrow screens, so the preview matches the print (ADR-077).
 - 2026-11-17 — Admin product form: saving with **Price range** or **No price** failed with "Invalid input: expected string, received undefined". Price fields the form doesn’t show are now treated as blank (ADR-076).
 
 ### Added

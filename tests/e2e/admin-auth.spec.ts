@@ -524,3 +524,53 @@ test("invoice: items × prices, discount and advance, print only the sheet, keep
   await page.getByRole("button", { name: "Clear" }).click();
   await expect(page.getByLabel("Name", { exact: true })).toHaveValue("");
 });
+
+// --- ADR-077: 15 ordinary items fit one A4 page; Print measures the sheet and blocks an overflow. ---
+
+test("invoice: 15 items print on one page, an overfull sheet is stopped at Print", async ({
+  page,
+}) => {
+  await signIn(page, EMAIL!, NEW_PASSWORD);
+  await expect(page).toHaveURL(/\/admin$/);
+  await page.goto("/admin/invoice");
+  await page.waitForLoadState("networkidle");
+  await page.evaluate(() => {
+    (window as unknown as { printed: number }).printed = 0;
+    window.print = () => {
+      (window as unknown as { printed: number }).printed++;
+    };
+  });
+  const printed = () => page.evaluate(() => (window as unknown as { printed: number }).printed);
+  const overflow = page.getByText("Too much for one A4 page", { exact: false });
+
+  await page.getByLabel("Name", { exact: true }).fill("E2E Fifteen Items");
+  await page.getByLabel("Phone (optional)").fill("01711111111");
+  await page.getByLabel("Address (optional)").fill("House 12, Road 3, Sector 10, Uttara, Dhaka");
+  await page.getByLabel("Discount (৳, optional)").fill("500");
+  await page.getByLabel("Advance paid (৳, optional)").fill("10000");
+  for (let i = 0; i < 15; i++) {
+    if (i > 0) await page.getByRole("button", { name: "Add item" }).click();
+    await page
+      .getByLabel(`Item ${i + 1}`, { exact: true })
+      .fill(`Solid wood dining chair ${i + 1}`);
+    await page.getByLabel("Unit price (৳)").nth(i).fill("12500");
+  }
+  await expect(page.getByRole("button", { name: "Add item" })).toBeDisabled();
+
+  // The 11th row used to trigger the warning; 15 ordinary rows now fit.
+  await expect(overflow).toHaveCount(0);
+  await page.getByRole("button", { name: "Print invoice" }).click();
+  expect(await printed()).toBe(1);
+
+  // Descriptions long enough to wrap onto several lines overflow the page: Print warns instead.
+  for (let i = 0; i < 15; i++) {
+    await page
+      .getByLabel(`Item ${i + 1}`, { exact: true })
+      .fill(
+        `Solid wood dining chair ${i + 1}, hand-carved back, walnut finish, premium fabric seat`,
+      );
+  }
+  await page.getByRole("button", { name: "Print invoice" }).click();
+  await expect(overflow).toBeVisible();
+  expect(await printed()).toBe(1);
+});

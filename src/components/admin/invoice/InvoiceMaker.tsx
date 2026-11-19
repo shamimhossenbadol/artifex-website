@@ -16,7 +16,7 @@ import {
   filledInvoiceItems,
   formatAmount,
   invoiceDateInput,
-  invoiceProblems,
+  invoicePrintProblems,
   invoiceTotals,
   lineTotal,
   type InvoiceDraft,
@@ -55,6 +55,9 @@ function newDraft(at: Date): InvoiceDraft {
 
 const subscribeNothing = () => () => {};
 
+/** True when the on-screen preview sheet runs past one A4 page. */
+const previewOverflows = () => sheetOverflows(document.getElementById(INVOICE_PREVIEW_ID));
+
 export function InvoiceMaker({
   business,
   products,
@@ -72,6 +75,7 @@ export function InvoiceMaker({
   // The invoice is exactly one A4 page: the preview is measured to make sure everything fits.
   const [overflows, setOverflows] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
+  const alertRef = useRef<HTMLUListElement>(null);
   const isBrowser = useSyncExternalStore(
     subscribeNothing,
     () => true,
@@ -83,24 +87,28 @@ export function InvoiceMaker({
   useEffect(() => {
     const container = previewRef.current;
     if (!container) return;
-    const measure = () => setOverflows(sheetOverflows(document.getElementById(INVOICE_PREVIEW_ID)));
+    const measure = () => setOverflows(previewOverflows());
+    // Text edits re-measure; so do the web fonts arriving and window resizes, which change the
+    // layout without touching the DOM (ADR-077).
     const observer = new MutationObserver(measure);
     observer.observe(container, { childList: true, subtree: true, characterData: true });
     const frame = requestAnimationFrame(measure);
+    let active = true;
+    void document.fonts.ready.then(() => {
+      if (active) measure();
+    });
+    window.addEventListener("resize", measure);
     return () => {
+      active = false;
       observer.disconnect();
       cancelAnimationFrame(frame);
+      window.removeEventListener("resize", measure);
     };
   }, []);
 
   const totals = invoiceTotals(draft);
   const itemCount = filledInvoiceItems(draft.items).length;
-  const problems = [
-    ...invoiceProblems(draft),
-    ...(overflows
-      ? ["Too much for one A4 page: remove an item or shorten long descriptions or the address."]
-      : []),
-  ];
+  const problems = invoicePrintProblems(draft, overflows);
   const set = <K extends keyof InvoiceDraft>(key: K, value: InvoiceDraft[K]) =>
     setDraft((d) => ({ ...d, [key]: value }));
   const setItem = (key: number, patch: Partial<InvoiceItem>) =>
@@ -110,8 +118,13 @@ export function InvoiceMaker({
     }));
 
   function print() {
-    if (problems.length > 0) {
+    // Measure the sheet now, not the last observed state, so Print never sends a sheet that
+    // doesn't fit one A4 page (ADR-077).
+    const overflowsNow = previewOverflows();
+    setOverflows(overflowsNow);
+    if (invoicePrintProblems(draft, overflowsNow).length > 0) {
       setShowProblems(true);
+      requestAnimationFrame(() => alertRef.current?.scrollIntoView({ block: "nearest" }));
       return;
     }
     window.print();
@@ -325,6 +338,7 @@ export function InvoiceMaker({
 
         {(showProblems || overflows) && problems.length > 0 && (
           <ul
+            ref={alertRef}
             role="alert"
             className="border-danger/40 bg-danger/5 text-small text-danger flex flex-col gap-1 rounded-md border px-4 py-3"
           >

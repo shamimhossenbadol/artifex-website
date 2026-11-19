@@ -11,7 +11,7 @@
 |---|---|
 | **Current phase** | Phase 8: SEO, security & performance hardening (in progress; Phase 7 done, 7f skipped) |
 | **Overall state** | ✅ Phase 1 complete. Code is on GitHub (`shamimhossenbadol/artifex-website`, private); CI is green. ✅ **First deploy succeeded 2026-11-12**: https://artifex.codespherestudio.site serves the placeholder page with security headers (via Cloudflare). Migration applied; seed created 7 categories, settings, hero and the admin (`mustChangePassword = 1`); backup saved in `~/backups`. |
-| **Last updated** | 2026-11-17 |
+| **Last updated** | 2026-11-19 |
 | **Next action** | LIVE at https://artifexfurniturebd.com. Owner: add products, category photos and the Facebook Pixel ID; Search Console + Meta domain verification; delete the old test site (owner's call: no redirect). Agent: check the occasional "failed to get redirect response … 127.0.0.1:3000" server log line (Server Action redirects under Passenger); accessibility pass (Phase 8). |
 
 ## Phase overview
@@ -86,6 +86,7 @@ Answer these by editing this list. Agents: use the **default** until an answer i
 
 Add one line per session, newest first: `YYYY-MM-DD — summary — files touched`.
 
+- 2026-11-19 — Fix (ADR-077): invoice warned "Too much for one A4 page" at 11 items (reproduced: 1,139 px sheet vs 1,123 px page). Sheet tightened so 15 items fit (~15 mm spare); Print measures the sheet at click time and scrolls to the warning; re-measure on font load/resize; sheet type sizes pinned to md+ so preview = print. Checked in the browser on a temporary no-DB page (removed): 15 rows fit at 1440 px and 375 px, wrapped descriptions warn and block Print. Unit + e2e tests added (e2e runs in CI only); not committed/deployed — src/components/admin/invoice/*, src/lib/invoice.ts, src/styles/globals.css, tests/unit/invoice.test.ts, tests/e2e/admin-auth.spec.ts, docs
 - 2026-11-17 — Fix: saving a product with Price range or No price failed ("expected string, received undefined"); missing price fields now count as blank — src/lib/validation/product.ts, tests/unit/admin-products.test.ts
 - 2026-11-17 — ADR-076: price range option (Product.maxPrice + migration; admin price type Fixed / Range / No price; Price component, cards, search, product page, sticky bar, WhatsApp {price}, Pixel value = lowest, JSON-LD AggregateOffer); unit tests. Not browser-checked (no local DB); not committed/deployed — prisma/, src/lib/{format,seo}.ts, src/lib/validation/product.ts, src/components/{ui/Price,admin/products/*}.tsx, src/server/*, tests/unit/*, docs
 - 2026-11-17 — ADR-075: Sofas default specs (11 rows) in spec-presets; unit test — src/lib/spec-presets.ts, tests/unit/admin-products.test.ts, docs

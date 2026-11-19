@@ -1,6 +1,6 @@
 // Zod schemas for first-party analytics (ADR-040): /api/track bodies and the dashboard period.
 import { z } from "zod";
-import { ANALYTICS_RANGES, SITE_EVENT_TYPES, type AnalyticsRange } from "@/lib/analytics";
+import { ANALYTICS_RANGES, DEFAULT_ANALYTICS_RANGE, SITE_EVENT_TYPES } from "@/lib/analytics";
 
 /** A page path: starts with one "/", no query or fragment, nothing outside printable ASCII. */
 const pathSchema = z
@@ -16,7 +16,5 @@ export const trackEventSchema = z.object({
 
 export type TrackEvent = z.infer<typeof trackEventSchema>;
 
-export const analyticsRangeSchema = z.coerce
-  .number()
-  .refine((n): n is AnalyticsRange => (ANALYTICS_RANGES as readonly number[]).includes(n))
-  .catch(30);
+/** `?range=` on the dashboard; anything unknown (or repeated) falls back to 30 days. */
+export const analyticsRangeSchema = z.enum(ANALYTICS_RANGES).catch(DEFAULT_ANALYTICS_RANGE);

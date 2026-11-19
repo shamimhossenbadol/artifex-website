@@ -40,9 +40,32 @@ export function isBotUserAgent(userAgent: string | null): boolean {
   return !userAgent || BOT_PATTERN.test(userAgent);
 }
 
-/** Dashboard periods in days. */
-export const ANALYTICS_RANGES = [7, 30, 90] as const;
+/**
+ * Dashboard periods, as written in `?range=`: Dhaka calendar days (today, yesterday; ADR-079)
+ * or rolling windows of 7, 30 and 90 days ending now (ADR-040).
+ */
+export const ANALYTICS_RANGES = ["today", "yesterday", "7", "30", "90"] as const;
 export type AnalyticsRange = (typeof ANALYTICS_RANGES)[number];
+export const DEFAULT_ANALYTICS_RANGE: AnalyticsRange = "30";
+
+/** Wording for each period: button label, what the KPIs compare against, and the empty state. */
+export function describeAnalyticsRange(range: AnalyticsRange): {
+  label: string;
+  comparison: string;
+  period: string;
+} {
+  if (range === "today") {
+    return { label: "Today", comparison: "same time yesterday", period: "today" };
+  }
+  if (range === "yesterday") {
+    return { label: "Yesterday", comparison: "the day before", period: "yesterday" };
+  }
+  return {
+    label: `${range} days`,
+    comparison: `previous ${range} days`,
+    period: `in the last ${range} days`,
+  };
+}
 
 /** Events are kept this long, then removed (no cron: pruned while recording). */
 export const EVENT_RETENTION_DAYS = 400;

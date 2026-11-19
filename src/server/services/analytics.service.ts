@@ -14,7 +14,7 @@ import {
 } from "@/lib/analytics";
 import { serverEnv } from "@/lib/env";
 import type { TrackEvent } from "@/lib/validation/analytics";
-import { toDhakaDateInput } from "@/lib/validation/home";
+import { dhakaStartOfDay, toDhakaDateInput } from "@/lib/validation/home";
 import {
   countEvents,
   countEventsByType,
@@ -69,7 +69,7 @@ export type Kpi = { value: number; previous: number; change: number | null };
 export type RankedItem = { label: string; href: string | null; count: number };
 
 export type AnalyticsSummary = {
-  days: AnalyticsRange;
+  range: AnalyticsRange;
   visitors: Kpi;
   pageViews: Kpi;
   productViews: Kpi;
@@ -115,14 +115,41 @@ async function productList(rows: { path: string; count: number }[]): Promise<Ran
   });
 }
 
+type Period = { from: Date; to: Date };
+
+/**
+ * The [from, to) windows for a dashboard period and the one it's compared against.
+ * - today: Dhaka midnight → now, vs the same stretch of yesterday (a fair comparison mid-day).
+ * - yesterday: the whole previous Dhaka day, vs the day before it.
+ * - 7/30/90: rolling windows ending now, vs the window before (ADR-040).
+ */
+export function analyticsPeriods(
+  range: AnalyticsRange,
+  now: Date,
+): { current: Period; previous: Period } {
+  const shift = (p: Period, ms: number): Period => ({
+    from: new Date(p.from.getTime() - ms),
+    to: new Date(p.to.getTime() - ms),
+  });
+  if (range === "today" || range === "yesterday") {
+    const todayStart = dhakaStartOfDay(toDhakaDateInput(now));
+    const current =
+      range === "today"
+        ? { from: todayStart, to: now }
+        : { from: new Date(todayStart.getTime() - DAY_MS), to: todayStart };
+    return { current, previous: shift(current, DAY_MS) };
+  }
+  const span = Number(range) * DAY_MS;
+  const current = { from: new Date(now.getTime() - span), to: now };
+  return { current, previous: shift(current, span) };
+}
+
 export async function getAnalyticsSummary(
-  days: AnalyticsRange,
+  range: AnalyticsRange,
   at?: Date,
 ): Promise<AnalyticsSummary> {
   await connection();
-  const to = at ?? new Date();
-  const current = { from: new Date(to.getTime() - days * DAY_MS), to };
-  const previous = { from: new Date(current.from.getTime() - days * DAY_MS), to: current.from };
+  const { current, previous } = analyticsPeriods(range, at ?? new Date());
 
   const [types, prevTypes, visitors, prevVisitors, productViews, prevProductViews] =
     await Promise.all([
@@ -145,7 +172,7 @@ export async function getAnalyticsSummary(
   const prevInquiries = before.whatsapp + before.messenger + before.calls;
 
   return {
-    days,
+    range,
     visitors: kpi(visitors, prevVisitors),
     pageViews: kpi(now.views, before.views),
     productViews: kpi(productViews, prevProductViews),

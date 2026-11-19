@@ -2,15 +2,20 @@
 // the change against the period before, plus top products and pages. Server component, no JS.
 import { ArrowDownRight, ArrowUpRight, Minus } from "lucide-react";
 import Link from "next/link";
-import { ANALYTICS_RANGES, type AnalyticsRange } from "@/lib/analytics";
+import {
+  ANALYTICS_RANGES,
+  DEFAULT_ANALYTICS_RANGE,
+  describeAnalyticsRange,
+  type AnalyticsRange,
+} from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 import type { AnalyticsSummary, Kpi, RankedItem } from "@/server/services/analytics.service";
 import { AdminPanel } from "../AdminPageHeader";
 
 const number = new Intl.NumberFormat("en-US");
 
-function Change({ kpi, days }: { kpi: Kpi; days: AnalyticsRange }) {
-  const context = `vs previous ${days} days`;
+function Change({ kpi, range }: { kpi: Kpi; range: AnalyticsRange }) {
+  const context = `vs ${describeAnalyticsRange(range).comparison}`;
   if (kpi.change === null) {
     return (
       <p className="text-small text-muted mt-1">
@@ -67,7 +72,7 @@ function Ranked({ title, items, empty }: { title: string; items: RankedItem[]; e
 }
 
 export function AnalyticsPanel({ summary }: { summary: AnalyticsSummary }) {
-  const { days } = summary;
+  const { range } = summary;
   const cards = [
     { label: "Visitors", kpi: summary.visitors, hint: "Unique per day" },
     { label: "Page views", kpi: summary.pageViews },
@@ -93,19 +98,21 @@ export function AnalyticsPanel({ summary }: { summary: AnalyticsSummary }) {
         </div>
         <nav
           aria-label="Period"
-          className="border-line bg-surface shadow-card flex rounded-md border p-1"
+          className="border-line bg-surface shadow-card flex max-w-full overflow-x-auto rounded-md border p-1"
         >
-          {ANALYTICS_RANGES.map((range) => (
+          {ANALYTICS_RANGES.map((option) => (
             <Link
-              key={range}
-              href={range === 30 ? "/admin" : `/admin?range=${range}`}
-              aria-current={range === days ? "page" : undefined}
+              key={option}
+              href={option === DEFAULT_ANALYTICS_RANGE ? "/admin" : `/admin?range=${option}`}
+              aria-current={option === range ? "page" : undefined}
               className={cn(
-                "text-small inline-flex min-h-11 items-center rounded-sm px-3 font-medium transition-colors",
-                range === days ? "bg-espresso text-bg shadow-card" : "text-ink-soft hover:text-ink",
+                "text-small inline-flex min-h-11 shrink-0 items-center rounded-sm px-3 font-medium whitespace-nowrap transition-colors",
+                option === range
+                  ? "bg-espresso text-bg shadow-card"
+                  : "text-ink-soft hover:text-ink",
               )}
             >
-              {range} days
+              {describeAnalyticsRange(option).label}
             </Link>
           ))}
         </nav>
@@ -113,8 +120,8 @@ export function AnalyticsPanel({ summary }: { summary: AnalyticsSummary }) {
 
       {noData && (
         <p className="admin-card text-ink-soft mb-3 px-4 py-3">
-          No visits recorded in the last {days} days yet. Numbers appear here as people browse the
-          website.
+          No visits recorded {describeAnalyticsRange(range).period} yet. Numbers appear here as
+          people browse the website.
         </p>
       )}
 
@@ -129,7 +136,7 @@ export function AnalyticsPanel({ summary }: { summary: AnalyticsSummary }) {
               <span className="text-h2 mt-1 block lining-nums tabular-nums">
                 {number.format(card.kpi.value)}
               </span>
-              <Change kpi={card.kpi} days={days} />
+              <Change kpi={card.kpi} range={range} />
             </dd>
           </div>
         ))}

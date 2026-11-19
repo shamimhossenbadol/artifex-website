@@ -22,7 +22,7 @@ vi.mock("next/server", () => ({ connection: async () => undefined }));
 vi.mock("@/server/repositories/analytics.repo", () => repo);
 vi.mock("@/lib/env", () => ({ serverEnv: () => ({ AUTH_SECRET: "x".repeat(40) }) }));
 
-const { getAnalyticsSummary, recordEvent, visitorHash } =
+const { analyticsPeriods, getAnalyticsSummary, recordEvent, visitorHash } =
   await import("@/server/services/analytics.service");
 
 const CHROME =
@@ -62,11 +62,13 @@ describe("event validation", () => {
     expect(trackEventSchema.safeParse({ type: "purchase", path: "/" }).success).toBe(false);
   });
 
-  it("falls back to 30 days for unknown periods", () => {
-    expect(analyticsRangeSchema.parse("7")).toBe(7);
-    expect(analyticsRangeSchema.parse("90")).toBe(90);
-    expect(analyticsRangeSchema.parse("365")).toBe(30);
-    expect(analyticsRangeSchema.parse(undefined)).toBe(30);
+  it("accepts the known periods and falls back to 30 days otherwise", () => {
+    for (const range of ["today", "yesterday", "7", "30", "90"]) {
+      expect(analyticsRangeSchema.parse(range)).toBe(range);
+    }
+    for (const range of ["365", "Today", "7.0", "", ["7", "30"], undefined]) {
+      expect(analyticsRangeSchema.parse(range), String(range)).toBe("30");
+    }
   });
 
   it("recognises bots and missing user agents", () => {
@@ -137,6 +139,78 @@ describe("recording", () => {
   });
 });
 
+describe("dashboard periods (Dhaka calendar days, ADR-079)", () => {
+  const iso = (p: { from: Date; to: Date }) => [p.from.toISOString(), p.to.toISOString()];
+
+  it("today runs from Dhaka midnight to now, vs the same stretch of yesterday", () => {
+    // 19 Nov 2026, 15:30 in Dhaka.
+    const now = new Date("2026-11-19T09:30:00Z");
+    const { current, previous } = analyticsPeriods("today", now);
+    expect(iso(current)).toEqual(["2026-11-18T18:00:00.000Z", "2026-11-19T09:30:00.000Z"]);
+    expect(iso(previous)).toEqual(["2026-11-17T18:00:00.000Z", "2026-11-18T09:30:00.000Z"]);
+  });
+
+  it("yesterday is the whole previous Dhaka day, vs the day before", () => {
+    const now = new Date("2026-11-19T09:30:00Z");
+    const { current, previous } = analyticsPeriods("yesterday", now);
+    expect(iso(current)).toEqual(["2026-11-17T18:00:00.000Z", "2026-11-18T18:00:00.000Z"]);
+    expect(iso(previous)).toEqual(["2026-11-16T18:00:00.000Z", "2026-11-17T18:00:00.000Z"]);
+  });
+
+  it("uses the Dhaka date, not the UTC date, around midnight", () => {
+    // 00:30 on 20 Nov in Dhaka is still 19 Nov in UTC.
+    const justAfter = new Date("2026-11-19T18:30:00Z");
+    expect(iso(analyticsPeriods("today", justAfter).current)).toEqual([
+      "2026-11-19T18:00:00.000Z",
+      "2026-11-19T18:30:00.000Z",
+    ]);
+    expect(iso(analyticsPeriods("yesterday", justAfter).current)).toEqual([
+      "2026-11-18T18:00:00.000Z",
+      "2026-11-19T18:00:00.000Z",
+    ]);
+    // 23:59:59.999 on 19 Nov in Dhaka still belongs to the 19th.
+    const justBefore = new Date("2026-11-19T17:59:59.999Z");
+    expect(analyticsPeriods("today", justBefore).current.from.toISOString()).toBe(
+      "2026-11-18T18:00:00.000Z",
+    );
+    // Exactly Dhaka midnight starts a new, empty day.
+    const midnight = new Date("2026-11-19T18:00:00Z");
+    const today = analyticsPeriods("today", midnight).current;
+    expect(today.from.getTime()).toBe(today.to.getTime());
+    expect(analyticsPeriods("yesterday", midnight).current.from.toISOString()).toBe(
+      "2026-11-18T18:00:00.000Z",
+    );
+  });
+
+  it("rolling windows end now and compare with the window before", () => {
+    const now = new Date("2026-11-19T09:30:00Z");
+    const { current, previous } = analyticsPeriods("7", now);
+    expect(iso(current)).toEqual(["2026-11-12T09:30:00.000Z", "2026-11-19T09:30:00.000Z"]);
+    expect(iso(previous)).toEqual(["2026-11-05T09:30:00.000Z", "2026-11-12T09:30:00.000Z"]);
+  });
+
+  it("queries the repository with the Dhaka-day windows", async () => {
+    vi.resetAllMocks();
+    repo.countEventsByType.mockResolvedValue([]);
+    repo.countVisitors.mockResolvedValue(0);
+    repo.countEvents.mockResolvedValue(0);
+    repo.findTopPaths.mockResolvedValue([]);
+    repo.findProductTitlesBySlug.mockResolvedValue([]);
+    const s = await getAnalyticsSummary("yesterday", new Date("2026-11-19T09:30:00Z"));
+    expect(s.range).toBe("yesterday");
+    const yesterday = {
+      from: new Date("2026-11-17T18:00:00Z"),
+      to: new Date("2026-11-18T18:00:00Z"),
+    };
+    expect(repo.countEventsByType).toHaveBeenNthCalledWith(1, yesterday);
+    expect(repo.countVisitors).toHaveBeenNthCalledWith(1, yesterday);
+    expect(repo.findTopPaths).toHaveBeenCalledWith(["view"], yesterday, {
+      prefix: "/products/",
+      take: 5,
+    });
+  });
+});
+
 describe("dashboard summary", () => {
   beforeEach(() => {
     vi.resetAllMocks();
@@ -168,7 +242,7 @@ describe("dashboard summary", () => {
   });
 
   it("computes KPIs, changes and ranked lists", async () => {
-    const s = await getAnalyticsSummary(30, new Date("2026-11-13T00:00:00Z"));
+    const s = await getAnalyticsSummary("30", new Date("2026-11-13T00:00:00Z"));
     expect(s.pageViews).toEqual({ value: 200, previous: 100, change: 100 });
     expect(s.visitors).toEqual({ value: 50, previous: 0, change: null });
     expect(s.productViews.change).toBe(100);

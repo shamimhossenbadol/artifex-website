@@ -111,6 +111,7 @@ Each phase ends with a short manual review of the phase's acceptance checks.
 - [x] Sofa default specifications (ADR-075)
 - [x] Price range option for products (ADR-076)
 - [x] Invoice: 15 items fit one A4 page; Print measures the sheet (ADR-077)
+- [x] Compact invoice heading, customer block and signature (ADR-078)
 
 ## Phase 8 — SEO, security & performance hardening
 - [x] `sitemap.ts`, `robots.ts`, canonical audit (ADR-037) — [ ] OG image check in the Facebook Sharing Debugger (owner, after the domain is final)
@@ -119,6 +120,7 @@ Each phase ends with a short manual review of the phase's acceptance checks.
 - [x] Lint rule audit, `npm audit --omit=dev` (0 vulnerabilities, 2026-11-13)
 - [x] Bundle analysis: client JS within budget (live test site, brotli: ~195 KB JS of which ~150 KB is the React/Next framework, ~45 KB app; HTML 19.5 KB; CSS 10.7 KB)
 - [x] WhatsApp/Messenger/call click tracking + dashboard KPIs (visitors, views, inquiries, top products) and Meta Pixel setting (ADR-040)
+- [x] Dashboard KPIs: Today and Yesterday periods (Dhaka calendar days) (ADR-079)
 - [ ] Accessibility pass (axe + manual keyboard/screen reader spot check)
 
 ## Phase 9 — Production deployment & QA

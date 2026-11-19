@@ -380,6 +380,19 @@ test("dashboard shows visitor KPIs; the Pixel ID is validated and loads the pixe
     "aria-current",
     "page",
   );
+  // ADR-079: Dhaka calendar days.
+  for (const [name, range, comparison] of [
+    ["Today", "today", "same time yesterday"],
+    ["Yesterday", "yesterday", "the day before"],
+  ] as const) {
+    await page.getByRole("link", { name, exact: true }).click();
+    await expect(page).toHaveURL(new RegExp(`/admin\\?range=${range}$`));
+    await expect(shown(page.getByRole("link", { name, exact: true }))).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+    await expect(page.getByText(`vs ${comparison}`).first()).toBeVisible();
+  }
 
   await page.goto("/admin/settings/tracking");
   await page.waitForLoadState("networkidle");

@@ -582,14 +582,22 @@ test("invoice: 15 items print on one page, an overfull sheet is stopped at Print
   await page.getByRole("button", { name: "Print invoice" }).click();
   expect(await printed()).toBe(1);
 
-  // A few wrapping descriptions fill the page: the signature moves beside the totals (ADR-080)
-  // and the invoice still prints.
-  for (let i = 0; i < 4; i++) {
+  // Wrapping descriptions fill the page: as soon as the signature no longer fits at the bottom
+  // it moves beside the totals (ADR-080), before any warning, and the invoice still prints.
+  // How many rows that takes depends on fonts and letterhead details, so wrap them one by one.
+  const settle = () =>
+    page.evaluate(
+      () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),
+    );
+  let wrapped = 0;
+  while (wrapped < 15 && (await signatureBesideTotals.count()) === 0) {
     await page
-      .getByLabel(`Item ${i + 1}`, { exact: true })
+      .getByLabel(`Item ${wrapped + 1}`, { exact: true })
       .fill(
-        `Solid wood dining chair ${i + 1}, hand-carved back, walnut finish, premium fabric seat`,
+        `Solid wood dining chair ${wrapped + 1}, hand-carved back, walnut finish, premium fabric seat`,
       );
+    wrapped++;
+    await settle();
   }
   await expect(signatureBesideTotals).toHaveCount(1);
   await expect(overflow).toHaveCount(0);

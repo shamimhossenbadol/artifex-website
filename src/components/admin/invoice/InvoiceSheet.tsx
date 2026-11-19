@@ -94,39 +94,32 @@ export function InvoiceSheet({
   const date = formatInvoiceDate(draft.date);
 
   return (
-    <article id={id} aria-label="Invoice" className={cn(A4_SHEET_CLASS, className)}>
+    // Less space above the letterhead than the challan (ADR-078): more room for items.
+    <article id={id} aria-label="Invoice" className={cn(A4_SHEET_CLASS, "pt-[9mm]", className)}>
       <SheetWatermark />
       <SheetLetterhead business={business} />
 
-      {/* Title with a brand-red accent; invoice number and date as labelled blocks. */}
-      <div className="mt-5 flex items-end justify-between gap-6">
-        <div className="min-w-0">
-          <h2 className="text-h3 leading-tight">Invoice</h2>
-          <div aria-hidden className="bg-brand mt-3 h-[0.7mm] w-[14mm]" />
-        </div>
-        <dl className="flex shrink-0 items-stretch">
+      {/* One compact line: a large "Invoice" title, then invoice no. and date inline (ADR-078). */}
+      <div className="mt-4 flex items-baseline justify-between gap-6">
+        <h2 className="text-h2 leading-none">Invoice</h2>
+        <dl className="text-body flex shrink-0 items-baseline gap-6">
           {draft.invoiceNumber.trim() && (
-            <div className="pr-6 text-right">
+            <div className="flex items-baseline gap-2">
               <dt className={SHEET_LABEL}>Invoice no.</dt>
-              <dd className="text-body text-ink mt-1.5 font-semibold tabular-nums">
-                {draft.invoiceNumber}
-              </dd>
+              <dd className="text-ink font-semibold tabular-nums">{draft.invoiceNumber}</dd>
             </div>
           )}
-          <div
-            className={cn("text-right", draft.invoiceNumber.trim() && "border-line border-l pl-6")}
-          >
+          <div className="flex items-baseline gap-2">
             <dt className={SHEET_LABEL}>Date</dt>
-            <dd className="text-body text-ink mt-1.5 font-semibold">{date || "—"}</dd>
+            <dd className="text-ink font-semibold">{date || "—"}</dd>
           </div>
         </dl>
       </div>
 
-      {/* Bill to */}
-      <section className="border-line mt-4 border-y py-3">
-        <p className={SHEET_LABEL}>Bill to</p>
-        {/* Name and phone share a line to leave room for 15 items (ADR-077). */}
-        <dl className="mt-2 grid grid-cols-[3fr_2fr] gap-x-8 gap-y-1.5">
+      {/* Customer: no heading and no rule under it; the table header follows (ADR-078). Name and
+          phone share a line to leave room for the items (ADR-077). */}
+      <section className="border-line mt-3 border-t pt-3">
+        <dl className="grid grid-cols-[3fr_2fr] gap-x-8 gap-y-1.5">
           <LeaderRow
             label="Customer Name"
             valueClassName="font-semibold"
@@ -148,7 +141,7 @@ export function InvoiceSheet({
       </section>
 
       {/* Items */}
-      <table className="mt-4 w-full border-collapse text-left">
+      <table className="mt-3 w-full border-collapse text-left">
         <thead>
           <tr className="bg-sand text-ink">
             <th scope="col" className={cn(TH, "w-[11mm]")}>
@@ -215,20 +208,16 @@ export function InvoiceSheet({
         </dl>
       )}
 
-      {/* Signatures, pushed to the bottom of the page (room above the lines to sign). */}
+      {/* Authorised signature only, on the left, pushed to the bottom (room above the line to
+          sign) with little space below it (ADR-078). */}
       <section className="mt-auto pt-10">
-        <div className="grid grid-cols-2 gap-16">
-          <div className="border-ink border-t pt-2">
-            <p className="text-small text-ink font-medium">Customer&apos;s signature</p>
-          </div>
-          <div className="border-ink border-t pt-2 text-right">
-            <p className="text-small text-ink font-medium">Authorised signature</p>
-            <p className="text-small text-muted">{business.name}</p>
-          </div>
+        <div className="border-ink w-[70mm] border-t pt-1.5">
+          <p className="text-small text-ink font-medium">Authorised signature</p>
+          <p className="text-small text-muted">{business.name}</p>
         </div>
       </section>
 
-      <SheetFooterBand website={business.website} className="mt-6" />
+      <SheetFooterBand website={business.website} className="mt-3" />
     </article>
   );
 }

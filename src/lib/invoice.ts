@@ -12,8 +12,36 @@ export const MAX_INVOICE_ITEMS = 15;
 /** Upper bound for a quantity or a money amount (keeps typos like 1500000000 out). */
 export const MAX_INVOICE_AMOUNT = 100_000_000;
 
-/** Suggestions for the unit column; any other text is allowed. */
-export const INVOICE_UNITS = ["pcs", "set", "yds", "feet", "sft", "rft", "meter", "kg"] as const;
+/** The unit choices for an item (ADR-082); new rows start with "pcs". */
+export const INVOICE_UNITS = [
+  "pcs",
+  "set",
+  "feet",
+  "inch",
+  "yds",
+  "meter",
+  "sft",
+  "rft",
+  "kg",
+] as const;
+
+/** Invoice numbers print as 6 digits (ADR-082). */
+export const INVOICE_NUMBER_DIGITS = 6;
+
+/** Keeps digits only, at most 6 ("INV-88" → "88"). */
+export function invoiceNumberInput(value: string): string {
+  return value.replace(/\D/g, "").slice(0, INVOICE_NUMBER_DIGITS);
+}
+
+/** "88" → "000088"; empty stays empty (the number is optional). */
+export function formatInvoiceNumber(value: string): string {
+  const digits = invoiceNumberInput(value);
+  return digits ? digits.padStart(INVOICE_NUMBER_DIGITS, "0") : "";
+}
+
+/** Space below the bottom signature, in mm, set with the form's up/down buttons (ADR-082). */
+export const SIGNATURE_LIFT_STEP_MM = 2;
+export const SIGNATURE_LIFT_MAX_MM = 120;
 
 export type InvoiceItem = {
   /** Stable key for React lists (not printed). */
@@ -70,6 +98,11 @@ export const INVOICE_TERMS = [
     title: "Remaining Payment",
     text: "The remaining 50% of the total amount must be paid in full before collecting the product.",
   },
+  {
+    id: "delivery-labor",
+    title: "Delivery & Labor Charges",
+    text: "All transportation, loading, unloading, and related labor costs shall be borne entirely by the customer.",
+  },
 ] as const;
 export type InvoiceTermId = (typeof INVOICE_TERMS)[number]["id"];
 
@@ -90,6 +123,8 @@ export type InvoiceDraft = {
   advanceMethod: AdvanceMethod;
   signatureSide: SignatureSide;
   signaturePosition: SignaturePosition;
+  /** Extra space below the signature when it's at the bottom, in mm (0 = lowest; ADR-082). */
+  signatureLift: number;
   /** Terms printed under the totals; none by default. */
   terms: InvoiceTermId[];
 };

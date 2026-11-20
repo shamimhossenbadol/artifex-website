@@ -504,7 +504,7 @@ test("invoice: items × prices, discount and advance, print only the sheet, keep
   await page.getByLabel("Name", { exact: true }).fill("E2E Invoice Customer");
   await page.getByLabel("Item 1").fill("Mk-1 Fabrics");
   await page.getByLabel("Qty").fill("27");
-  await page.getByLabel("Unit", { exact: true }).fill("yds");
+  await page.getByLabel("Unit", { exact: true }).selectOption("yds");
   await page.getByLabel("Unit price (৳)").fill("1500");
   await page.getByRole("button", { name: "Add item" }).click();
   await page.getByLabel("Item 2").fill("Curtain Making");
@@ -512,12 +512,15 @@ test("invoice: items × prices, discount and advance, print only the sheet, keep
   await page.getByLabel("Unit price (৳)").nth(1).fill("80");
   await page.getByLabel("Discount (৳, optional)").fill("500");
   await page.getByLabel("Advance paid (৳, optional)").fill("10,000");
-  await page.getByLabel("Invoice no. (optional)").fill("INV-0001");
+  await page.getByLabel("Invoice no. (optional)").fill("INV-1");
+  // Digits only, padded to 6 digits when the field is left (ADR-082).
+  await page.getByLabel("Invoice no. (optional)").blur();
+  await expect(page.getByLabel("Invoice no. (optional)")).toHaveValue("000001");
 
   // 27 × 1500 = 40,500; 2.5 × 80 = 200; subtotal 40,700 − 500 − 10,000 = 30,200 due.
   const preview = page.getByRole("region", { name: "Preview" });
   await expect(preview.getByText("E2E Invoice Customer")).toBeVisible();
-  await expect(preview.getByText("INV-0001")).toBeVisible();
+  await expect(preview.getByText("000001")).toBeVisible();
   await expect(preview.getByText("40,500", { exact: true })).toBeVisible();
   await expect(preview.getByText("৳ 40,700")).toBeVisible();
   await expect(preview.getByText("৳ 30,200")).toBeVisible();
@@ -530,6 +533,18 @@ test("invoice: items × prices, discount and advance, print only the sheet, keep
   await page.getByLabel(/^No Return or Exchange:/).check();
   await expect(preview.getByText("Terms & Conditions")).toBeVisible();
   await expect(preview.getByText("All sales are final.", { exact: false })).toBeVisible();
+  // ADR-082: the bottom signature moves up and down in 2 mm steps (space below it).
+  await page.getByLabel("Signature position").selectOption("bottom");
+  await expect(page.getByRole("button", { name: "Move down" })).toBeDisabled();
+  await page.getByRole("button", { name: "Move up" }).click();
+  await page.getByRole("button", { name: "Move up" }).click();
+  await expect(page.getByText("4 mm up")).toBeVisible();
+  await expect(preview.locator("[data-invoice-signature-slot]")).toHaveAttribute(
+    "style",
+    /margin-bottom: 4mm/,
+  );
+  await page.getByRole("button", { name: "Move down" }).click();
+  await expect(page.getByText("2 mm up")).toBeVisible();
   await page.getByLabel("Signature side").selectOption("right");
   await page.getByLabel("Signature position").selectOption("up");
   await expect(preview.locator("div.justify-end > [data-invoice-signature]")).toHaveCount(1);

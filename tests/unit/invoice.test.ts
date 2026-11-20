@@ -9,6 +9,9 @@ import {
   advanceMethodLabel,
   selectedInvoiceTerms,
   signatureLayout,
+  formatInvoiceNumber,
+  invoiceNumberInput,
+  INVOICE_UNITS,
   invoiceProblems,
   invoiceTotals,
   lineTotal,
@@ -39,6 +42,7 @@ const draft = (over: Partial<InvoiceDraft> = {}): InvoiceDraft => ({
   advanceMethod: "",
   signatureSide: "left",
   signaturePosition: "auto",
+  signatureLift: 0,
   terms: [],
   ...over,
 });
@@ -192,6 +196,7 @@ describe("signature, payment method and terms (ADR-081)", () => {
       "Product Collection",
       "No Return or Exchange",
       "Remaining Payment",
+      "Delivery & Labor Charges",
     ]);
     expect(selectedInvoiceTerms(["remaining", "advance"]).map((t) => t.id)).toEqual([
       "advance",
@@ -206,5 +211,21 @@ describe("signature, payment method and terms (ADR-081)", () => {
         draft({ advanceMethod: "bank", signatureSide: "right", terms: ["no-return"] }),
       ),
     ).toEqual([]);
+  });
+});
+
+describe("invoice number and units (ADR-082)", () => {
+  it("keeps digits only, at most 6, and pads to 6 digits", () => {
+    expect(invoiceNumberInput("INV-88")).toBe("88");
+    expect(invoiceNumberInput("12345678")).toBe("123456");
+    expect(formatInvoiceNumber("88")).toBe("000088");
+    expect(formatInvoiceNumber("123456")).toBe("123456");
+    expect(formatInvoiceNumber("000001")).toBe("000001");
+    expect(formatInvoiceNumber("")).toBe("");
+  });
+
+  it("offers a fixed unit list starting with pcs", () => {
+    expect(INVOICE_UNITS[0]).toBe("pcs");
+    expect(INVOICE_UNITS).toEqual(expect.arrayContaining(["set", "feet", "inch", "yds", "meter"]));
   });
 });

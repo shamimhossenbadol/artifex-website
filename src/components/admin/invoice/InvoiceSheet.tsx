@@ -9,6 +9,7 @@ import {
   filledInvoiceItems,
   formatAmount,
   formatInvoiceDate,
+  formatInvoiceNumber,
   invoiceTotals,
   lineTotal,
   parseAmount,
@@ -126,10 +127,12 @@ export function InvoiceSheet({
       <div className="mt-4 flex items-baseline justify-between gap-6">
         <h2 className="text-h2 leading-none">Invoice</h2>
         <dl className="text-body flex shrink-0 items-baseline gap-6">
-          {draft.invoiceNumber.trim() && (
+          {formatInvoiceNumber(draft.invoiceNumber) && (
             <div className="flex items-baseline gap-2">
               <dt className={SHEET_LABEL}>Invoice no.</dt>
-              <dd className="text-ink font-semibold tabular-nums">{draft.invoiceNumber}</dd>
+              <dd className="text-ink font-semibold tabular-nums">
+                {formatInvoiceNumber(draft.invoiceNumber)}
+              </dd>
             </div>
           )}
           <div className="flex items-baseline gap-2">
@@ -260,9 +263,14 @@ export function InvoiceSheet({
         )}
       </div>
 
-      {/* At the bottom: room above the line to sign, little space below it (ADR-078). */}
+      {/* At the bottom: room above the line to sign, little space below it (ADR-078). The form's
+          up/down buttons add space below it to move it up (ADR-082). */}
       {!up && (
-        <section className={cn("mt-auto flex pt-10", right && "justify-end")}>
+        <section
+          data-invoice-signature-slot
+          className={cn("mt-auto flex pt-10", right && "justify-end")}
+          style={draft.signatureLift > 0 ? { marginBottom: `${draft.signatureLift}mm` } : undefined}
+        >
           {signatureBlock}
         </section>
       )}

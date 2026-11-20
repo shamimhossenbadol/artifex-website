@@ -15,10 +15,7 @@ export default async function InvoicePage() {
   const { business, products, issuedAt } = await getChallanSetup();
   return (
     <>
-      <AdminPageHeader
-        title="Invoice"
-        description="Fill in the customer, items and payment, check the preview, then print. Nothing is saved; the form stays filled until you press Clear."
-      />
+      <AdminPageHeader title="Invoice" />
       <InvoiceMaker business={business} products={products} issuedAt={issuedAt} />
     </>
   );

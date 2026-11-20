@@ -3,7 +3,7 @@
 // component's memory. Nothing is sent to the server, saved, or kept in browser storage. Print
 // shows only the A4 sheet (a copy portalled under <body>, see globals.css), and the form stays
 // filled after printing until "Clear" (ADR-073).
-import { Plus, Printer, RotateCcw, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronUp, Plus, Printer, RotateCcw, Trash2 } from "lucide-react";
 import { useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal, flushSync } from "react-dom";
 import { Button } from "@/components/ui/Button";
@@ -17,6 +17,10 @@ import {
   INVOICE_UNITS,
   advanceMethodLabel,
   MAX_INVOICE_ITEMS,
+  SIGNATURE_LIFT_MAX_MM,
+  SIGNATURE_LIFT_STEP_MM,
+  formatInvoiceNumber,
+  invoiceNumberInput,
   filledInvoiceItems,
   formatAmount,
   invoiceDateInput,
@@ -63,6 +67,7 @@ function newDraft(at: Date): InvoiceDraft {
     advanceMethod: "",
     signatureSide: "left",
     signaturePosition: "auto",
+    signatureLift: 0,
     terms: [],
   };
 }
@@ -72,13 +77,17 @@ const subscribeNothing = () => () => {};
 /** Space the bottom signature needs besides its own block: 40 px to sign above the line, 12 px
  * above the red band (InvoiceSheet). */
 const BOTTOM_SIGNATURE_EXTRA = 52;
+/** CSS px per mm (96 dpi). */
+const PX_PER_MM = 96 / 25.4;
 
 /**
  * Measures the on-screen preview (in sheet px, whatever the preview zoom): whether it runs past
  * one A4 page, the free space between the content after the items (totals, terms) and the red
- * band, and the room the signature needs at the bottom of the page (ADR-077, ADR-080).
+ * band, the room the signature needs at the bottom of the page (with its chosen lift, ADR-082),
+ * and the empty space above the bottom signature, which limits how far it can move up
+ * (ADR-077, ADR-080).
  */
-function measurePreview() {
+function measurePreview(liftMm: number) {
   const sheet = document.getElementById(INVOICE_PREVIEW_ID);
   if (!sheet) return null;
   const scale =
@@ -92,10 +101,16 @@ function measurePreview() {
       ? (footer.getBoundingClientRect().top - flowEnd.getBoundingClientRect().bottom) / scale
       : Number.POSITIVE_INFINITY;
   const signatureHeight = signature ? signature.getBoundingClientRect().height / scale : 0;
+  const slot = sheet.querySelector("[data-invoice-signature-slot]");
+  const spaceAbove =
+    slot && flowEnd
+      ? (slot.getBoundingClientRect().top - flowEnd.getBoundingClientRect().bottom) / scale
+      : 0;
   return {
     overflows: sheetOverflows(sheet),
     freeSpace,
-    bottomRoom: BOTTOM_SIGNATURE_EXTRA + signatureHeight,
+    bottomRoom: BOTTOM_SIGNATURE_EXTRA + signatureHeight + liftMm * PX_PER_MM,
+    spaceAbove,
   };
 }
 
@@ -109,7 +124,7 @@ export function InvoiceMaker({
   issuedAt: string;
 }) {
   const productListId = useId();
-  const unitListId = useId();
+  const liftLabelId = useId();
   // Same starting date on the server and in the browser (from the request time).
   const [draft, setDraft] = useState<InvoiceDraft>(() => newDraft(new Date(issuedAt)));
   const [showProblems, setShowProblems] = useState(false);
@@ -122,9 +137,14 @@ export function InvoiceMaker({
   const signatureRef = useRef<SignaturePlacement>("bottom");
   const autoRef = useRef(true);
   const autoSignature = draft.signaturePosition === "auto" && draft.signatureSide === "left";
+  // The bottom signature's lift (ADR-082), for the measurements; "Move up" is offered while there
+  // is empty space above the signature.
+  const liftRef = useRef(0);
+  const [canLift, setCanLift] = useState(true);
   useEffect(() => {
     autoRef.current = autoSignature;
-  }, [autoSignature]);
+    liftRef.current = draft.signatureLift;
+  }, [autoSignature, draft.signatureLift]);
   const layout = signatureLayout(draft.signaturePosition, draft.signatureSide, signature);
   const previewRef = useRef<HTMLDivElement>(null);
   const alertRef = useRef<HTMLUListElement>(null);
@@ -140,8 +160,9 @@ export function InvoiceMaker({
     const container = previewRef.current;
     if (!container) return;
     const measure = () => {
-      const m = measurePreview();
+      const m = measurePreview(liftRef.current);
       if (!m) return;
+      setCanLift(m.spaceAbove >= SIGNATURE_LIFT_STEP_MM * PX_PER_MM);
       // A fixed side/position (ADR-081) only needs the overflow check.
       const next = autoRef.current
         ? nextSignaturePlacement(signatureRef.current, m)
@@ -157,7 +178,14 @@ export function InvoiceMaker({
     // Text edits re-measure; so do the web fonts arriving and window resizes, which change the
     // layout without touching the DOM (ADR-077).
     const observer = new MutationObserver(measure);
-    observer.observe(container, { childList: true, subtree: true, characterData: true });
+    observer.observe(container, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+      // The signature lift is an inline style (ADR-082).
+      attributes: true,
+      attributeFilter: ["style", "class"],
+    });
     const frame = requestAnimationFrame(measure);
     let active = true;
     void document.fonts.ready.then(() => {
@@ -186,14 +214,14 @@ export function InvoiceMaker({
   function print() {
     // Measure the sheet now, not the last observed state, so Print never sends a sheet that
     // doesn't fit one A4 page (ADR-077).
-    let m = measurePreview();
+    let m = measurePreview(draft.signatureLift);
     if (m?.overflows && autoRef.current && signatureRef.current === "bottom") {
       // Try the signature beside the totals first (ADR-080), then measure that layout.
       flushSync(() => {
         signatureRef.current = "beside";
         setSignature("beside");
       });
-      m = measurePreview();
+      m = measurePreview(draft.signatureLift);
     }
     const overflowsNow = m?.overflows ?? false;
     setOverflows(overflowsNow);
@@ -252,17 +280,9 @@ export function InvoiceMaker({
               {formatAmount(totals.subtotal)}
             </p>
           </div>
-          <p className="text-small text-muted -mt-2">
-            Pick a product or type any item. Quantities and prices can have two decimals.
-          </p>
           <datalist id={productListId}>
             {products.map((product) => (
               <option key={product.id} value={product.label} />
-            ))}
-          </datalist>
-          <datalist id={unitListId}>
-            {INVOICE_UNITS.map((unit) => (
-              <option key={unit} value={unit} />
             ))}
           </datalist>
           <ol className="flex flex-col gap-4">
@@ -308,14 +328,18 @@ export function InvoiceMaker({
                         maxLength={12}
                       />
                     </Field>
+                    {/* A fixed list of units, "pcs" by default (ADR-082). */}
                     <Field label="Unit">
-                      <Input
-                        list={unitListId}
+                      <Select
                         value={item.unit}
                         onChange={(e) => setItem(item.key, { unit: e.target.value })}
-                        maxLength={12}
-                        autoComplete="off"
-                      />
+                      >
+                        {INVOICE_UNITS.map((unit) => (
+                          <option key={unit} value={unit}>
+                            {unit}
+                          </option>
+                        ))}
+                      </Select>
                     </Field>
                     <Field label="Unit price (৳)">
                       <Input
@@ -417,11 +441,15 @@ export function InvoiceMaker({
             <Field label="Date">
               <Input type="date" value={draft.date} onChange={(e) => set("date", e.target.value)} />
             </Field>
+            {/* Digits only, shown and printed as 6 digits: 88 → 000088 (ADR-082). */}
             <Field label="Invoice no. (optional)">
               <Input
+                inputMode="numeric"
                 value={draft.invoiceNumber}
-                onChange={(e) => set("invoiceNumber", e.target.value)}
-                maxLength={30}
+                onChange={(e) => set("invoiceNumber", invoiceNumberInput(e.target.value))}
+                onBlur={() => set("invoiceNumber", formatInvoiceNumber(draft.invoiceNumber))}
+                maxLength={6}
+                placeholder="000001"
                 autoComplete="off"
               />
             </Field>
@@ -452,10 +480,48 @@ export function InvoiceMaker({
               </Select>
             </Field>
           </div>
-          <p className="text-small text-muted -mt-2">
-            Auto keeps the signature at the bottom and moves it up beside the totals when the items
-            fill the page (left side only).
-          </p>
+          {/* Up/down for the bottom signature: adds or removes space below it, 2 mm a step. "Up"
+              stops when there is no empty space left above it (ADR-082). */}
+          {layout === "bottom" && (
+            <div role="group" aria-labelledby={liftLabelId} className="flex flex-col gap-2">
+              <p id={liftLabelId} className="text-small text-ink font-medium">
+                Signature height
+              </p>
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  disabled={draft.signatureLift <= 0}
+                  onClick={() =>
+                    set("signatureLift", Math.max(0, draft.signatureLift - SIGNATURE_LIFT_STEP_MM))
+                  }
+                >
+                  <ChevronDown aria-hidden strokeWidth={1.5} className="size-4" />
+                  Move down
+                </Button>
+                <output
+                  aria-live="polite"
+                  className="text-small text-ink min-w-20 text-center tabular-nums"
+                >
+                  {draft.signatureLift === 0 ? "Lowest" : `${draft.signatureLift} mm up`}
+                </output>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  disabled={!canLift || draft.signatureLift >= SIGNATURE_LIFT_MAX_MM}
+                  onClick={() =>
+                    set(
+                      "signatureLift",
+                      Math.min(SIGNATURE_LIFT_MAX_MM, draft.signatureLift + SIGNATURE_LIFT_STEP_MM),
+                    )
+                  }
+                >
+                  <ChevronUp aria-hidden strokeWidth={1.5} className="size-4" />
+                  Move up
+                </Button>
+              </div>
+            </div>
+          )}
           <fieldset className="flex flex-col gap-1">
             <legend className="text-small text-ink mb-1 font-medium">
               Terms &amp; conditions (optional)
@@ -509,6 +575,7 @@ export function InvoiceMaker({
                 ...newDraft(new Date()),
                 signatureSide: d.signatureSide,
                 signaturePosition: d.signaturePosition,
+                signatureLift: d.signatureLift,
                 terms: d.terms,
               }));
               setShowProblems(false);
@@ -518,10 +585,6 @@ export function InvoiceMaker({
             Clear
           </Button>
         </div>
-        <p className="text-small text-muted">
-          Nothing is saved: the invoice exists only on this page. Printing keeps the form; use Clear
-          to start a new one. Use “Save as PDF” in the print dialog to keep a copy.
-        </p>
       </form>
 
       <section aria-label="Preview" className="xl:sticky xl:top-6">

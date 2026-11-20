@@ -114,6 +114,7 @@ Each phase ends with a short manual review of the phase's acceptance checks.
 - [x] Compact invoice heading, customer block and signature (ADR-078)
 - [x] Invoice signature moves with the number of items (ADR-080)
 - [x] Customisable invoice: signature side/position, advance method, optional terms; margin and band fixes (ADR-081)
+- [x] Invoice: signature up/down stepper, 6-digit number, unit list, fewer help texts (ADR-082)
 
 ## Phase 8 — SEO, security & performance hardening
 - [x] `sitemap.ts`, `robots.ts`, canonical audit (ADR-037) — [ ] OG image check in the Facebook Sharing Debugger (owner, after the domain is final)

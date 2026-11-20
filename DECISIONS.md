@@ -648,3 +648,17 @@ Sheet:
 
 The measured free space now runs from the end of everything after the items (totals and terms) to the band.
 **Consequences:** No new dependency, token or storage; nothing is saved. The band takes 6 mm more of the page, and terms take space too, so long invoices with terms move the signature up or show the one-page warning sooner. Unit tests cover the layout rule, the method labels and the terms order. The invoice e2e test covers the payment method, a term, a right signature after the totals and the band label. 07 is updated.
+
+### ADR-082 — Invoice: signature up/down stepper, 6-digit invoice number, fixed unit list, fewer help texts
+**Date:** 2026-11-20 · **Status:** Accepted
+**Context:** The owner wants to fine-tune how high the bottom signature sits, using the empty space on the page, instead of only choosing a position. They also want invoice numbers in a fixed 6-digit format, units chosen from a set list, and less help text on the invoice page.
+**Decision:** This extends ADR-081.
+- **Signature height:** When the signature is at the bottom of the page, the "Signature & terms" card shows **Move down** / **Move up** buttons and the current value ("Lowest" or "N mm up").
+  - Each step adds or removes 2 mm of space below the signature (`signatureLift`, 0–120 mm, an inline `margin-bottom` on the signature slot).
+  - "Move up" is disabled once there's less than one step of empty space above the signature, so it never pushes the page over; "Move down" is disabled at the lowest point.
+  - The lift counts in Auto's room check (ADR-080), the preview observer now also watches style changes, and Clear keeps the lift with the other signature choices.
+- **Invoice number:** digits only (non-digits are dropped, at most 6). It is padded to 6 digits when the field is left and when printed (88 → 000088; `formatInvoiceNumber`), and stays optional.
+- **Units:** a select instead of free text, `pcs` (default), set, feet, inch, yds, meter, sft, rft, kg.
+- **Terms:** a fifth standard term, **Delivery & Labor Charges** ("All transportation, loading, unloading, and related labor costs shall be borne entirely by the customer."), is added to `INVOICE_TERMS` after Remaining Payment.
+- **Help texts removed:** the page description under "Invoice", "Pick a product or type any item…", the Auto explanation and the "Nothing is saved…" note.
+**Consequences:** No new dependency or token; nothing is stored. Free-text units are no longer possible, so a new unit needs a code change to `INVOICE_UNITS`. Unit tests cover the number input and padding and the unit list. The invoice e2e test covers the unit select, the padded number and the stepper. 07 is updated.

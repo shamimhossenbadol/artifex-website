@@ -5,6 +5,9 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 
 ## [Unreleased]
 
+### Changed
+- 2026-11-20 — Admin → Invoice: the bottom signature can be moved up and down with Move up / Move down buttons (2 mm steps, up to the free space). Invoice numbers are digits only and print as 6 digits (88 → 000088). Units are picked from a list (pcs by default, set, feet, inch, yds, meter, sft, rft, kg). A fifth standard term, Delivery & Labor Charges, can be ticked. The page’s help texts are removed (ADR-082).
+
 ### Added
 - 2026-11-20 — Admin → Invoice: choose how the advance was paid (Cash, Card or Bank; printed as "Advance paid (Cash)"), put the authorised signature on the left or right and at the bottom, after the totals or Auto, and tick any of the standard terms & conditions (Advance Payment, Product Collection, No Return or Exchange, Remaining Payment) to print them under the totals (ADR-081).
 

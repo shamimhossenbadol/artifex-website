@@ -628,3 +628,23 @@ Format: each ADR has a number, date, status (Accepted / Superseded by ADR-x / Pr
 **Context:** The owner wants the invoice layout to adapt to the items: with few items the signature can sit at the foot of the page, but when the items fill the page its own block wastes space that rows could use.
 **Decision:** This refines ADR-078. The authorised signature (left, 70 mm line, business name) is placed automatically from a measurement of the preview. While the page has room it stays at the bottom, with 40 px above the line to sign and 12 px above the red band. When the sheet would overflow, it moves up beside the totals, on their left with its line level with the bottom of Amount due, and the red band follows at the foot of the page. It moves back once the free space under the totals holds the bottom block plus an 8 px buffer, so it never flip-flops. The pure rule is `nextSignaturePlacement` in `lib/invoice.ts`; `InvoiceSheet` takes a `signature` prop ("bottom" or "beside") used by both the preview and the print copy. "Print invoice" also tries the beside layout before warning about an overflow. The overflow warning appears only when the sheet doesn't fit even with the signature beside the totals.
 **Consequences:** No new dependency or token; the challan is unchanged. Unit tests cover the placement rule; the invoice e2e test checks bottom placement with 15 short items, beside placement once four descriptions wrap (still prints), and the warning when all wrap. 07 is updated.
+
+### ADR-081 — Customisable invoice: signature side/position, advance payment method, optional terms; margin and band fixes
+**Date:** 2026-11-20 · **Status:** Accepted
+**Context:** The owner wants more control over the invoice: the signature on the left or right and higher or lower, how the advance was paid, and optional standard terms. They also reported that on paper the website text sat low in the red band, and that the phone number and amounts didn't line up with the right margin. A print PDF confirmed the phone number ran past the right margin (its 2fr column was narrower than "Phone Number", the leader and the number) and that the table and totals stopped about 2.5 mm inside it. The band itself was centred in the PDF. It sat at the very edge of the page, where most printers can't print, so the bottom of the band was cut off and the text looked low.
+**Decision:** This extends ADR-078 and ADR-080. Form (new "Signature & terms" card, plus a field in Payment):
+- **Advance paid by:** Not stated, Cash, Card or Bank (`ADVANCE_METHODS`). The sheet prints "Advance paid (Cash)".
+- **Signature side:** Left (default) or Right.
+- **Signature position:** Auto (default), Bottom of page, or After the totals.
+  - Auto is ADR-080's measured placement for a left signature. On the right, Auto stays at the bottom, because a signature under the totals would save almost no space.
+  - After the totals: a left signature sits beside the totals, a right one directly under them.
+  - `signatureLayout()` in `lib/invoice.ts` combines the choice with the measurement.
+- **Terms & conditions (optional):** one checkbox for each of the owner's four standard terms (`INVOICE_TERMS`: Advance Payment, Product Collection, No Return or Exchange, Remaining Payment). The ticked ones print under the totals as a numbered "Terms & Conditions" list, with the term name in bold.
+- **Clear:** starts a new invoice but keeps the signature and terms choices.
+
+Sheet:
+- Every right-aligned value ends on the right margin. The first and last table columns have no outer padding. The table header is ruled above and below instead of filled. The totals have no side padding, and Amount due has a rule under it instead of a fill. The phone column is as wide as its content.
+- The red band now reads "Visit our website: www…". It is 11 mm high with the text centred, and sits 6 mm above the bottom edge of the paper, so the whole band prints. `SheetFooterBand` gained an optional `label`; the challan is unchanged.
+
+The measured free space now runs from the end of everything after the items (totals and terms) to the band.
+**Consequences:** No new dependency, token or storage; nothing is saved. The band takes 6 mm more of the page, and terms take space too, so long invoices with terms move the signature up or show the one-page warning sooner. Unit tests cover the layout rule, the method labels and the terms order. The invoice e2e test covers the payment method, a term, a right signature after the totals and the band label. 07 is updated.

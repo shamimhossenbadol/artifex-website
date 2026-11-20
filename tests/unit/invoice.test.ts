@@ -5,6 +5,10 @@ import {
   formatAmount,
   invoicePrintProblems,
   nextSignaturePlacement,
+  INVOICE_TERMS,
+  advanceMethodLabel,
+  selectedInvoiceTerms,
+  signatureLayout,
   invoiceProblems,
   invoiceTotals,
   lineTotal,
@@ -32,6 +36,10 @@ const draft = (over: Partial<InvoiceDraft> = {}): InvoiceDraft => ({
   items: [item()],
   discount: "",
   advance: "",
+  advanceMethod: "",
+  signatureSide: "left",
+  signaturePosition: "auto",
+  terms: [],
   ...over,
 });
 
@@ -159,5 +167,44 @@ describe("nextSignaturePlacement (ADR-080)", () => {
     expect(nextSignaturePlacement("beside", fits)).toBe("bottom");
     expect(nextSignaturePlacement("beside", { ...fits, freeSpace: 104 })).toBe("beside");
     expect(nextSignaturePlacement("beside", { ...fits, freeSpace: 108 })).toBe("bottom");
+  });
+});
+
+describe("signature, payment method and terms (ADR-081)", () => {
+  it("uses fixed positions as chosen, and Auto's measurement only on the left", () => {
+    expect(signatureLayout("bottom", "left", "beside")).toBe("bottom");
+    expect(signatureLayout("up", "right", "bottom")).toBe("beside");
+    expect(signatureLayout("auto", "left", "beside")).toBe("beside");
+    expect(signatureLayout("auto", "left", "bottom")).toBe("bottom");
+    expect(signatureLayout("auto", "right", "beside")).toBe("bottom");
+  });
+
+  it("labels the advance payment method", () => {
+    expect(advanceMethodLabel("cash")).toBe("Cash");
+    expect(advanceMethodLabel("card")).toBe("Card");
+    expect(advanceMethodLabel("bank")).toBe("Bank");
+    expect(advanceMethodLabel("")).toBe("");
+  });
+
+  it("prints the selected terms in the standard order", () => {
+    expect(INVOICE_TERMS.map((t) => t.title)).toEqual([
+      "Advance Payment",
+      "Product Collection",
+      "No Return or Exchange",
+      "Remaining Payment",
+    ]);
+    expect(selectedInvoiceTerms(["remaining", "advance"]).map((t) => t.id)).toEqual([
+      "advance",
+      "remaining",
+    ]);
+    expect(selectedInvoiceTerms([])).toEqual([]);
+  });
+
+  it("doesn't add form problems for the new options", () => {
+    expect(
+      invoiceProblems(
+        draft({ advanceMethod: "bank", signatureSide: "right", terms: ["no-return"] }),
+      ),
+    ).toEqual([]);
   });
 });

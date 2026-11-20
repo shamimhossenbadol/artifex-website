@@ -11,7 +11,7 @@
 |---|---|
 | **Current phase** | Phase 8: SEO, security & performance hardening (in progress; Phase 7 done, 7f skipped) |
 | **Overall state** | ✅ Phase 1 complete. Code is on GitHub (`shamimhossenbadol/artifex-website`, private); CI is green. ✅ **First deploy succeeded 2026-11-12**: https://artifex.codespherestudio.site serves the placeholder page with security headers (via Cloudflare). Migration applied; seed created 7 categories, settings, hero and the admin (`mustChangePassword = 1`); backup saved in `~/backups`. |
-| **Last updated** | 2026-11-19 |
+| **Last updated** | 2026-11-20 |
 | **Next action** | LIVE at https://artifexfurniturebd.com. Owner: add products, category photos and the Facebook Pixel ID; Search Console + Meta domain verification; delete the old test site (owner's call: no redirect). Agent: check the occasional "failed to get redirect response … 127.0.0.1:3000" server log line (Server Action redirects under Passenger); accessibility pass (Phase 8). |
 
 ## Phase overview
@@ -86,6 +86,7 @@ Answer these by editing this list. Agents: use the **default** until an answer i
 
 Add one line per session, newest first: `YYYY-MM-DD — summary — files touched`.
 
+- 2026-11-20 — ADR-081: invoice advance method (Cash/Card/Bank), signature side + position (Auto/Bottom/After totals), optional standard terms; fixes: phone ran past the right margin, table/totals now end on the margin, red band raised 6 mm off the paper edge with "Visit our website:". Checked with local Playwright print PDFs on a temporary no-DB page (removed). Unit + e2e tests; not committed/deployed — src/components/admin/{invoice/*,print/Letterhead.tsx}, src/lib/invoice.ts, tests/unit/invoice.test.ts, tests/e2e/admin-auth.spec.ts, docs
 - 2026-11-19 — ADR-080: invoice signature placement adapts to the items (bottom while there is room, beside the totals when the page fills; measured, with a buffer; Print tries beside before warning). Checked in the browser on a temporary no-DB page (removed): 3 and 15 short items → bottom, 15 with 4 wrapped → beside and fits, more → warning, back to bottom when shortened. Unit + e2e tests; not committed/deployed — src/components/admin/invoice/*, src/lib/invoice.ts, tests/unit/invoice.test.ts, tests/e2e/admin-auth.spec.ts, docs
 - 2026-11-19 — ADR-079: dashboard KPIs get Today and Yesterday periods (Dhaka calendar days; `?range=today|yesterday`, Zod enum, default 30; Today vs same time yesterday, Yesterday vs the day before); `analyticsPeriods` in analytics.service; unit tests for Dhaka day boundaries, dashboard e2e clicks both (CI only). Not browser-checked (no local DB); not committed/deployed — src/lib/analytics.ts, src/lib/validation/analytics.ts, src/server/services/analytics.service.ts, src/components/admin/dashboard/AnalyticsPanel.tsx, tests/unit/analytics.test.ts, tests/e2e/admin-auth.spec.ts, docs
 - 2026-11-19 — ADR-078: compact invoice sheet (9 mm top padding, text-h2 title without red accent, invoice no./date inline, no "Bill to" label or rule before the table, authorised signature only on the left, footer band closer). Checked in the browser on a temporary no-DB page (removed): 15 items fit with ~30 mm spare. Not committed/deployed — src/components/admin/invoice/InvoiceSheet.tsx, src/styles/globals.css, docs

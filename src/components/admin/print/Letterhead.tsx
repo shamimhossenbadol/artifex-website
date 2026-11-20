@@ -54,8 +54,17 @@ export function SheetLetterhead({ business }: { business: LetterheadBusiness }) 
   );
 }
 
-/** Website on a brand-red band across the foot of the page. */
-export function SheetFooterBand({ website, className }: { website: string; className?: string }) {
+/** Website on a brand-red band across the foot of the page, optionally after a label. */
+export function SheetFooterBand({
+  website,
+  label,
+  className,
+}: {
+  website: string;
+  /** e.g. "Visit our website:" (invoice, ADR-081); the challan prints the address alone. */
+  label?: string;
+  className?: string;
+}) {
   return (
     <footer
       className={cn(
@@ -63,7 +72,10 @@ export function SheetFooterBand({ website, className }: { website: string; class
         className,
       )}
     >
-      {website}
+      <span>
+        {label && <span className="mr-2 tracking-normal">{label}</span>}
+        {website}
+      </span>
     </footer>
   );
 }

@@ -9,9 +9,13 @@ import { createPortal, flushSync } from "react-dom";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
 import {
+  ADVANCE_METHODS,
+  INVOICE_TERMS,
   INVOICE_UNITS,
+  advanceMethodLabel,
   MAX_INVOICE_ITEMS,
   filledInvoiceItems,
   formatAmount,
@@ -20,9 +24,13 @@ import {
   invoiceTotals,
   lineTotal,
   nextSignaturePlacement,
+  signatureLayout,
+  type AdvanceMethod,
   type InvoiceDraft,
   type InvoiceItem,
   type SignaturePlacement,
+  type SignaturePosition,
+  type SignatureSide,
 } from "@/lib/invoice";
 import type { ChallanProductOption } from "@/server/services/challan.service";
 import { sheetOverflows, type LetterheadBusiness } from "../print/Letterhead";
@@ -52,6 +60,10 @@ function newDraft(at: Date): InvoiceDraft {
     items: [emptyItem()],
     discount: "",
     advance: "",
+    advanceMethod: "",
+    signatureSide: "left",
+    signaturePosition: "auto",
+    terms: [],
   };
 }
 
@@ -63,8 +75,8 @@ const BOTTOM_SIGNATURE_EXTRA = 52;
 
 /**
  * Measures the on-screen preview (in sheet px, whatever the preview zoom): whether it runs past
- * one A4 page, the free space between the totals and the red band, and the room the signature
- * needs at the bottom of the page (ADR-077, ADR-080).
+ * one A4 page, the free space between the content after the items (totals, terms) and the red
+ * band, and the room the signature needs at the bottom of the page (ADR-077, ADR-080).
  */
 function measurePreview() {
   const sheet = document.getElementById(INVOICE_PREVIEW_ID);
@@ -72,11 +84,12 @@ function measurePreview() {
   const scale =
     sheet.offsetHeight > 0 ? sheet.getBoundingClientRect().height / sheet.offsetHeight : 1;
   const totals = sheet.querySelector("[data-invoice-totals]");
+  const flowEnd = sheet.querySelector("[data-invoice-flow-end]");
   const footer = sheet.querySelector("footer");
   const signature = sheet.querySelector("[data-invoice-signature]");
   const freeSpace =
-    totals && footer
-      ? (footer.getBoundingClientRect().top - totals.getBoundingClientRect().bottom) / scale
+    totals && flowEnd && footer
+      ? (footer.getBoundingClientRect().top - flowEnd.getBoundingClientRect().bottom) / scale
       : Number.POSITIVE_INFINITY;
   const signatureHeight = signature ? signature.getBoundingClientRect().height / scale : 0;
   return {
@@ -102,10 +115,17 @@ export function InvoiceMaker({
   const [showProblems, setShowProblems] = useState(false);
   // The invoice is exactly one A4 page: the preview is measured to make sure everything fits.
   const [overflows, setOverflows] = useState(false);
-  // The signature sits at the bottom of the page, or beside the totals when the items fill the
-  // page (ADR-080). The ref is the value the measurements compare against.
+  // "Auto" placement from the measurements: the signature sits at the bottom of the page, or
+  // beside the totals when the items fill the page (ADR-080). The ref is the value the
+  // measurements compare against. The admin can also fix the side and position (ADR-081).
   const [signature, setSignature] = useState<SignaturePlacement>("bottom");
   const signatureRef = useRef<SignaturePlacement>("bottom");
+  const autoRef = useRef(true);
+  const autoSignature = draft.signaturePosition === "auto" && draft.signatureSide === "left";
+  useEffect(() => {
+    autoRef.current = autoSignature;
+  }, [autoSignature]);
+  const layout = signatureLayout(draft.signaturePosition, draft.signatureSide, signature);
   const previewRef = useRef<HTMLDivElement>(null);
   const alertRef = useRef<HTMLUListElement>(null);
   const isBrowser = useSyncExternalStore(
@@ -122,7 +142,10 @@ export function InvoiceMaker({
     const measure = () => {
       const m = measurePreview();
       if (!m) return;
-      const next = nextSignaturePlacement(signatureRef.current, m);
+      // A fixed side/position (ADR-081) only needs the overflow check.
+      const next = autoRef.current
+        ? nextSignaturePlacement(signatureRef.current, m)
+        : signatureRef.current;
       if (next !== signatureRef.current) {
         // The re-render changes the preview, so the observer measures again with the new layout.
         signatureRef.current = next;
@@ -164,7 +187,7 @@ export function InvoiceMaker({
     // Measure the sheet now, not the last observed state, so Print never sends a sheet that
     // doesn't fit one A4 page (ADR-077).
     let m = measurePreview();
-    if (m?.overflows && signatureRef.current === "bottom") {
+    if (m?.overflows && autoRef.current && signatureRef.current === "bottom") {
       // Try the signature beside the totals first (ADR-080), then measure that layout.
       flushSync(() => {
         signatureRef.current = "beside";
@@ -347,6 +370,20 @@ export function InvoiceMaker({
               />
             </Field>
           </div>
+          {/* Printed after "Advance paid", e.g. "Advance paid (Cash)" (ADR-081). */}
+          <Field label="Advance paid by (optional)">
+            <Select
+              value={draft.advanceMethod}
+              onChange={(e) => set("advanceMethod", e.target.value as AdvanceMethod)}
+            >
+              <option value="">Not stated</option>
+              {ADVANCE_METHODS.map((method) => (
+                <option key={method.value} value={method.value}>
+                  {method.label}
+                </option>
+              ))}
+            </Select>
+          </Field>
           <dl className="bg-bg text-small flex flex-col gap-1 rounded-md px-4 py-3 tabular-nums">
             <div className="flex justify-between">
               <dt className="text-muted">Subtotal</dt>
@@ -360,7 +397,10 @@ export function InvoiceMaker({
             )}
             {totals.advance > 0 && (
               <div className="flex justify-between">
-                <dt className="text-muted">Advance paid</dt>
+                <dt className="text-muted">
+                  Advance paid
+                  {draft.advanceMethod && ` (${advanceMethodLabel(draft.advanceMethod)})`}
+                </dt>
                 <dd>− ৳ {formatAmount(totals.advance)}</dd>
               </div>
             )}
@@ -388,6 +428,61 @@ export function InvoiceMaker({
           </div>
         </section>
 
+        {/* Signature placement and optional terms (ADR-081). Clear keeps these choices. */}
+        <section className="admin-card flex flex-col gap-5 p-5">
+          <h2 className="text-h3">Signature &amp; terms</h2>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Signature side">
+              <Select
+                value={draft.signatureSide}
+                onChange={(e) => set("signatureSide", e.target.value as SignatureSide)}
+              >
+                <option value="left">Left</option>
+                <option value="right">Right</option>
+              </Select>
+            </Field>
+            <Field label="Signature position">
+              <Select
+                value={draft.signaturePosition}
+                onChange={(e) => set("signaturePosition", e.target.value as SignaturePosition)}
+              >
+                <option value="auto">Auto</option>
+                <option value="bottom">Bottom of page</option>
+                <option value="up">After the totals</option>
+              </Select>
+            </Field>
+          </div>
+          <p className="text-small text-muted -mt-2">
+            Auto keeps the signature at the bottom and moves it up beside the totals when the items
+            fill the page (left side only).
+          </p>
+          <fieldset className="flex flex-col gap-1">
+            <legend className="text-small text-ink mb-1 font-medium">
+              Terms &amp; conditions (optional)
+            </legend>
+            {INVOICE_TERMS.map((term) => (
+              <label key={term.id} className="text-small flex min-h-11 items-start gap-2 py-2">
+                <input
+                  type="checkbox"
+                  checked={draft.terms.includes(term.id)}
+                  onChange={(e) =>
+                    setDraft((d) => ({
+                      ...d,
+                      terms: e.target.checked
+                        ? [...d.terms, term.id]
+                        : d.terms.filter((id) => id !== term.id),
+                    }))
+                  }
+                  className="accent-ink mt-0.5 size-4 shrink-0"
+                />
+                <span>
+                  <span className="text-ink font-medium">{term.title}:</span> {term.text}
+                </span>
+              </label>
+            ))}
+          </fieldset>
+        </section>
+
         {(showProblems || overflows) && problems.length > 0 && (
           <ul
             ref={alertRef}
@@ -409,7 +504,13 @@ export function InvoiceMaker({
             type="button"
             variant="secondary"
             onClick={() => {
-              setDraft(newDraft(new Date()));
+              // A new invoice keeps the signature and terms choices (ADR-081).
+              setDraft((d) => ({
+                ...newDraft(new Date()),
+                signatureSide: d.signatureSide,
+                signaturePosition: d.signaturePosition,
+                terms: d.terms,
+              }));
               setShowProblems(false);
             }}
           >
@@ -429,7 +530,7 @@ export function InvoiceMaker({
           <InvoiceSheet
             id={INVOICE_PREVIEW_ID}
             draft={draft}
-            signature={signature}
+            signature={layout}
             business={business}
             className="mx-auto xl:[zoom:0.72] 2xl:[zoom:0.9]"
           />
@@ -440,7 +541,7 @@ export function InvoiceMaker({
       {isBrowser &&
         createPortal(
           <div id={INVOICE_PRINT_ROOT_ID}>
-            <InvoiceSheet draft={draft} business={business} signature={signature} />
+            <InvoiceSheet draft={draft} business={business} signature={layout} />
           </div>,
           document.body,
         )}

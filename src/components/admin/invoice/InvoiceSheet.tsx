@@ -1,15 +1,18 @@
-// The printable invoice (ADR-067): the same letterhead, watermark and red website band as the
-// delivery challan (print/Letterhead.tsx), then the customer, an itemised table (qty × unit
-// price), the totals (subtotal, optional discount and advance, due) and the authorised signature.
-// Exactly one A4 page for both the on-screen preview and the print copy; it renders the form and
-// keeps nothing. The form decides where the signature goes (ADR-080).
+// The printable invoice (ADR-067): the same letterhead and watermark as the delivery challan
+// (print/Letterhead.tsx), then the customer, an itemised table (qty × unit price), the totals
+// (subtotal, optional discount and advance with how it was paid, due), optional terms and the
+// authorised signature, and a red website band. Exactly one A4 page for both the on-screen
+// preview and the print copy; it renders the form and keeps nothing. The form decides where the
+// signature goes (ADR-080, ADR-081). Every right-aligned value ends exactly on the right margin.
 import {
+  advanceMethodLabel,
   filledInvoiceItems,
   formatAmount,
   formatInvoiceDate,
   invoiceTotals,
   lineTotal,
   parseAmount,
+  selectedInvoiceTerms,
   type InvoiceDraft,
   type SignaturePlacement,
 } from "@/lib/invoice";
@@ -26,9 +29,10 @@ import {
 /** Id of the on-screen preview sheet, measured by the form to keep everything on one page. */
 export const INVOICE_PREVIEW_ID = "invoice-preview-sheet";
 
-const TH = "text-small px-2.5 py-1.5 font-semibold";
-// Compact rows (ADR-077): 15 items, the totals and the signatures fit one A4 page.
-const TD = "px-2.5 py-1 leading-tight";
+// Compact rows (ADR-077). The first and last columns have no outer padding, so SL starts on the
+// left margin and the totals end on the right margin, like the rest of the sheet (ADR-081).
+const TH = "text-small px-2.5 py-1.5 font-semibold first:pl-0 last:pr-0";
+const TD = "px-2.5 py-1 leading-tight first:pl-0 last:pr-0";
 
 /** "Name ........ Abu Kashem": label left, value right, a dotted leader between. */
 function LeaderRow({
@@ -45,7 +49,7 @@ function LeaderRow({
   return (
     <div className={cn("flex min-w-0 items-baseline gap-3", className)}>
       <dt className="text-small text-muted shrink-0">{label}</dt>
-      <span aria-hidden className="border-muted min-w-[10mm] flex-1 border-b border-dotted" />
+      <span aria-hidden className="border-muted min-w-[6mm] flex-1 border-b border-dotted" />
       <dd className={cn("text-ink max-w-[120mm] min-w-0 text-right", valueClassName)}>
         {children || "—"}
       </dd>
@@ -68,8 +72,8 @@ function TotalRow({
   return (
     <div
       className={cn(
-        "flex items-baseline justify-between gap-6 px-2.5",
-        strong ? "bg-sand text-ink py-1.5 font-semibold" : "py-0.5",
+        "flex items-baseline justify-between gap-6",
+        strong ? "border-ink text-ink border-b py-1.5 font-semibold" : "py-0.5",
       )}
     >
       <dt className={strong ? "text-body" : "text-small text-ink-soft"}>{label}</dt>
@@ -91,19 +95,26 @@ export function InvoiceSheet({
   business: LetterheadBusiness;
   id?: string;
   className?: string;
-  /** "bottom" of the page, or "beside" the totals when the items fill the page (ADR-080). */
+  /** "bottom" of the page, or "beside" = right after the totals (ADR-080, ADR-081). */
   signature?: SignaturePlacement;
 }) {
   const items = filledInvoiceItems(draft.items);
-  const beside = signature === "beside" && items.length > 0;
+  const totals = invoiceTotals(draft);
+  const date = formatInvoiceDate(draft.date);
+  const terms = selectedInvoiceTerms(draft.terms);
+  const right = draft.signatureSide === "right";
+  // "Beside" needs the totals: without items the signature stays at the bottom.
+  const up = signature === "beside" && items.length > 0;
+  const advanceMethod = advanceMethodLabel(draft.advanceMethod);
   const signatureBlock = (
-    <div data-invoice-signature className="border-ink w-[70mm] shrink-0 border-t pt-1.5">
+    <div
+      data-invoice-signature
+      className={cn("border-ink w-[70mm] shrink-0 border-t pt-1.5", right && "text-right")}
+    >
       <p className="text-small text-ink font-medium">Authorised signature</p>
       <p className="text-small text-muted">{business.name}</p>
     </div>
   );
-  const totals = invoiceTotals(draft);
-  const date = formatInvoiceDate(draft.date);
 
   return (
     // Less space above the letterhead than the challan (ADR-078): more room for items.
@@ -128,10 +139,10 @@ export function InvoiceSheet({
         </dl>
       </div>
 
-      {/* Customer: no heading and no rule under it; the table header follows (ADR-078). Name and
-          phone share a line to leave room for the items (ADR-077). */}
+      {/* Customer: no heading and no rule under it (ADR-078). Name and phone share a line; the
+          phone column is as wide as the number, so it never runs past the margin (ADR-081). */}
       <section className="border-line mt-3 border-t pt-3">
-        <dl className="grid grid-cols-[3fr_2fr] gap-x-8 gap-y-1.5">
+        <dl className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-8 gap-y-1.5">
           <LeaderRow
             label="Customer Name"
             valueClassName="font-semibold"
@@ -152,11 +163,12 @@ export function InvoiceSheet({
         </dl>
       </section>
 
-      {/* Items */}
+      {/* Items: the header is ruled above and below (no fill), so the columns can run margin to
+          margin (ADR-081). */}
       <table className="mt-3 w-full border-collapse text-left">
         <thead>
-          <tr className="bg-sand text-ink">
-            <th scope="col" className={cn(TH, "w-[11mm]")}>
+          <tr className="border-ink text-ink border-y">
+            <th scope="col" className={cn(TH, "w-[9mm]")}>
               SL
             </th>
             <th scope="col" className={TH}>
@@ -171,7 +183,7 @@ export function InvoiceSheet({
             <th scope="col" className={cn(TH, "w-[26mm] text-right")}>
               Unit price
             </th>
-            <th scope="col" className={cn(TH, "w-[30mm] text-right")}>
+            <th scope="col" className={cn(TH, "w-[28mm] text-right")}>
               Total
             </th>
           </tr>
@@ -209,26 +221,62 @@ export function InvoiceSheet({
         </tbody>
       </table>
 
-      {/* Totals, right-aligned under the amount columns. When the items fill the page, the
-          signature sits on their left, its line level with the bottom of the totals (ADR-080). */}
-      {items.length > 0 && (
-        <div className={cn("mt-2 flex items-end justify-between gap-8", beside && "pb-3")}>
-          {beside && signatureBlock}
-          <dl data-invoice-totals className="ml-auto w-[76mm]">
-            <TotalRow label="Subtotal" value={totals.subtotal} />
-            {totals.discount > 0 && <TotalRow label="Discount" value={totals.discount} minus />}
-            {totals.advance > 0 && <TotalRow label="Advance paid" value={totals.advance} minus />}
-            <div className="border-ink mt-1 border-t" />
-            <TotalRow label="Amount due" value={totals.due} strong />
-          </dl>
-        </div>
+      {/* Everything after the items that stays in the flow; the form measures where it ends. */}
+      <div data-invoice-flow-end className={cn(up && "pb-3")}>
+        {/* Totals, right-aligned, ending on the margin. A left signature "up" sits beside them,
+            its line level with Amount due; a right one goes under them (ADR-080, ADR-081). */}
+        {items.length > 0 && (
+          <div className="mt-2 flex items-end justify-between gap-8">
+            {up && !right && signatureBlock}
+            <dl data-invoice-totals className="ml-auto w-[76mm]">
+              <TotalRow label="Subtotal" value={totals.subtotal} />
+              {totals.discount > 0 && <TotalRow label="Discount" value={totals.discount} minus />}
+              {totals.advance > 0 && (
+                <TotalRow
+                  label={advanceMethod ? `Advance paid (${advanceMethod})` : "Advance paid"}
+                  value={totals.advance}
+                  minus
+                />
+              )}
+              <div className="border-ink mt-1 border-t" />
+              <TotalRow label="Amount due" value={totals.due} strong />
+            </dl>
+          </div>
+        )}
+        {up && right && <div className="mt-10 flex justify-end">{signatureBlock}</div>}
+
+        {/* Optional terms (ADR-081): only the ones ticked in the form, numbered. */}
+        {terms.length > 0 && (
+          <section className="mt-4">
+            <h3 className={cn(SHEET_LABEL, "text-ink")}>Terms &amp; Conditions</h3>
+            <ol className="text-small text-ink-soft mt-1.5 flex list-decimal flex-col gap-0.5 pl-4">
+              {terms.map((term) => (
+                <li key={term.id} className="leading-snug">
+                  <span className="text-ink font-medium">{term.title}:</span> {term.text}
+                </li>
+              ))}
+            </ol>
+          </section>
+        )}
+      </div>
+
+      {/* At the bottom: room above the line to sign, little space below it (ADR-078). */}
+      {!up && (
+        <section className={cn("mt-auto flex pt-10", right && "justify-end")}>
+          {signatureBlock}
+        </section>
       )}
 
-      {/* Otherwise the authorised signature is on the left at the foot of the page, with room
-          above the line to sign and little space below it (ADR-078). */}
-      {!beside && <section className="mt-auto pt-10">{signatureBlock}</section>}
-
-      <SheetFooterBand website={business.website} className={beside ? "mt-auto" : "mt-3"} />
+      {/* The red band sits 6 mm above the paper's edge, clear of the strip most printers can't
+          print, so the whole band prints and the text is centred in it (ADR-081). */}
+      <SheetFooterBand
+        website={business.website}
+        label="Visit our website:"
+        className={cn(
+          "-mb-[6mm] flex h-[11mm] items-center justify-center py-0",
+          up ? "mt-auto" : "mt-3",
+        )}
+      />
     </article>
   );
 }

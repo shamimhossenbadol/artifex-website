@@ -523,6 +523,18 @@ test("invoice: items × prices, discount and advance, print only the sheet, keep
   await expect(preview.getByText("৳ 30,200")).toBeVisible();
   await expect(preview.getByText(/^Email: /)).toBeVisible();
 
+  // ADR-081: advance payment method, signature side/position and optional terms.
+  await page.getByLabel("Advance paid by (optional)").selectOption("cash");
+  await expect(preview.getByText("Advance paid (Cash)")).toBeVisible();
+  await expect(preview.getByText("Terms & Conditions")).toHaveCount(0);
+  await page.getByLabel(/^No Return or Exchange:/).check();
+  await expect(preview.getByText("Terms & Conditions")).toBeVisible();
+  await expect(preview.getByText("All sales are final.", { exact: false })).toBeVisible();
+  await page.getByLabel("Signature side").selectOption("right");
+  await page.getByLabel("Signature position").selectOption("up");
+  await expect(preview.locator("div.justify-end > [data-invoice-signature]")).toHaveCount(1);
+  await expect(preview.getByText("Visit our website:")).toBeVisible();
+
   await page.emulateMedia({ media: "print" });
   await expect(page.locator("#invoice-print-root")).toBeVisible();
   await expect(page.locator("#invoice-print-root").getByText("E2E Invoice Customer")).toBeVisible();

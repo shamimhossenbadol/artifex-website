@@ -5,6 +5,12 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 
 ## [Unreleased]
 
+### Added
+- 2026-11-20 — Admin → Invoice: choose how the advance was paid (Cash, Card or Bank; printed as "Advance paid (Cash)"), put the authorised signature on the left or right and at the bottom, after the totals or Auto, and tick any of the standard terms & conditions (Advance Payment, Product Collection, No Return or Exchange, Remaining Payment) to print them under the totals (ADR-081).
+
+### Fixed
+- 2026-11-20 — Invoice print: the phone number no longer runs past the right margin, and the table and totals now end exactly on it. The red band sits clear of the paper edge so it prints whole, with "Visit our website: …" centred in it (ADR-081).
+
 ### Changed
 - 2026-11-19 — Admin → Invoice: the authorised signature now adapts to the items. It stays at the bottom of the page while there is room and moves up beside the totals when the items fill the page, so more or longer rows fit before the "Too much for one A4 page" warning (ADR-080).
 - 2026-11-19 — Admin → Dashboard: the visitor & inquiry numbers can now be shown for **Today** and **Yesterday** (Dhaka days), next to 7, 30 and 90 days. Today compares with the same time yesterday; Yesterday with the day before (ADR-079).

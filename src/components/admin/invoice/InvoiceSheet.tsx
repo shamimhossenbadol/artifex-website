@@ -35,8 +35,8 @@ export const INVOICE_PREVIEW_ID = "invoice-preview-sheet";
 const TH = "text-small px-2.5 py-1.5 font-semibold first:pl-0 last:pr-0";
 const TD = "px-2.5 py-1 leading-tight first:pl-0 last:pr-0";
 
-/** "Name ........ Abu Kashem": label left, value right, a dotted leader between. */
-function LeaderRow({
+/** "Name: Shamim Hossen": the value follows its label after a standard gap (ADR-084). */
+function DetailRow({
   label,
   valueClassName,
   className,
@@ -48,12 +48,9 @@ function LeaderRow({
   children: string;
 }) {
   return (
-    <div className={cn("flex min-w-0 items-baseline gap-3", className)}>
-      <dt className="text-small text-muted shrink-0">{label}</dt>
-      <span aria-hidden className="border-muted min-w-[6mm] flex-1 border-b border-dotted" />
-      <dd className={cn("text-ink max-w-[120mm] min-w-0 text-right", valueClassName)}>
-        {children || "—"}
-      </dd>
+    <div className={cn("flex min-w-0 items-baseline gap-2", className)}>
+      <dt className="text-small text-muted shrink-0">{label}:</dt>
+      <dd className={cn("text-ink min-w-0", valueClassName)}>{children || "—"}</dd>
     </div>
   );
 }
@@ -113,7 +110,8 @@ export function InvoiceSheet({
       className={cn("border-ink w-[70mm] shrink-0 border-t pt-1.5", right && "text-right")}
     >
       <p className="text-small text-ink font-medium">Authorised signature</p>
-      <p className="text-small text-muted">{business.name}</p>
+      {/* The salesman's name, when given (ADR-084; replaces the business name). */}
+      {draft.salesman.trim() && <p className="text-small text-muted">{draft.salesman.trim()}</p>}
     </div>
   );
 
@@ -142,26 +140,27 @@ export function InvoiceSheet({
         </dl>
       </div>
 
-      {/* Customer: no heading and no rule under it (ADR-078). Name and phone share a line; the
-          phone column is as wide as the number, so it never runs past the margin (ADR-081). */}
+      {/* Customer: no heading and no rule under it (ADR-078). "Label: value", left-aligned
+          (ADR-084). Name and phone share a line; the phone column is as wide as its content, so
+          it never runs past the margin (ADR-081). */}
       <section className="border-line mt-3 border-t pt-3">
         <dl className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-8 gap-y-1.5">
-          <LeaderRow
-            label="Customer Name"
+          <DetailRow
+            label="Name"
             valueClassName="font-semibold"
             className={draft.customerPhone.trim() ? undefined : "col-span-2"}
           >
             {draft.customerName}
-          </LeaderRow>
+          </DetailRow>
           {draft.customerPhone.trim() && (
-            <LeaderRow label="Phone Number" valueClassName="tabular-nums">
+            <DetailRow label="Phone" valueClassName="tabular-nums">
               {draft.customerPhone}
-            </LeaderRow>
+            </DetailRow>
           )}
           {draft.customerAddress.trim() && (
-            <LeaderRow label="Address" valueClassName="whitespace-pre-line" className="col-span-2">
+            <DetailRow label="Address" valueClassName="whitespace-pre-line" className="col-span-2">
               {draft.customerAddress}
-            </LeaderRow>
+            </DetailRow>
           )}
         </dl>
       </section>

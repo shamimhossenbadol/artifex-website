@@ -70,6 +70,7 @@ function newDraft(at: Date): InvoiceDraft {
     signaturePosition: "auto",
     signatureLift: 0,
     termsGap: 0,
+    salesman: "",
     terms: [],
   };
 }
@@ -503,6 +504,15 @@ export function InvoiceMaker({
               />
             </Field>
           </div>
+          {/* Printed under "Authorised signature" (ADR-084). Clear keeps it. */}
+          <Field label="Salesman (optional)">
+            <Input
+              value={draft.salesman}
+              onChange={(e) => set("salesman", e.target.value)}
+              maxLength={60}
+              autoComplete="off"
+            />
+          </Field>
         </section>
 
         {/* Signature placement and optional terms (ADR-081). Clear keeps these choices. */}
@@ -610,13 +620,14 @@ export function InvoiceMaker({
             type="button"
             variant="secondary"
             onClick={() => {
-              // A new invoice keeps the signature and terms choices (ADR-081).
+              // A new invoice keeps the signature, terms and salesman choices (ADR-081, ADR-084).
               setDraft((d) => ({
                 ...newDraft(new Date()),
                 signatureSide: d.signatureSide,
                 signaturePosition: d.signaturePosition,
                 signatureLift: d.signatureLift,
                 termsGap: d.termsGap,
+                salesman: d.salesman,
                 terms: d.terms,
               }));
               setShowProblems(false);

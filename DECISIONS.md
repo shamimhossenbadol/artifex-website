@@ -673,3 +673,12 @@ The measured free space now runs from the end of everything after the items (tot
   - The signature and terms controls share one `MoveButtons` group component, labelled "Signature height" / "Terms position".
 - **Red band:** It runs to the bottom edge of the paper again, and is exactly 12 mm high, the sheet's bottom padding. An 11 mm band with a −12 mm margin made Chrome report 3 px of overflow on every invoice, which wrongly moved an Auto signature up beside the totals. The text stays centred in the band. On printers that can't print the last few millimetres, the bottom of the band may be cut off; the owner accepted that.
 **Consequences:** No new dependency or token. The band gives back 6 mm of page space. The invoice e2e test scopes each Move button to its labelled group and covers the terms control. 07 is updated.
+
+### ADR-084 — Invoice: shorter terms, "Label: value" customer details, salesman under the signature
+**Date:** 2026-11-20 · **Status:** Accepted
+**Context:** The owner revised two of the standard terms. They want the customer's details to read like "Name: Shamim Hossen" rather than a label and a right-aligned value with a dotted leader between them. They also want the salesman's name under "Authorised signature" instead of the business name.
+**Decision:** This changes ADR-081's sheet.
+- **Terms:** Remaining Payment now reads "The remaining 50% must be paid in full before product collection." "Delivery & Labor Charges" is renamed **Delivery & Labor**: "All transportation, loading, unloading, and labor costs are borne by the customer." The term ids are unchanged.
+- **Customer details:** each detail is "Label: value", left-aligned with a standard 8 px gap and no dotted leaders. The labels are shortened to Name, Phone and Address. Name and phone still share a line (the phone column sits at the right), and the address takes the next line.
+- **Salesman:** a new optional **Salesman** field in Details. Its name prints under "Authorised signature"; when it is empty, nothing prints there, and the business name is no longer printed under the signature. Clear keeps the salesman, like the signature and terms choices.
+**Consequences:** No new dependency or token; nothing is stored. Unit tests follow the renamed term. The invoice e2e test covers "Name:" and the salesman under the signature. 07 is updated.

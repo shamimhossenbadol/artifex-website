@@ -6,6 +6,9 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 ## [Unreleased]
 
 ### Changed
+- 2026-11-20 — Admin → Invoice: shorter Remaining Payment and Delivery & Labor terms. The customer details read "Name: …", "Phone: …", "Address: …" (value right after the label). A new optional Salesman field prints the salesman’s name under "Authorised signature" instead of the business name (ADR-084).
+
+### Changed
 - 2026-11-20 — Admin → Invoice: the terms & conditions can be moved down and back up (2 mm steps, up to the free space), like the signature. The red website band touches the bottom edge of the paper again (ADR-083).
 
 ### Changed

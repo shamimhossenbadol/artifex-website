@@ -44,6 +44,7 @@ const draft = (over: Partial<InvoiceDraft> = {}): InvoiceDraft => ({
   signaturePosition: "auto",
   signatureLift: 0,
   termsGap: 0,
+  salesman: "",
   terms: [],
   ...over,
 });
@@ -197,7 +198,7 @@ describe("signature, payment method and terms (ADR-081)", () => {
       "Product Collection",
       "No Return or Exchange",
       "Remaining Payment",
-      "Delivery & Labor Charges",
+      "Delivery & Labor",
     ]);
     expect(selectedInvoiceTerms(["remaining", "advance"]).map((t) => t.id)).toEqual([
       "advance",

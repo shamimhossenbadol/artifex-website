@@ -98,12 +98,12 @@ export const INVOICE_TERMS = [
   {
     id: "remaining",
     title: "Remaining Payment",
-    text: "The remaining 50% of the total amount must be paid in full before collecting the product.",
+    text: "The remaining 50% must be paid in full before product collection.",
   },
   {
     id: "delivery-labor",
-    title: "Delivery & Labor Charges",
-    text: "All transportation, loading, unloading, and related labor costs shall be borne entirely by the customer.",
+    title: "Delivery & Labor",
+    text: "All transportation, loading, unloading, and labor costs are borne by the customer.",
   },
 ] as const;
 export type InvoiceTermId = (typeof INVOICE_TERMS)[number]["id"];
@@ -131,6 +131,8 @@ export type InvoiceDraft = {
   terms: InvoiceTermId[];
   /** Extra space above the terms, in mm (0 = closest to the totals; ADR-083). */
   termsGap: number;
+  /** Printed under "Authorised signature" (optional; ADR-084). */
+  salesman: string;
 };
 
 /**

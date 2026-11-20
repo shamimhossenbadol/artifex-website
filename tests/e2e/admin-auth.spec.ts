@@ -526,6 +526,12 @@ test("invoice: items × prices, discount and advance, print only the sheet, keep
   await expect(preview.getByText("৳ 30,200")).toBeVisible();
   await expect(preview.getByText(/^Email: /)).toBeVisible();
 
+  // ADR-084: "Name: …" (label then value) and the salesman under the authorised signature.
+  await expect(preview.getByText("Name:", { exact: true })).toBeVisible();
+  await page.getByLabel("Salesman (optional)").fill("E2E Salesman");
+  const signature = preview.locator("[data-invoice-signature]");
+  await expect(signature.getByText("E2E Salesman")).toBeVisible();
+
   // ADR-081: advance payment method, signature side/position and optional terms.
   await page.getByLabel("Advance paid by (optional)").selectOption("cash");
   await expect(preview.getByText("Advance paid (Cash)")).toBeVisible();

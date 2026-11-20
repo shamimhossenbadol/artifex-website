@@ -248,9 +248,16 @@ export function InvoiceSheet({
         )}
         {up && right && <div className="mt-10 flex justify-end">{signatureBlock}</div>}
 
-        {/* Optional terms (ADR-081): only the ones ticked in the form, numbered. */}
+        {/* Optional terms (ADR-081): only the ones ticked in the form, numbered. The form's
+            up/down buttons add space above them (ADR-083). */}
         {terms.length > 0 && (
-          <section className="mt-4">
+          <section
+            data-invoice-terms
+            className="mt-4"
+            style={
+              draft.termsGap > 0 ? { marginTop: `calc(1rem + ${draft.termsGap}mm)` } : undefined
+            }
+          >
             <h3 className={cn(SHEET_LABEL, "text-ink")}>Terms &amp; Conditions</h3>
             <ol className="text-small text-ink-soft mt-1.5 flex list-decimal flex-col gap-0.5 pl-4">
               {terms.map((term) => (
@@ -275,15 +282,13 @@ export function InvoiceSheet({
         </section>
       )}
 
-      {/* The red band sits 6 mm above the paper's edge, clear of the strip most printers can't
-          print, so the whole band prints and the text is centred in it (ADR-081). */}
+      {/* The red band runs to the bottom edge of the paper, 12 mm high (exactly the bottom padding,
+          so it never measures as an overflow), with the text centred in
+          it (ADR-083; ADR-081 had lifted it 6 mm). */}
       <SheetFooterBand
         website={business.website}
         label="Visit our website:"
-        className={cn(
-          "-mb-[6mm] flex h-[11mm] items-center justify-center py-0",
-          up ? "mt-auto" : "mt-3",
-        )}
+        className={cn("flex h-[12mm] items-center justify-center py-0", up ? "mt-auto" : "mt-3")}
       />
     </article>
   );

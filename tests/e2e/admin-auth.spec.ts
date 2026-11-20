@@ -535,16 +535,26 @@ test("invoice: items × prices, discount and advance, print only the sheet, keep
   await expect(preview.getByText("All sales are final.", { exact: false })).toBeVisible();
   // ADR-082: the bottom signature moves up and down in 2 mm steps (space below it).
   await page.getByLabel("Signature position").selectOption("bottom");
-  await expect(page.getByRole("button", { name: "Move down" })).toBeDisabled();
-  await page.getByRole("button", { name: "Move up" }).click();
-  await page.getByRole("button", { name: "Move up" }).click();
-  await expect(page.getByText("4 mm up")).toBeVisible();
+  const signatureHeight = page.getByRole("group", { name: "Signature height" });
+  await expect(signatureHeight.getByRole("button", { name: "Move down" })).toBeDisabled();
+  await signatureHeight.getByRole("button", { name: "Move up" }).click();
+  await signatureHeight.getByRole("button", { name: "Move up" }).click();
+  await expect(signatureHeight.getByText("4 mm up")).toBeVisible();
   await expect(preview.locator("[data-invoice-signature-slot]")).toHaveAttribute(
     "style",
     /margin-bottom: 4mm/,
   );
-  await page.getByRole("button", { name: "Move down" }).click();
-  await expect(page.getByText("2 mm up")).toBeVisible();
+  await signatureHeight.getByRole("button", { name: "Move down" }).click();
+  await expect(signatureHeight.getByText("2 mm up")).toBeVisible();
+  // ADR-083: the terms move down (more space above them) and back up the same way.
+  const termsPosition = page.getByRole("group", { name: "Terms position" });
+  await expect(termsPosition.getByRole("button", { name: "Move up" })).toBeDisabled();
+  await termsPosition.getByRole("button", { name: "Move down" }).click();
+  await expect(termsPosition.getByText("2 mm down")).toBeVisible();
+  await expect(preview.locator("[data-invoice-terms]")).toHaveAttribute(
+    "style",
+    /margin-top: calc\(.*2mm.*\)/,
+  );
   await page.getByLabel("Signature side").selectOption("right");
   await page.getByLabel("Signature position").selectOption("up");
   await expect(preview.locator("div.justify-end > [data-invoice-signature]")).toHaveCount(1);

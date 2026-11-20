@@ -43,6 +43,7 @@ const draft = (over: Partial<InvoiceDraft> = {}): InvoiceDraft => ({
   signatureSide: "left",
   signaturePosition: "auto",
   signatureLift: 0,
+  termsGap: 0,
   terms: [],
   ...over,
 });

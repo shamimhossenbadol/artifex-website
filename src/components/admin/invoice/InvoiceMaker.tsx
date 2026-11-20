@@ -19,6 +19,7 @@ import {
   MAX_INVOICE_ITEMS,
   SIGNATURE_LIFT_MAX_MM,
   SIGNATURE_LIFT_STEP_MM,
+  TERMS_GAP_MAX_MM,
   formatInvoiceNumber,
   invoiceNumberInput,
   filledInvoiceItems,
@@ -68,6 +69,7 @@ function newDraft(at: Date): InvoiceDraft {
     signatureSide: "left",
     signaturePosition: "auto",
     signatureLift: 0,
+    termsGap: 0,
     terms: [],
   };
 }
@@ -101,17 +103,65 @@ function measurePreview(liftMm: number) {
       ? (footer.getBoundingClientRect().top - flowEnd.getBoundingClientRect().bottom) / scale
       : Number.POSITIVE_INFINITY;
   const signatureHeight = signature ? signature.getBoundingClientRect().height / scale : 0;
+  // The page's empty space: above the bottom signature, or above the red band when the signature
+  // sits after the totals. Moving the signature up or the terms down uses it up (ADR-082/083).
   const slot = sheet.querySelector("[data-invoice-signature-slot]");
-  const spaceAbove =
-    slot && flowEnd
-      ? (slot.getBoundingClientRect().top - flowEnd.getBoundingClientRect().bottom) / scale
+  const below = slot ?? footer;
+  const emptySpace =
+    below && flowEnd
+      ? (below.getBoundingClientRect().top - flowEnd.getBoundingClientRect().bottom) / scale
       : 0;
   return {
     overflows: sheetOverflows(sheet),
     freeSpace,
     bottomRoom: BOTTOM_SIGNATURE_EXTRA + signatureHeight + liftMm * PX_PER_MM,
-    spaceAbove,
+    emptySpace,
   };
+}
+
+/**
+ * "Move down · value · Move up" for nudging the signature or the terms (ADR-082, ADR-083). A
+ * labelled group, so each pair of buttons is named by its label for assistive tech and tests.
+ */
+function MoveButtons({
+  label,
+  value,
+  upDisabled,
+  downDisabled,
+  onUp,
+  onDown,
+}: {
+  label: string;
+  value: string;
+  upDisabled: boolean;
+  downDisabled: boolean;
+  onUp: () => void;
+  onDown: () => void;
+}) {
+  const labelId = useId();
+  return (
+    <div role="group" aria-labelledby={labelId} className="flex flex-col gap-2">
+      <p id={labelId} className="text-small text-ink font-medium">
+        {label}
+      </p>
+      <div className="flex items-center gap-2">
+        <Button type="button" variant="secondary" disabled={downDisabled} onClick={onDown}>
+          <ChevronDown aria-hidden strokeWidth={1.5} className="size-4" />
+          Move down
+        </Button>
+        <output
+          aria-live="polite"
+          className="text-small text-ink min-w-20 text-center tabular-nums"
+        >
+          {value}
+        </output>
+        <Button type="button" variant="secondary" disabled={upDisabled} onClick={onUp}>
+          <ChevronUp aria-hidden strokeWidth={1.5} className="size-4" />
+          Move up
+        </Button>
+      </div>
+    </div>
+  );
 }
 
 export function InvoiceMaker({
@@ -124,7 +174,6 @@ export function InvoiceMaker({
   issuedAt: string;
 }) {
   const productListId = useId();
-  const liftLabelId = useId();
   // Same starting date on the server and in the browser (from the request time).
   const [draft, setDraft] = useState<InvoiceDraft>(() => newDraft(new Date(issuedAt)));
   const [showProblems, setShowProblems] = useState(false);
@@ -140,7 +189,7 @@ export function InvoiceMaker({
   // The bottom signature's lift (ADR-082), for the measurements; "Move up" is offered while there
   // is empty space above the signature.
   const liftRef = useRef(0);
-  const [canLift, setCanLift] = useState(true);
+  const [hasRoom, setHasRoom] = useState(true);
   useEffect(() => {
     autoRef.current = autoSignature;
     liftRef.current = draft.signatureLift;
@@ -162,7 +211,7 @@ export function InvoiceMaker({
     const measure = () => {
       const m = measurePreview(liftRef.current);
       if (!m) return;
-      setCanLift(m.spaceAbove >= SIGNATURE_LIFT_STEP_MM * PX_PER_MM);
+      setHasRoom(m.emptySpace >= SIGNATURE_LIFT_STEP_MM * PX_PER_MM);
       // A fixed side/position (ADR-081) only needs the overflow check.
       const next = autoRef.current
         ? nextSignaturePlacement(signatureRef.current, m)
@@ -483,44 +532,21 @@ export function InvoiceMaker({
           {/* Up/down for the bottom signature: adds or removes space below it, 2 mm a step. "Up"
               stops when there is no empty space left above it (ADR-082). */}
           {layout === "bottom" && (
-            <div role="group" aria-labelledby={liftLabelId} className="flex flex-col gap-2">
-              <p id={liftLabelId} className="text-small text-ink font-medium">
-                Signature height
-              </p>
-              <div className="flex items-center gap-2">
-                <Button
-                  type="button"
-                  variant="secondary"
-                  disabled={draft.signatureLift <= 0}
-                  onClick={() =>
-                    set("signatureLift", Math.max(0, draft.signatureLift - SIGNATURE_LIFT_STEP_MM))
-                  }
-                >
-                  <ChevronDown aria-hidden strokeWidth={1.5} className="size-4" />
-                  Move down
-                </Button>
-                <output
-                  aria-live="polite"
-                  className="text-small text-ink min-w-20 text-center tabular-nums"
-                >
-                  {draft.signatureLift === 0 ? "Lowest" : `${draft.signatureLift} mm up`}
-                </output>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  disabled={!canLift || draft.signatureLift >= SIGNATURE_LIFT_MAX_MM}
-                  onClick={() =>
-                    set(
-                      "signatureLift",
-                      Math.min(SIGNATURE_LIFT_MAX_MM, draft.signatureLift + SIGNATURE_LIFT_STEP_MM),
-                    )
-                  }
-                >
-                  <ChevronUp aria-hidden strokeWidth={1.5} className="size-4" />
-                  Move up
-                </Button>
-              </div>
-            </div>
+            <MoveButtons
+              label="Signature height"
+              value={draft.signatureLift === 0 ? "Lowest" : `${draft.signatureLift} mm up`}
+              downDisabled={draft.signatureLift <= 0}
+              upDisabled={!hasRoom || draft.signatureLift >= SIGNATURE_LIFT_MAX_MM}
+              onDown={() =>
+                set("signatureLift", Math.max(0, draft.signatureLift - SIGNATURE_LIFT_STEP_MM))
+              }
+              onUp={() =>
+                set(
+                  "signatureLift",
+                  Math.min(SIGNATURE_LIFT_MAX_MM, draft.signatureLift + SIGNATURE_LIFT_STEP_MM),
+                )
+              }
+            />
           )}
           <fieldset className="flex flex-col gap-1">
             <legend className="text-small text-ink mb-1 font-medium">
@@ -547,6 +573,20 @@ export function InvoiceMaker({
               </label>
             ))}
           </fieldset>
+          {/* Space above the terms, like the signature height: "Move down" adds 2 mm and stops
+              when the page has no empty space left (ADR-083). */}
+          {draft.terms.length > 0 && (
+            <MoveButtons
+              label="Terms position"
+              value={draft.termsGap === 0 ? "Highest" : `${draft.termsGap} mm down`}
+              upDisabled={draft.termsGap <= 0}
+              downDisabled={!hasRoom || draft.termsGap >= TERMS_GAP_MAX_MM}
+              onUp={() => set("termsGap", Math.max(0, draft.termsGap - SIGNATURE_LIFT_STEP_MM))}
+              onDown={() =>
+                set("termsGap", Math.min(TERMS_GAP_MAX_MM, draft.termsGap + SIGNATURE_LIFT_STEP_MM))
+              }
+            />
+          )}
         </section>
 
         {(showProblems || overflows) && problems.length > 0 && (
@@ -576,6 +616,7 @@ export function InvoiceMaker({
                 signatureSide: d.signatureSide,
                 signaturePosition: d.signaturePosition,
                 signatureLift: d.signatureLift,
+                termsGap: d.termsGap,
                 terms: d.terms,
               }));
               setShowProblems(false);

@@ -42,6 +42,8 @@ export function formatInvoiceNumber(value: string): string {
 /** Space below the bottom signature, in mm, set with the form's up/down buttons (ADR-082). */
 export const SIGNATURE_LIFT_STEP_MM = 2;
 export const SIGNATURE_LIFT_MAX_MM = 120;
+/** Extra space above the terms, in mm, set the same way (ADR-083). */
+export const TERMS_GAP_MAX_MM = 120;
 
 export type InvoiceItem = {
   /** Stable key for React lists (not printed). */
@@ -127,6 +129,8 @@ export type InvoiceDraft = {
   signatureLift: number;
   /** Terms printed under the totals; none by default. */
   terms: InvoiceTermId[];
+  /** Extra space above the terms, in mm (0 = closest to the totals; ADR-083). */
+  termsGap: number;
 };
 
 /**

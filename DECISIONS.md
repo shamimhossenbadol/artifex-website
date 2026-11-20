@@ -662,3 +662,14 @@ The measured free space now runs from the end of everything after the items (tot
 - **Terms:** a fifth standard term, **Delivery & Labor Charges** ("All transportation, loading, unloading, and related labor costs shall be borne entirely by the customer."), is added to `INVOICE_TERMS` after Remaining Payment.
 - **Help texts removed:** the page description under "Invoice", "Pick a product or type any item…", the Auto explanation and the "Nothing is saved…" note.
 **Consequences:** No new dependency or token; nothing is stored. Free-text units are no longer possible, so a new unit needs a code change to `INVOICE_UNITS`. Unit tests cover the number input and padding and the unit list. The invoice e2e test covers the unit select, the padded number and the stepper. 07 is updated.
+
+### ADR-083 — Invoice: terms position stepper; red band back at the paper edge
+**Date:** 2026-11-20 · **Status:** Accepted
+**Context:** The owner wants to adjust the space above the terms the same way as the signature height (ADR-082). They also found that the white strip below the red band (ADR-081 had lifted the band 6 mm) looked like extra margin, and chose to have the band touch the bottom edge of the paper again.
+**Decision:** This extends ADR-082 and reverses ADR-081's band lift.
+- **Terms position:** When at least one term is ticked, the "Signature & terms" card shows a **Terms position** control with Move down / Move up and the value ("Highest" or "N mm down").
+  - Each step adds or removes 2 mm of space above the terms (`termsGap`, 0–120 mm, an inline margin on the terms block).
+  - "Move down" stops when the page has no empty space left (above the bottom signature, or above the band when the signature sits after the totals). Clear keeps the setting.
+  - The signature and terms controls share one `MoveButtons` group component, labelled "Signature height" / "Terms position".
+- **Red band:** It runs to the bottom edge of the paper again, and is exactly 12 mm high, the sheet's bottom padding. An 11 mm band with a −12 mm margin made Chrome report 3 px of overflow on every invoice, which wrongly moved an Auto signature up beside the totals. The text stays centred in the band. On printers that can't print the last few millimetres, the bottom of the band may be cut off; the owner accepted that.
+**Consequences:** No new dependency or token. The band gives back 6 mm of page space. The invoice e2e test scopes each Move button to its labelled group and covers the terms control. 07 is updated.

@@ -6,6 +6,9 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 ## [Unreleased]
 
 ### Changed
+- 2026-11-20 — Admin → Invoice: the terms & conditions can be moved down and back up (2 mm steps, up to the free space), like the signature. The red website band touches the bottom edge of the paper again (ADR-083).
+
+### Changed
 - 2026-11-20 — Admin → Invoice: the bottom signature can be moved up and down with Move up / Move down buttons (2 mm steps, up to the free space). Invoice numbers are digits only and print as 6 digits (88 → 000088). Units are picked from a list (pcs by default, set, feet, inch, yds, meter, sft, rft, kg). A fifth standard term, Delivery & Labor Charges, can be ticked. The page’s help texts are removed (ADR-082).
 
 ### Added

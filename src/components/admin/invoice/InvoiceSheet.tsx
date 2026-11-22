@@ -138,44 +138,45 @@ export function InvoiceSheet({
       <SheetWatermark />
       <SheetLetterhead business={business} />
 
-      {/* One compact line: a large "Invoice" title, then invoice no. and date inline (ADR-078). */}
+      {/* One compact line: a large "Invoice" title, then the invoice no. on the right (ADR-078;
+          the date moved to the customer line, ADR-088). */}
       <div className="mt-4 flex items-baseline justify-between gap-6">
         <h2 className="text-h2 leading-none">Invoice</h2>
-        <dl className="text-body flex shrink-0 items-baseline gap-6">
-          {formatInvoiceNumber(draft.invoiceNumber) && (
-            <div className="flex items-baseline gap-2">
-              <dt className={SHEET_LABEL}>Invoice no.</dt>
-              <dd className="text-ink font-semibold tabular-nums">
-                {formatInvoiceNumber(draft.invoiceNumber)}
-              </dd>
-            </div>
-          )}
-          <div className="flex items-baseline gap-2">
-            <dt className={SHEET_LABEL}>Date</dt>
-            <dd className="text-ink font-semibold">{date || "—"}</dd>
-          </div>
-        </dl>
+        {formatInvoiceNumber(draft.invoiceNumber) && (
+          <dl className="text-body flex shrink-0 items-baseline gap-2">
+            <dt className={SHEET_LABEL}>Invoice no.</dt>
+            <dd className="text-ink font-semibold tabular-nums">
+              {formatInvoiceNumber(draft.invoiceNumber)}
+            </dd>
+          </dl>
+        )}
       </div>
 
-      {/* Customer: no heading and no rule under it (ADR-078). "Label: value", left-aligned
-          (ADR-084). Name and phone share a line in two equal columns, so the phone starts at the
-          centre of the page (ADR-085). */}
+      {/* Customer: no heading and no rule under it (ADR-078). "Label: value" (ADR-084). One line
+          with the name on the left, the phone in the centre and the date on the right (ADR-088);
+          the side columns share the rest equally, so the phone sits in the middle of the page. The
+          address takes the next line. */}
       <section className="border-line mt-3 border-t pt-3">
-        <dl className="grid grid-cols-2 gap-x-8 gap-y-1.5">
-          <DetailRow
-            label="Name"
-            valueClassName="font-semibold"
-            className={draft.customerPhone.trim() ? undefined : "col-span-2"}
-          >
+        <dl className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] gap-x-8 gap-y-1.5">
+          <DetailRow label="Name" valueClassName="font-semibold">
             {draft.customerName}
           </DetailRow>
-          {draft.customerPhone.trim() && (
-            <DetailRow label="Phone" valueClassName="tabular-nums">
+          {draft.customerPhone.trim() ? (
+            <DetailRow label="Phone" valueClassName="tabular-nums whitespace-nowrap">
               {draft.customerPhone}
             </DetailRow>
+          ) : (
+            <div aria-hidden />
           )}
+          <DetailRow
+            label="Date"
+            valueClassName="font-semibold whitespace-nowrap"
+            className="justify-end"
+          >
+            {date}
+          </DetailRow>
           {draft.customerAddress.trim() && (
-            <DetailRow label="Address" valueClassName="whitespace-pre-line" className="col-span-2">
+            <DetailRow label="Address" valueClassName="whitespace-pre-line" className="col-span-3">
               {draft.customerAddress}
             </DetailRow>
           )}

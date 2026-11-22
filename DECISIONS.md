@@ -707,3 +707,11 @@ The measured free space now runs from the end of everything after the items (tot
 **Context:** The owner wants the authorised signature on the right of new invoices.
 **Decision:** This supersedes the "left" default of ADR-078/ADR-081. A new invoice starts with Signature side = Right (position still Auto). The Left option stays, and Clear still keeps whatever side was chosen. Under ADR-081, Auto keeps a right signature at the bottom of the page, so it moves up beside the totals only when the admin picks Left (or "After the totals" for either side).
 **Consequences:** No new dependency or storage. The e2e test checks the Right default and picks Left where it tests the Auto move beside the totals. 07 is updated.
+
+### ADR-088 — Invoice: date on the customer line; Details form after Customer
+**Date:** 2026-11-22 · **Status:** Accepted
+**Context:** The owner wants the customer line to read name (left), phone (centre), date (right), and the Details form card (date, invoice no., salesman) right after Customer.
+**Decision:** This supersedes the title-line date of ADR-078 and the two-column customer line of ADR-085.
+- **Sheet:** the title line keeps "Invoice" and, on the right, "Invoice no." (only when given). The customer line is a three-column grid: "Name: …" left, "Phone: …" in the centre (auto width, equal side columns, so it sits in the middle of the page; the cell stays empty without a phone), "Date: …" right-aligned. A long name wraps inside its column. The address takes the next line.
+- **Form:** the cards are Customer → Details → Items → Payment → Signature & terms. The re-advance date field is labelled "Paid on" so it isn't confused with the invoice Date.
+**Consequences:** No new dependency, token or storage. The e2e test checks "Date:" on the sheet and uses "Paid on". 07 is updated.

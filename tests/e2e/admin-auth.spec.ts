@@ -528,6 +528,8 @@ test("invoice: items × prices, discount and advance, print only the sheet, keep
 
   // ADR-084: "Name: …" (label then value) and the salesman under the authorised signature.
   await expect(preview.getByText("Name:", { exact: true })).toBeVisible();
+  // ADR-088: name, phone and date share the customer line.
+  await expect(preview.getByText("Date:", { exact: true })).toBeVisible();
   await page.getByLabel("Salesman (optional)").fill("E2E Salesman");
   const signature = preview.locator("[data-invoice-signature]");
   await expect(signature.getByText("E2E Salesman")).toBeVisible();
@@ -538,7 +540,7 @@ test("invoice: items × prices, discount and advance, print only the sheet, keep
   // ADR-086: a re-advance with its date and method, deducted from the amount due.
   await page.getByRole("button", { name: "Add re-advance" }).click();
   await page.getByLabel("Re-advance 1 (৳)").fill("5,000");
-  await page.getByLabel("Date").first().fill("2026-11-25");
+  await page.getByLabel("Paid on").fill("2026-11-25");
   await page.getByLabel("Paid by (optional)", { exact: true }).selectOption("bank");
   await expect(preview.getByText("Re-advance (Bank, 25 Nov 2026)")).toBeVisible();
   await expect(preview.getByText("৳ 25,200")).toBeVisible();

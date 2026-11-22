@@ -338,6 +338,36 @@ export function InvoiceMaker({
           </Field>
         </section>
 
+        <section className="admin-card flex flex-col gap-5 p-5">
+          <h2 className="text-h3">Details</h2>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Date">
+              <Input type="date" value={draft.date} onChange={(e) => set("date", e.target.value)} />
+            </Field>
+            {/* Digits only, shown and printed as 6 digits: 88 → 000088 (ADR-082). */}
+            <Field label="Invoice no. (optional)">
+              <Input
+                inputMode="numeric"
+                value={draft.invoiceNumber}
+                onChange={(e) => set("invoiceNumber", invoiceNumberInput(e.target.value))}
+                onBlur={() => set("invoiceNumber", formatInvoiceNumber(draft.invoiceNumber))}
+                maxLength={6}
+                placeholder="000001"
+                autoComplete="off"
+              />
+            </Field>
+          </div>
+          {/* Printed under "Authorised signature" (ADR-084). Clear keeps it. */}
+          <Field label="Salesman (optional)">
+            <Input
+              value={draft.salesman}
+              onChange={(e) => set("salesman", e.target.value)}
+              maxLength={60}
+              autoComplete="off"
+            />
+          </Field>
+        </section>
+
         <section className="admin-card flex flex-col gap-4 p-5">
           <div className="flex items-baseline justify-between gap-3">
             <h2 className="text-h3">Items</h2>
@@ -490,7 +520,7 @@ export function InvoiceMaker({
                           maxLength={14}
                         />
                       </Field>
-                      <Field label="Date">
+                      <Field label="Paid on">
                         <Input
                           type="date"
                           value={row.date}
@@ -575,36 +605,6 @@ export function InvoiceMaker({
               <dd>৳ {formatAmount(totals.due)}</dd>
             </div>
           </dl>
-        </section>
-
-        <section className="admin-card flex flex-col gap-5 p-5">
-          <h2 className="text-h3">Details</h2>
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="Date">
-              <Input type="date" value={draft.date} onChange={(e) => set("date", e.target.value)} />
-            </Field>
-            {/* Digits only, shown and printed as 6 digits: 88 → 000088 (ADR-082). */}
-            <Field label="Invoice no. (optional)">
-              <Input
-                inputMode="numeric"
-                value={draft.invoiceNumber}
-                onChange={(e) => set("invoiceNumber", invoiceNumberInput(e.target.value))}
-                onBlur={() => set("invoiceNumber", formatInvoiceNumber(draft.invoiceNumber))}
-                maxLength={6}
-                placeholder="000001"
-                autoComplete="off"
-              />
-            </Field>
-          </div>
-          {/* Printed under "Authorised signature" (ADR-084). Clear keeps it. */}
-          <Field label="Salesman (optional)">
-            <Input
-              value={draft.salesman}
-              onChange={(e) => set("salesman", e.target.value)}
-              maxLength={60}
-              autoComplete="off"
-            />
-          </Field>
         </section>
 
         {/* Signature placement and optional terms (ADR-081). Clear keeps these choices. */}

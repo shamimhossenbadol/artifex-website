@@ -120,6 +120,7 @@ Each phase ends with a short manual review of the phase's acceptance checks.
 - [x] Invoice: no item limit, soft header/Amount due fills back, phone from the centre (ADR-085)
 - [x] Invoice: re-advance payments with date and method (ADR-086)
 - [x] Invoice: signature on the right by default (ADR-087)
+- [x] Invoice: name · phone · date on one line; Details form after Customer (ADR-088)
 
 ## Phase 8 — SEO, security & performance hardening
 - [x] `sitemap.ts`, `robots.ts`, canonical audit (ADR-037) — [ ] OG image check in the Facebook Sharing Debugger (owner, after the domain is final)

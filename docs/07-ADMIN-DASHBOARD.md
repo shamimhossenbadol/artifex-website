@@ -96,6 +96,7 @@ Session and security mechanics are in `09-SECURITY-GUIDELINES.md` §2.
 - **ADR-085:** no item limit (the one-page check decides). Table header and Amount due on the soft sand fill, figures on the margin with the fill bleeding ~2.5 mm past it. Phone starts at the centre of the customer line.
 - **ADR-086:** "Add re-advance" (Payment) adds later payments: amount, date (today by default) and optional Paid by (Cash, Card, Bank). Each prints under "Advance paid" as "Re-advance (Bank, 25 Nov 2026)" and is deducted from the amount due; Print needs a valid amount and a date for each. Clear removes them.
 - **ADR-087:** the signature side defaults to Right (Auto then keeps it at the bottom; pick Left for the Auto move beside the totals).
+- **ADR-088:** customer line Name (left) · Phone (centre) · Date (right); invoice no. beside the title. Form order Customer → Details → Items → Payment → Signature & terms; the re-advance date is "Paid on".
 - **Print:** "Print invoice" checks the name, ≥ 1 item with quantity > 0 and a unit price, valid discount/advance (discount ≤ subtotal) and the date, and measures the sheet at that moment (an overfull sheet shows the warning instead of printing, ADR-077), then prints only the sheet (`#invoice-print-root`). Use "Save as PDF" to keep a copy.
 
 ## 4. Behaviour rules

@@ -11,7 +11,7 @@
 |---|---|
 | **Current phase** | Phase 8: SEO, security & performance hardening (in progress; Phase 7 done, 7f skipped) |
 | **Overall state** | ✅ Phase 1 complete. Code is on GitHub (`shamimhossenbadol/artifex-website`, private); CI is green. ✅ **First deploy succeeded 2026-11-12**: https://artifex.codespherestudio.site serves the placeholder page with security headers (via Cloudflare). Migration applied; seed created 7 categories, settings, hero and the admin (`mustChangePassword = 1`); backup saved in `~/backups`. |
-| **Last updated** | 2026-11-20 |
+| **Last updated** | 2026-11-22 |
 | **Next action** | LIVE at https://artifexfurniturebd.com. Owner: add products, category photos and the Facebook Pixel ID; Search Console + Meta domain verification; delete the old test site (owner's call: no redirect). Agent: check the occasional "failed to get redirect response … 127.0.0.1:3000" server log line (Server Action redirects under Passenger); accessibility pass (Phase 8). |
 
 ## Phase overview
@@ -86,6 +86,9 @@ Answer these by editing this list. Agents: use the **default** until an answer i
 
 Add one line per session, newest first: `YYYY-MM-DD — summary — files touched`.
 
+- 2026-11-22 — ADR-087: invoice signature side defaults to Right; e2e picks Left for the Auto beside-the-totals check. Unit tests, typecheck, lint pass; not committed/deployed — src/components/admin/invoice/InvoiceMaker.tsx, tests/e2e, docs
+- 2026-11-22 — ADR-086: invoice re-advances (amount, date, Paid by) printed under Advance paid and deducted from the amount due; totals block widens to keep labels on one line. Blank-print report checked: local print PDFs (bare page + full admin layout) and the live CSS were fine; owner confirmed print looks OK, so no print change. Checked with local Playwright print PDFs (temporary no-DB page removed). Unit + e2e tests; not committed/deployed — src/components/admin/invoice/*, src/lib/invoice.ts, tests, docs
+- 2026-11-20 — ADR-085: invoice item limit removed (one-page check decides; ~18 one-line items fit, 25 warns), soft sand fill back on the table header and Amount due (figures stay on the margin, fill bleeds ~2.5 mm), phone column starts at the centre. Checked with local Playwright print PDFs (temporary no-DB page removed). Unit + e2e tests; not committed/deployed — src/components/admin/invoice/*, src/lib/invoice.ts, tests, docs
 - 2026-11-20 — ADR-084: invoice terms reworded (Remaining Payment; Delivery & Labor), customer details as Label: value, Salesman field printed under the authorised signature. Checked with a local Playwright print PDF (temporary no-DB page removed). Unit + e2e tests; not committed/deployed — src/components/admin/invoice/*, src/lib/invoice.ts, tests, docs
 - 2026-11-20 — ADR-083: invoice terms position stepper (2 mm, limited by free space, shared MoveButtons); red band back at the paper edge, 12 mm high (an 11 mm band with −12 mm margin caused a 3 px phantom overflow that moved Auto signatures up). Checked with local Playwright print PDFs (temporary no-DB page removed). Unit + e2e tests; not committed/deployed — src/components/admin/invoice/*, src/lib/invoice.ts, tests, docs
 - 2026-11-20 — ADR-082: invoice signature Move up/down stepper (2 mm, limited by free space), 6-digit padded invoice number, unit select (pcs default), help texts removed, Delivery & Labor Charges term added. Checked with local Playwright print PDFs on a temporary no-DB page (removed): 20 mm lift, and Up stops at the free space (58 mm with 12 items). Unit + e2e tests; not committed/deployed — src/app/admin/(panel)/invoice/page.tsx, src/components/admin/invoice/*, src/lib/invoice.ts, tests, docs

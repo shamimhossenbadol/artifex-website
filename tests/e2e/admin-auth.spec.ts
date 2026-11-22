@@ -535,6 +535,15 @@ test("invoice: items × prices, discount and advance, print only the sheet, keep
   // ADR-081: advance payment method, signature side/position and optional terms.
   await page.getByLabel("Advance paid by (optional)").selectOption("cash");
   await expect(preview.getByText("Advance paid (Cash)")).toBeVisible();
+  // ADR-086: a re-advance with its date and method, deducted from the amount due.
+  await page.getByRole("button", { name: "Add re-advance" }).click();
+  await page.getByLabel("Re-advance 1 (৳)").fill("5,000");
+  await page.getByLabel("Date").first().fill("2026-11-25");
+  await page.getByLabel("Paid by (optional)", { exact: true }).selectOption("bank");
+  await expect(preview.getByText("Re-advance (Bank, 25 Nov 2026)")).toBeVisible();
+  await expect(preview.getByText("৳ 25,200")).toBeVisible();
+  await page.getByRole("button", { name: "Remove re-advance 1" }).click();
+  await expect(preview.getByText("৳ 30,200")).toBeVisible();
   await expect(preview.getByText("Terms & Conditions")).toHaveCount(0);
   await page.getByLabel(/^No Return or Exchange:/).check();
   await expect(preview.getByText("Terms & Conditions")).toBeVisible();
@@ -606,6 +615,9 @@ test("invoice: 15 items print on one page, an overfull sheet is stopped at Print
   await page.getByLabel("Address (optional)").fill("House 12, Road 3, Sector 10, Uttara, Dhaka");
   await page.getByLabel("Discount (৳, optional)").fill("500");
   await page.getByLabel("Advance paid (৳, optional)").fill("10000");
+  // The signature is on the right by default (ADR-087); Auto moves only a left one up (ADR-081).
+  await expect(page.getByLabel("Signature side")).toHaveValue("right");
+  await page.getByLabel("Signature side").selectOption("left");
   for (let i = 0; i < 15; i++) {
     if (i > 0) await page.getByRole("button", { name: "Add item" }).click();
     await page
@@ -613,7 +625,8 @@ test("invoice: 15 items print on one page, an overfull sheet is stopped at Print
       .fill(`Solid wood dining chair ${i + 1}`);
     await page.getByLabel("Unit price (৳)").nth(i).fill("12500");
   }
-  await expect(page.getByRole("button", { name: "Add item" })).toBeDisabled();
+  // No item limit (ADR-085): the one-page check decides, not a fixed count.
+  await expect(page.getByRole("button", { name: "Add item" })).toBeEnabled();
 
   // The 11th row used to trigger the warning; 15 ordinary rows now fit, with the signature at
   // the bottom of the page.

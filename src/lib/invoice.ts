@@ -7,8 +7,8 @@ export {
 } from "./challan";
 import { formatChallanDate } from "./challan";
 
-/** Rows that fit on one A4 page with the letterhead, totals and signatures. */
-export const MAX_INVOICE_ITEMS = 15;
+// No item limit (ADR-085): the admin adds as many rows as needed; the measured one-page check
+// (ADR-077) warns when the sheet no longer fits.
 /** Upper bound for a quantity or a money amount (keeps typos like 1500000000 out). */
 export const MAX_INVOICE_AMOUNT = 100_000_000;
 
@@ -67,6 +67,29 @@ export function advanceMethodLabel(method: AdvanceMethod): string {
   return ADVANCE_METHODS.find((m) => m.value === method)?.label ?? "";
 }
 
+/**
+ * A later payment after the advance (ADR-086): amount, the day it was paid and how. Printed
+ * under "Advance paid" and deducted from the amount due. Rows without an amount are ignored.
+ */
+export type InvoiceReAdvance = {
+  /** Stable key for React lists (not printed). */
+  key: number;
+  amount: string;
+  date: string; // YYYY-MM-DD
+  method: AdvanceMethod;
+};
+
+/** Re-advance rows that count: those with an amount typed in. */
+export function filledReAdvances(rows: readonly InvoiceReAdvance[]): InvoiceReAdvance[] {
+  return rows.filter((row) => row.amount.trim() !== "");
+}
+
+/** "Re-advance (Bank, 25 Nov 2026)": method and date when given. */
+export function reAdvanceLabel(row: InvoiceReAdvance): string {
+  const details = [advanceMethodLabel(row.method), formatChallanDate(row.date)].filter(Boolean);
+  return details.length > 0 ? `Re-advance (${details.join(", ")})` : "Re-advance";
+}
+
 /** Where the authorised signature prints (ADR-081). */
 export type SignatureSide = "left" | "right";
 /**
@@ -123,6 +146,8 @@ export type InvoiceDraft = {
   discount: string;
   advance: string;
   advanceMethod: AdvanceMethod;
+  /** Later payments after the advance (ADR-086). */
+  reAdvances: InvoiceReAdvance[];
   signatureSide: SignatureSide;
   signaturePosition: SignaturePosition;
   /** Extra space below the signature when it's at the bottom, in mm (0 = lowest; ADR-082). */
@@ -170,7 +195,9 @@ export type InvoiceTotals = {
   subtotal: number;
   discount: number;
   advance: number;
-  /** subtotal − discount − advance (can be negative if more was paid; shown as is). */
+  /** Sum of the re-advances (ADR-086). */
+  reAdvance: number;
+  /** subtotal − discount − advance − re-advances (can be negative if more was paid). */
   due: number;
 };
 
@@ -182,7 +209,19 @@ export function invoiceTotals(draft: InvoiceDraft): InvoiceTotals {
   const advance = parseAmount(draft.advance);
   const d = isValid(discount) ? discount : 0;
   const a = isValid(advance) ? advance : 0;
-  return { subtotal, discount: d, advance: a, due: roundMoney(subtotal - d - a) };
+  const r = roundMoney(
+    filledReAdvances(draft.reAdvances).reduce((sum, row) => {
+      const amount = parseAmount(row.amount);
+      return sum + (isValid(amount) ? amount : 0);
+    }, 0),
+  );
+  return {
+    subtotal,
+    discount: d,
+    advance: a,
+    reAdvance: r,
+    due: roundMoney(subtotal - d - a - r),
+  };
 }
 
 /** "1,40,170" or "1,250.50": Bangladeshi (lakh) grouping, decimals only when needed. */
@@ -208,6 +247,13 @@ export function invoiceProblems(draft: InvoiceDraft): string[] {
   if (Number.isNaN(parseAmount(draft.discount)))
     problems.push("The discount isn't a valid amount.");
   if (Number.isNaN(parseAmount(draft.advance))) problems.push("The advance isn't a valid amount.");
+  const reAdvances = filledReAdvances(draft.reAdvances);
+  if (reAdvances.some((row) => !parseAmount(row.amount))) {
+    problems.push("Every re-advance needs a valid amount above 0.");
+  }
+  if (reAdvances.some((row) => !formatChallanDate(row.date))) {
+    problems.push("Every re-advance needs a date.");
+  }
   const totals = invoiceTotals(draft);
   if (totals.discount > totals.subtotal) problems.push("The discount is more than the subtotal.");
   if (!formatChallanDate(draft.date)) problems.push("Choose the date.");

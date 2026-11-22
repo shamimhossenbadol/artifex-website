@@ -7,12 +7,14 @@
 import {
   advanceMethodLabel,
   filledInvoiceItems,
+  filledReAdvances,
   formatAmount,
   formatInvoiceDate,
   formatInvoiceNumber,
   invoiceTotals,
   lineTotal,
   parseAmount,
+  reAdvanceLabel,
   selectedInvoiceTerms,
   type InvoiceDraft,
   type SignaturePlacement,
@@ -32,7 +34,10 @@ export const INVOICE_PREVIEW_ID = "invoice-preview-sheet";
 
 // Compact rows (ADR-077). The first and last columns have no outer padding, so SL starts on the
 // left margin and the totals end on the right margin, like the rest of the sheet (ADR-081).
-const TH = "text-small px-2.5 py-1.5 font-semibold first:pl-0 last:pr-0";
+// The header keeps its soft fill (ADR-085): text sits on the margins and the fill runs 2.5 mm
+// past them (a shadow in the fill colour on the outer cells), like Amount due.
+const TH =
+  "text-small px-2.5 py-1.5 font-semibold first:pl-0 last:pr-0 first:[box-shadow:-0.625rem_0_0_var(--color-sand)] last:[box-shadow:0.625rem_0_0_var(--color-sand)]";
 const TD = "px-2.5 py-1 leading-tight first:pl-0 last:pr-0";
 
 /** "Name: Shamim Hossen": the value follows its label after a standard gap (ADR-084). */
@@ -71,11 +76,19 @@ function TotalRow({
     <div
       className={cn(
         "flex items-baseline justify-between gap-6",
-        strong ? "border-ink text-ink border-b py-1.5 font-semibold" : "py-0.5",
+        // Amount due on the soft fill (ADR-085), bleeding 2.5 mm so its figures stay on the margin.
+        strong ? "bg-sand text-ink -mx-2.5 px-2.5 py-1.5 font-semibold" : "py-0.5",
       )}
     >
-      <dt className={strong ? "text-body" : "text-small text-ink-soft"}>{label}</dt>
-      <dd className={cn("tabular-nums", strong ? "text-body" : "text-ink font-medium")}>
+      <dt className={cn("whitespace-nowrap", strong ? "text-body" : "text-small text-ink-soft")}>
+        {label}
+      </dt>
+      <dd
+        className={cn(
+          "whitespace-nowrap tabular-nums",
+          strong ? "text-body" : "text-ink font-medium",
+        )}
+      >
         {minus ? "− " : ""}৳ {formatAmount(value)}
       </dd>
     </div>
@@ -104,6 +117,10 @@ export function InvoiceSheet({
   // "Beside" needs the totals: without items the signature stays at the bottom.
   const up = signature === "beside" && items.length > 0;
   const advanceMethod = advanceMethodLabel(draft.advanceMethod);
+  const reAdvances = filledReAdvances(draft.reAdvances).filter((row) => {
+    const amount = parseAmount(row.amount);
+    return amount !== null && Number.isFinite(amount) && amount > 0;
+  });
   const signatureBlock = (
     <div
       data-invoice-signature
@@ -141,10 +158,10 @@ export function InvoiceSheet({
       </div>
 
       {/* Customer: no heading and no rule under it (ADR-078). "Label: value", left-aligned
-          (ADR-084). Name and phone share a line; the phone column is as wide as its content, so
-          it never runs past the margin (ADR-081). */}
+          (ADR-084). Name and phone share a line in two equal columns, so the phone starts at the
+          centre of the page (ADR-085). */}
       <section className="border-line mt-3 border-t pt-3">
-        <dl className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-8 gap-y-1.5">
+        <dl className="grid grid-cols-2 gap-x-8 gap-y-1.5">
           <DetailRow
             label="Name"
             valueClassName="font-semibold"
@@ -169,7 +186,7 @@ export function InvoiceSheet({
           margin (ADR-081). */}
       <table className="mt-3 w-full border-collapse text-left">
         <thead>
-          <tr className="border-ink text-ink border-y">
+          <tr className="bg-sand text-ink">
             <th scope="col" className={cn(TH, "w-[9mm]")}>
               SL
             </th>
@@ -230,7 +247,7 @@ export function InvoiceSheet({
         {items.length > 0 && (
           <div className="mt-2 flex items-end justify-between gap-8">
             {up && !right && signatureBlock}
-            <dl data-invoice-totals className="ml-auto w-[76mm]">
+            <dl data-invoice-totals className="ml-auto w-max min-w-[76mm]">
               <TotalRow label="Subtotal" value={totals.subtotal} />
               {totals.discount > 0 && <TotalRow label="Discount" value={totals.discount} minus />}
               {totals.advance > 0 && (
@@ -240,6 +257,15 @@ export function InvoiceSheet({
                   minus
                 />
               )}
+              {/* Later payments, each with how and when it was paid (ADR-086). */}
+              {reAdvances.map((row) => (
+                <TotalRow
+                  key={row.key}
+                  label={reAdvanceLabel(row)}
+                  value={parseAmount(row.amount) ?? 0}
+                  minus
+                />
+              ))}
               <div className="border-ink mt-1 border-t" />
               <TotalRow label="Amount due" value={totals.due} strong />
             </dl>

@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
   INVOICE_OVERFLOW_PROBLEM,
-  MAX_INVOICE_ITEMS,
   formatAmount,
   invoicePrintProblems,
   nextSignaturePlacement,
@@ -16,9 +15,11 @@ import {
   invoiceTotals,
   lineTotal,
   parseAmount,
+  reAdvanceLabel,
   roundMoney,
   type InvoiceDraft,
   type InvoiceItem,
+  type InvoiceReAdvance,
 } from "@/lib/invoice";
 
 const item = (over: Partial<InvoiceItem> = {}): InvoiceItem => ({
@@ -40,6 +41,7 @@ const draft = (over: Partial<InvoiceDraft> = {}): InvoiceDraft => ({
   discount: "",
   advance: "",
   advanceMethod: "",
+  reAdvances: [],
   signatureSide: "left",
   signaturePosition: "auto",
   signatureLift: 0,
@@ -97,7 +99,13 @@ describe("totals", () => {
         advance: "10000",
       }),
     );
-    expect(totals).toEqual({ subtotal: 140170, discount: 0, advance: 10000, due: 130170 });
+    expect(totals).toEqual({
+      subtotal: 140170,
+      discount: 0,
+      advance: 10000,
+      reAdvance: 0,
+      due: 130170,
+    });
   });
 
   it("ignores blank rows and subtracts a discount", () => {
@@ -146,7 +154,7 @@ describe("invoiceProblems", () => {
 describe("invoicePrintProblems (ADR-077)", () => {
   it("blocks printing only when the measured sheet overflows one A4 page", () => {
     const full = draft({
-      items: Array.from({ length: MAX_INVOICE_ITEMS }, (_, i) => item({ key: i + 1 })),
+      items: Array.from({ length: 20 }, (_, i) => item({ key: i + 1 })),
     });
     expect(invoicePrintProblems(full, false)).toEqual([]);
     expect(invoicePrintProblems(full, true)).toEqual([INVOICE_OVERFLOW_PROBLEM]);
@@ -229,5 +237,42 @@ describe("invoice number and units (ADR-082)", () => {
   it("offers a fixed unit list starting with pcs", () => {
     expect(INVOICE_UNITS[0]).toBe("pcs");
     expect(INVOICE_UNITS).toEqual(expect.arrayContaining(["set", "feet", "inch", "yds", "meter"]));
+  });
+});
+
+describe("re-advances (ADR-086)", () => {
+  const row = (over: Partial<InvoiceReAdvance> = {}): InvoiceReAdvance => ({
+    key: 1,
+    amount: "5000",
+    date: "2026-11-25",
+    method: "bank",
+    ...over,
+  });
+
+  it("deducts every re-advance from the amount due and ignores empty rows", () => {
+    const totals = invoiceTotals(
+      draft({
+        advance: "10000",
+        reAdvances: [row(), row({ key: 2, amount: "2,500.50" }), row({ key: 3, amount: "" })],
+      }),
+    );
+    expect(totals).toMatchObject({ subtotal: 40500, advance: 10000, reAdvance: 7500.5 });
+    expect(totals.due).toBe(22999.5);
+  });
+
+  it("labels each payment with its method and date", () => {
+    expect(reAdvanceLabel(row())).toBe("Re-advance (Bank, 25 Nov 2026)");
+    expect(reAdvanceLabel(row({ method: "" }))).toBe("Re-advance (25 Nov 2026)");
+    expect(reAdvanceLabel(row({ method: "", date: "" }))).toBe("Re-advance");
+  });
+
+  it("needs a valid amount and a date before printing", () => {
+    expect(invoiceProblems(draft({ reAdvances: [row()] }))).toEqual([]);
+    expect(invoiceProblems(draft({ reAdvances: [row({ amount: "abc" })] }))).toContain(
+      "Every re-advance needs a valid amount above 0.",
+    );
+    expect(invoiceProblems(draft({ reAdvances: [row({ date: "" })] }))).toContain(
+      "Every re-advance needs a date.",
+    );
   });
 });

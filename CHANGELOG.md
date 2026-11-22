@@ -6,6 +6,15 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 ## [Unreleased]
 
 ### Changed
+- 2026-11-22 — Admin → Invoice: the authorised signature is on the right by default; Left is still available (ADR-087).
+
+### Added
+- 2026-11-22 — Admin → Invoice: "Add re-advance" in Payment. Each later payment has an amount, a date and how it was paid (Cash, Card, Bank), prints under "Advance paid" as "Re-advance (Bank, 25 Nov 2026)" and is deducted from the amount due (ADR-086).
+
+### Changed
+- 2026-11-20 — Admin → Invoice: no 15-item limit; add as many items as needed and the sheet warns when it no longer fits one A4 page. The table header and Amount due have their soft background again (figures still end on the margin), and the phone starts at the centre of the customer line (ADR-085).
+
+### Changed
 - 2026-11-20 — Admin → Invoice: shorter Remaining Payment and Delivery & Labor terms. The customer details read "Name: …", "Phone: …", "Address: …" (value right after the label). A new optional Salesman field prints the salesman’s name under "Authorised signature" instead of the business name (ADR-084).
 
 ### Changed
@@ -13,6 +22,9 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 
 ### Changed
 - 2026-11-20 — Admin → Invoice: the bottom signature can be moved up and down with Move up / Move down buttons (2 mm steps, up to the free space). Invoice numbers are digits only and print as 6 digits (88 → 000088). Units are picked from a list (pcs by default, set, feet, inch, yds, meter, sft, rft, kg). A fifth standard term, Delivery & Labor Charges, can be ticked. The page’s help texts are removed (ADR-082).
+
+### Changed
+- 2026-11-22 — Admin → Invoice: the authorised signature is on the right by default; Left is still available (ADR-087).
 
 ### Added
 - 2026-11-20 — Admin → Invoice: choose how the advance was paid (Cash, Card or Bank; printed as "Advance paid (Cash)"), put the authorised signature on the left or right and at the bottom, after the totals or Auto, and tick any of the standard terms & conditions (Advance Payment, Product Collection, No Return or Exchange, Remaining Payment) to print them under the totals (ADR-081).
@@ -29,13 +41,22 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 - 2026-11-19 — Admin → Invoice: the "Too much for one A4 page" warning appeared at 11 items. The sheet is tighter so 15 ordinary items (with discount and advance) fit one A4 page, and "Print invoice" now measures the sheet when clicked and shows the warning instead of printing an overfull page. The printable sheets also keep the same text sizes on narrow screens, so the preview matches the print (ADR-077).
 - 2026-11-17 — Admin product form: saving with **Price range** or **No price** failed with "Invalid input: expected string, received undefined". Price fields the form doesn’t show are now treated as blank (ADR-076).
 
+### Changed
+- 2026-11-22 — Admin → Invoice: the authorised signature is on the right by default; Left is still available (ADR-087).
+
 ### Added
 - 2026-11-17 — Products can show a **price range** (e.g. `৳ 40,000 – ৳ 60,000`) instead of a fixed price. Admin → Product → Pricing now offers Fixed price, Price range or No price. New nullable `Product.maxPrice` column (migration `20261117000000_product_price_range`) (ADR-076).
 - 2026-11-17 — Product pages: the "Ask on Messenger" link now carries the product (`m.me/<page>?ref=product-<slug>`), so the Page inbox shows which product a chat started from (ADR-074).
 
+### Changed
+- 2026-11-22 — Admin → Invoice: the authorised signature is on the right by default; Left is still available (ADR-087).
+
 ### Added
 - 2026-11-16 — Homepage: a product rail for each category that has products (Sofas, Dining Tables, Beds, Curtains…), after New arrivals, each with "View all" (ADR-072).
 - 2026-11-16 — Admin → Invoice: print customer invoices on the same letterhead as the delivery challan. Items with quantity, unit and unit price (line totals calculated), optional discount and advance, amount due, optional invoice number; one A4 page, nothing stored (ADR-067).
+
+### Changed
+- 2026-11-22 — Admin → Invoice: the authorised signature is on the right by default; Left is still available (ADR-087).
 
 ### Added
 - 2026-11-16 — Delivery challan: optional driver details (driver name, phone, vehicle number), switched on with a checkbox and printed as a "Driver & vehicle" row under the items; blank fields print as lines to fill in by hand (ADR-066).
@@ -98,6 +119,9 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 - 2026-11-12 — Hosting plan confirmed as **Namecheap Stellar**. Deploys will run from **GitHub Actions over SSH** (ADR-016); deployment guide §5.1 added.
 - 2026-11-10 — Runtime pinned to **Node.js 24 LTS** on cPanel and on build machines (ADR-015).
 - 2026-11-10 — Image storage moved from local disk to **Cloudflare R2** served at `media.<domain>` (ADR-014). Docs updated: architecture, database, SEO, security, deployment, roadmap, and testing.
+
+### Changed
+- 2026-11-22 — Admin → Invoice: the authorised signature is on the right by default; Left is still available (ADR-087).
 
 ### Added
 - 2026-11-14 — Admin → Challan: make and print a delivery challan (customer, products and quantities, salesman and date, signatures, the website on a red band) on exactly one A4 page in the style of the shop's letterhead, with a live A4 preview. Nothing is saved; the form clears after printing (ADR-046).

@@ -16,7 +16,6 @@ import {
   INVOICE_TERMS,
   INVOICE_UNITS,
   advanceMethodLabel,
-  MAX_INVOICE_ITEMS,
   SIGNATURE_LIFT_MAX_MM,
   SIGNATURE_LIFT_STEP_MM,
   TERMS_GAP_MAX_MM,
@@ -33,6 +32,7 @@ import {
   type AdvanceMethod,
   type InvoiceDraft,
   type InvoiceItem,
+  type InvoiceReAdvance,
   type SignaturePlacement,
   type SignaturePosition,
   type SignatureSide,
@@ -55,6 +55,15 @@ const emptyItem = (): InvoiceItem => ({
   unitPrice: "",
 });
 
+let nextReAdvanceKey = 1;
+/** A new re-advance row, dated today (Dhaka) by default (ADR-086). */
+const emptyReAdvance = (date: string): InvoiceReAdvance => ({
+  key: nextReAdvanceKey++,
+  amount: "",
+  date,
+  method: "",
+});
+
 function newDraft(at: Date): InvoiceDraft {
   return {
     date: invoiceDateInput(at),
@@ -66,7 +75,9 @@ function newDraft(at: Date): InvoiceDraft {
     discount: "",
     advance: "",
     advanceMethod: "",
-    signatureSide: "left",
+    reAdvances: [],
+    // Right by default (ADR-087).
+    signatureSide: "right",
     signaturePosition: "auto",
     signatureLift: 0,
     termsGap: 0,
@@ -260,6 +271,11 @@ export function InvoiceMaker({
       ...d,
       items: d.items.map((item) => (item.key === key ? { ...item, ...patch } : item)),
     }));
+  const setReAdvance = (key: number, patch: Partial<InvoiceReAdvance>) =>
+    setDraft((d) => ({
+      ...d,
+      reAdvances: d.reAdvances.map((row) => (row.key === key ? { ...row, ...patch } : row)),
+    }));
 
   function print() {
     // Measure the sheet now, not the last observed state, so Print never sends a sheet that
@@ -415,13 +431,11 @@ export function InvoiceMaker({
           <Button
             type="button"
             variant="secondary"
-            disabled={draft.items.length >= MAX_INVOICE_ITEMS}
             onClick={() => setDraft((d) => ({ ...d, items: [...d.items, emptyItem()] }))}
           >
             <Plus aria-hidden strokeWidth={1.5} className="size-4" />
             Add item
           </Button>
-          <p className="text-small text-muted">Up to {MAX_INVOICE_ITEMS} items.</p>
         </section>
 
         <section className="admin-card flex flex-col gap-5 p-5">
@@ -458,6 +472,78 @@ export function InvoiceMaker({
               ))}
             </Select>
           </Field>
+          {/* Later payments after the advance: amount, date and method, printed under "Advance
+              paid" and deducted from the amount due (ADR-086). */}
+          {draft.reAdvances.length > 0 && (
+            <ol className="flex flex-col gap-4">
+              {draft.reAdvances.map((row, index) => (
+                <li key={row.key} className="border-line flex flex-col gap-3 border-t pt-4">
+                  <div className="flex items-end gap-2">
+                    <div className="grid min-w-0 flex-1 grid-cols-2 gap-3">
+                      <Field label={`Re-advance ${index + 1} (৳)`}>
+                        <Input
+                          inputMode="decimal"
+                          value={row.amount}
+                          onChange={(e) =>
+                            setReAdvance(row.key, { amount: amountOnly(e.target.value) })
+                          }
+                          maxLength={14}
+                        />
+                      </Field>
+                      <Field label="Date">
+                        <Input
+                          type="date"
+                          value={row.date}
+                          onChange={(e) => setReAdvance(row.key, { date: e.target.value })}
+                        />
+                      </Field>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setDraft((d) => ({
+                          ...d,
+                          reAdvances: d.reAdvances.filter((r) => r.key !== row.key),
+                        }))
+                      }
+                      className="text-ink-soft hover:text-danger inline-flex size-11 shrink-0 items-center justify-center"
+                    >
+                      <Trash2 aria-hidden strokeWidth={1.5} className="size-5" />
+                      <span className="sr-only">Remove re-advance {index + 1}</span>
+                    </button>
+                  </div>
+                  <Field label="Paid by (optional)">
+                    <Select
+                      value={row.method}
+                      onChange={(e) =>
+                        setReAdvance(row.key, { method: e.target.value as AdvanceMethod })
+                      }
+                    >
+                      <option value="">Not stated</option>
+                      {ADVANCE_METHODS.map((method) => (
+                        <option key={method.value} value={method.value}>
+                          {method.label}
+                        </option>
+                      ))}
+                    </Select>
+                  </Field>
+                </li>
+              ))}
+            </ol>
+          )}
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() =>
+              setDraft((d) => ({
+                ...d,
+                reAdvances: [...d.reAdvances, emptyReAdvance(invoiceDateInput(new Date()))],
+              }))
+            }
+          >
+            <Plus aria-hidden strokeWidth={1.5} className="size-4" />
+            Add re-advance
+          </Button>
           <dl className="bg-bg text-small flex flex-col gap-1 rounded-md px-4 py-3 tabular-nums">
             <div className="flex justify-between">
               <dt className="text-muted">Subtotal</dt>
@@ -476,6 +562,12 @@ export function InvoiceMaker({
                   {draft.advanceMethod && ` (${advanceMethodLabel(draft.advanceMethod)})`}
                 </dt>
                 <dd>− ৳ {formatAmount(totals.advance)}</dd>
+              </div>
+            )}
+            {totals.reAdvance > 0 && (
+              <div className="flex justify-between">
+                <dt className="text-muted">Re-advance</dt>
+                <dd>− ৳ {formatAmount(totals.reAdvance)}</dd>
               </div>
             )}
             <div className="border-line text-ink mt-1 flex justify-between border-t pt-1 font-semibold">

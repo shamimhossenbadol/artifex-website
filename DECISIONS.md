@@ -682,3 +682,28 @@ The measured free space now runs from the end of everything after the items (tot
 - **Customer details:** each detail is "Label: value", left-aligned with a standard 8 px gap and no dotted leaders. The labels are shortened to Name, Phone and Address. Name and phone still share a line (the phone column sits at the right), and the address takes the next line.
 - **Salesman:** a new optional **Salesman** field in Details. Its name prints under "Authorised signature"; when it is empty, nothing prints there, and the business name is no longer printed under the signature. Clear keeps the salesman, like the signature and terms choices.
 **Consequences:** No new dependency or token; nothing is stored. Unit tests follow the renamed term. The invoice e2e test covers "Name:" and the salesman under the signature. 07 is updated.
+
+### ADR-085 — Invoice: no item limit; soft header and Amount due fills back; phone from the centre
+**Date:** 2026-11-20 · **Status:** Accepted
+**Context:** The owner doesn't want a fixed 15-item limit: they will decide, and the sheet should only warn when it no longer fits one page. They also felt that removing the soft fill from the table header and Amount due (ADR-081) lost the premium look, and that the phone, pushed to the right edge, should start from the middle of the line.
+**Decision:** This supersedes the 15-item limit of ADR-067/ADR-077 and the "no fill" part of ADR-081.
+- **No item limit:** "Add item" is always available, and the "Up to 15 items" note and `MAX_INVOICE_ITEMS` are gone. The measured one-page check (ADR-077), the Auto signature (ADR-080) and the Print check still decide: with ordinary one-line items about 18 fit, and beyond that the "Too much for one A4 page" warning appears.
+- **Soft fills:** The table header and Amount due are on the sand fill again. To keep ADR-081's alignment, every figure still ends exactly on the right margin (and SL starts on the left margin), and the fill runs about 2.5 mm beyond the margins. On the header that's done with a fill-coloured box-shadow on the outer cells; Amount due uses a negative margin with matching padding. The ink rules above and below the header are removed.
+- **Phone:** name and phone share the line in two equal columns, so "Phone: …" starts at the centre of the page.
+**Consequences:** No new dependency or token. Nothing stops an admin from adding a row that overflows, but Print refuses and shows the warning instead. Unit tests no longer reference the limit. The e2e test checks that "Add item" stays enabled after 15 items. 07 is updated.
+
+### ADR-086 — Invoice: re-advance payments with date and method
+**Date:** 2026-11-22 · **Status:** Accepted
+**Context:** Customers often pay a second (or third) instalment after the first advance. The owner wants these on the invoice under "Advance paid", each with its date and how it was paid (Bank, Cash, Card). The owner also reported a blank print. Local print-to-PDF checks (bare page and the full admin layout) printed the full sheet, the live CSS was intact, and the owner then confirmed printing looks fine, so no print change was made.
+**Decision:**
+- **Payment → "Add re-advance"** adds a row: amount (৳), date (today by default) and "Paid by" (optional: Cash, Card, Bank; same list as the advance). Rows can be removed; there is no fixed limit (the one-page check decides, ADR-085).
+- **Sheet:** each re-advance prints under "Advance paid" as "Re-advance (Bank, 25 Nov 2026) − ৳ 5,000" (method and date when given). All re-advances are deducted from the amount due. The totals block is at least 76 mm wide and widens to fit a label on one line; figures still end on the right margin.
+- **Print check:** a re-advance with an amount needs a valid amount above 0 and a date. Rows with no amount are ignored.
+- Clear removes the re-advances (they belong to one customer, unlike the signature/terms choices).
+**Consequences:** No new dependency, token or storage. Unit tests cover totals, labels and validation; the invoice e2e test adds and removes a re-advance. 07 is updated.
+
+### ADR-087 — Invoice: signature on the right by default
+**Date:** 2026-11-22 · **Status:** Accepted
+**Context:** The owner wants the authorised signature on the right of new invoices.
+**Decision:** This supersedes the "left" default of ADR-078/ADR-081. A new invoice starts with Signature side = Right (position still Auto). The Left option stays, and Clear still keeps whatever side was chosen. Under ADR-081, Auto keeps a right signature at the bottom of the page, so it moves up beside the totals only when the admin picks Left (or "After the totals" for either side).
+**Consequences:** No new dependency or storage. The e2e test checks the Right default and picks Left where it tests the Auto move beside the totals. 07 is updated.

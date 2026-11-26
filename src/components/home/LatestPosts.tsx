@@ -4,7 +4,7 @@ import { Container } from "@/components/ui/Container";
 import type { PostCardVM } from "@/server/services/blog.service";
 
 /**
- * "From the Journal" (05 §3): the 3 latest posts; hidden when there are none. Phones: a horizontal
+ * "Journal" (05 §3; one-line title, ADR-090): the 3 latest posts; hidden when there are none. Phones: a horizontal
  * scroll-snap row with the next post peeking (like the product rail); desktop: 3 columns.
  */
 export function LatestPosts({ posts }: { posts: PostCardVM[] }) {
@@ -14,8 +14,7 @@ export function LatestPosts({ posts }: { posts: PostCardVM[] }) {
       <Container>
         <SectionHeading
           id="journal-heading"
-          eyebrow="Journal"
-          title="Ideas for your home"
+          title="Journal"
           link={{ href: "/blog", label: "All stories" }}
         />
       </Container>

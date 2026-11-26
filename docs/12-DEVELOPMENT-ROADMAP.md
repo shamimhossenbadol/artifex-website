@@ -122,6 +122,7 @@ Each phase ends with a short manual review of the phase's acceptance checks.
 - [x] Invoice: signature on the right by default (ADR-087)
 - [x] Invoice: name · phone · date on one line; Details form after Customer (ADR-088)
 - [x] Phone layout: photos-only hero, image-only promo, grid-only listings, no breadcrumbs, credit clear of floating buttons; Bangla font for the journal (ADR-089)
+- [x] Uncropped 7:3 phone hero and 16:9 journal photos; centred phone credit; one-line Journal title (ADR-090)
 
 ## Phase 8 — SEO, security & performance hardening
 - [x] `sitemap.ts`, `robots.ts`, canonical audit (ADR-037) — [ ] OG image check in the Facebook Sharing Debugger (owner, after the domain is final)

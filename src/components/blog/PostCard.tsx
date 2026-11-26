@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import type { PostCardVM } from "@/server/services/blog.service";
 
 /**
- * Journal card: 3:2 cover, date, title, excerpt (03 §6, 05 §3). `featured` = the large first card;
+ * Journal card: 16:9 cover shown whole (ADR-090), date, title, excerpt (03 §6, 05 §3). `featured` = the large first card;
  * `row` = a compact row on phones (small photo left, text right), the normal card from md up.
  */
 export function PostCard({
@@ -36,9 +36,8 @@ export function PostCard({
       >
         <div
           className={cn(
-            "bg-sand relative aspect-[3/2] overflow-hidden",
+            "bg-sand relative aspect-[16/9] overflow-hidden",
             featured && "md:col-span-7",
-            row && "max-md:aspect-[4/3]",
           )}
         >
           {post.cover ? (
@@ -54,7 +53,7 @@ export function PostCard({
                     ? "(min-width:1024px) 33vw, (min-width:768px) 50vw, 120px"
                     : "(min-width:1024px) 33vw, 100vw"
               }
-              className="object-cover transition-transform duration-500 ease-out motion-safe:md:group-hover:scale-[1.03]"
+              className="object-contain transition-transform duration-500 ease-out motion-safe:md:group-hover:scale-[1.03]"
             />
           ) : (
             <ImagePlaceholder />

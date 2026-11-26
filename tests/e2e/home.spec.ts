@@ -27,7 +27,7 @@ test("shows the sections in order and hides empty ones", async ({ page }) => {
   expect(titles.slice(-3)).toEqual([
     "Decor your dreams",
     "Not sure what fits your space? Talk to us.",
-    "Ideas for your home",
+    "Journal",
   ]);
   const rails = titles.slice(2, -3);
   expect(rails.slice(0, 2)).toEqual(["Sofas", "Dining Tables"]);

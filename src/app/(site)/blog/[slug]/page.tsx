@@ -101,15 +101,16 @@ async function PostContent({ params, searchParams }: Props) {
         </p>
       </div>
 
+      {/* 16:9 and never cropped (ADR-090). */}
       {post.cover && (
-        <div className="bg-sand relative mx-auto mt-8 aspect-[3/2] max-w-5xl overflow-hidden md:mt-12">
+        <div className="bg-sand relative mx-auto mt-8 aspect-[16/9] max-w-5xl overflow-hidden md:mt-12">
           <Image
             src={post.cover.path}
             alt={post.cover.alt}
             fill
             preload
             sizes="(min-width:1024px) 1024px, 100vw"
-            className="object-cover"
+            className="object-contain"
           />
         </div>
       )}

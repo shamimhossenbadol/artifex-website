@@ -40,8 +40,9 @@ export default async function HomepageAdminPage() {
             Hero photos
           </h2>
           <p className="text-ink-soft mt-1 mb-4">
-            Up to {MAX_HERO_SLIDES} wide, bright room photos (at least 1600 px wide). Visitors move
-            between them with the arrows; the text stays on top. Changes save immediately.
+            Up to {MAX_HERO_SLIDES} wide, bright room photos, ideally 7:3 (e.g. 2400×1029 px; at
+            least 1600 px wide): phones show the whole photo at that shape. Changes save
+            immediately.
           </p>
           <AdminPanel>
             <HeroSlides slides={slides} max={MAX_HERO_SLIDES} />

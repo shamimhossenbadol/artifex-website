@@ -77,10 +77,10 @@ async function PostList({ searchParams }: Pick<Props, "searchParams">) {
 function PostListSkeleton() {
   return (
     <div aria-busy="true" aria-label="Loading posts">
-      <Skeleton className="aspect-[3/2] w-full md:w-7/12" />
+      <Skeleton className="aspect-[16/9] w-full md:w-7/12" />
       <div className="mt-14 grid gap-8 md:grid-cols-3">
         {Array.from({ length: 3 }, (_, i) => (
-          <Skeleton key={i} className="aspect-[3/2] w-full" />
+          <Skeleton key={i} className="aspect-[16/9] w-full" />
         ))}
       </div>
     </div>

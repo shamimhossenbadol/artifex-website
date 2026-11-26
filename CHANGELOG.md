@@ -6,6 +6,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 ## [Unreleased]
 
 ### Changed
+- 2026-11-26 — Phones: the hero slider shows the whole photo (7:3) and the © / developer credit is centred. Journal covers and thumbnails are 16:9 and never cropped. The homepage Journal section title is just "Journal" (ADR-090).
 - 2026-11-26 — Phones: the homepage hero is a photos-only slider (no text or buttons on screen), promo banners show the image alone at 16:9, product and category listings show just the product grid (no path, title, description, count or sorting), breadcrumbs are hidden on every page, and the © and developer credit no longer sit under the floating Messenger/WhatsApp buttons. Tablet and desktop are unchanged (ADR-089).
 - 2026-11-26 — Journal titles and excerpts use the Bangla font Hind Siliguri, downloaded only where Bangla text shows (ADR-089).
 

@@ -86,6 +86,7 @@ Answer these by editing this list. Agents: use the **default** until an answer i
 
 Add one line per session, newest first: `YYYY-MM-DD — summary — files touched`.
 
+- 2026-11-26 — ADR-090: uncropped 7:3 phone hero, 16:9 object-contain journal covers/cards, centred balanced phone credit, homepage "Journal" one-line title. Checked at 375 px with a temporary no-DB page (removed) — src/components/{home,blog,site}, src/app/(site)/{page,blog}, admin homepage hint, tests/e2e/home.spec.ts, docs
 - 2026-11-26 — ADR-089: phone layout (photos-only hero, image-only 16:9 promo, grid-only listings, breadcrumbs hidden on phones, © / credit clear of the floating buttons) and Hind Siliguri for Bangla journal titles/excerpts. Checked at 375 and 768 px with a temporary no-DB page (removed); unit tests, typecheck, lint pass; e2e added for CI — src/components/{home,product,site,blog,ui}, src/app/(site)/*, src/app/layout.tsx, src/styles/globals.css, tests/e2e, docs
 
 - 2026-11-22 — ADR-088: invoice customer line Name · Phone (centre) · Date (right), invoice no. beside the title; Details form card moved after Customer; re-advance date relabelled "Paid on". Checked with a local Playwright print PDF (temporary no-DB page removed). Unit tests, typecheck, lint pass; not committed/deployed — src/components/admin/invoice/*, tests/e2e, docs

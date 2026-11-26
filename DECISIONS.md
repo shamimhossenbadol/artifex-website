@@ -727,3 +727,13 @@ The measured free space now runs from the end of everything after the items (tot
 - **Footer:** the © and credit bar gets `pr-16` below md so both lines sit left of the floating buttons. Phone product pages still hide the bar (ADR-071).
 - **Bangla:** `Hind Siliguri` (the fallback family 03 §2 named) via next/font, Bengali subset only, weights 400/600, not preloaded, exposed as `--font-hind`. Elements marked `lang="bn"` (journal article h1, journal card title and excerpt) use it, with Inter after it for any Latin characters; headings 600 with line-height 1.4, text line-height 1.7. The rule is unlayered CSS so it wins over the type utilities. Because of the unicode-range and no preload, the font downloads only where Bangla text renders. Article body text is unchanged.
 **Consequences:** No new dependency (next/font is built in). New e2e checks in `layout.spec.ts` (phones: listings, breadcrumbs, credit clear of the WhatsApp button, product page without the credit) and `pages.spec.ts` (journal h1 `lang="bn"`); the category count check is desktop-only. 03 and 05 are updated.
+
+### ADR-090 — Uncropped hero and journal photos; centred phone credit; one-line Journal title
+**Date:** 2026-11-26 · **Status:** Accepted
+**Context:** After ADR-089 the owner reported that the phone © line was off-centre, journal covers and thumbnails were cropped (3:2 frames for 16:9 photos), the phone hero cropped the sides of the 7:3 (1600×687) slider photos, and the homepage Journal section had a two-line header ("Journal" eyebrow over "Ideas for your home").
+**Decision:** Amends ADR-089.
+- **Phone hero:** the band takes the photos' own 7:3 shape (`aspect-[7/3]`, ~161 px at 375 px wide) instead of min-height 60vw, so the whole photo shows. The skeleton matches. md+ is unchanged (full-bleed, min-height 78vh). The admin hint asks for 7:3 photos (e.g. 2400×1029).
+- **Journal images:** the article cover and every journal card (journal page, related posts, homepage) use a 16:9 frame with `object-contain` on sand, so no photo is ever cropped (16:9 uploads fill it exactly). The phone row thumbnail is 16:9 too; skeletons match.
+- **Homepage Journal section:** one-line title "Journal" (no eyebrow), "All stories" link kept.
+- **Footer on phones:** the © / credit bar uses equal side padding (`px-16`) with `text-balance`, so both lines are centred and still clear of the floating buttons; the © line breaks as "© 2026 Artifex Furniture." / "All rights reserved." when it doesn't fit.
+**Consequences:** No new dependency or token. home.spec expects the "Journal" title. 05 is updated.

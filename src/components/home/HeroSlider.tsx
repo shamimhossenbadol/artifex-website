@@ -4,7 +4,7 @@
 // It pauses while hovered or focused and while the tab is hidden, and doesn't play at all for
 // people who ask for reduced motion (no pause button, owner's choice).
 //
-// Phones (ADR-089, superseding ADR-051): a photos-only 7:3 band (ADR-090) with the dots at its foot; the text is
+// Phones (ADR-089, superseding ADR-051): a photos-only band with the dots at its foot; the text is
 // screen-reader only and there are no buttons. From md the photos fill the whole hero behind the
 // text and buttons. The first photo is the LCP image: preloaded and never faded in;
 // other photos load when they're shown or next in line.
@@ -111,9 +111,9 @@ export function HeroSlider({
         else if (start - end > SWIPE_PX) pick(current + 1);
       }}
     >
-      {/* Phones: the band at the photos' own 7:3 shape, so nothing is cropped (ADR-090). md+: static,
-          so the photos cover the hero. */}
-      <div className="relative isolate flex aspect-[7/3] flex-col justify-end md:static md:isolation-auto md:block md:aspect-auto">
+      {/* Phones: the band (min-height 60vw; ADR-091 restores it). md+: static, so the photos
+          cover the hero. */}
+      <div className="relative isolate flex min-h-[60vw] flex-col justify-end md:static md:isolation-auto md:block md:min-h-0">
         <div className="absolute inset-0 -z-10 overflow-hidden">
           {slides.map((slide, index) => {
             const active = index === current;

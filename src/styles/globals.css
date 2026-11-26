@@ -564,3 +564,25 @@ dialog.drawer.admin-sidebar::backdrop {
   font-weight: 600;
   line-height: 1.4;
 }
+/*
+ * Bangla titles a step smaller than the Latin scale (ADR-091): Hind Siliguri reads much larger
+ * than Cormorant at the same size. Article h1 28/40 px, featured card 24/32, card 19/22.
+ */
+[lang="bn"].text-h1 {
+  font-size: 1.75rem;
+  @media (width >= 48rem) {
+    font-size: 2.5rem;
+  }
+}
+[lang="bn"].text-h2 {
+  font-size: 1.5rem;
+  @media (width >= 48rem) {
+    font-size: 2rem;
+  }
+}
+[lang="bn"].text-h3 {
+  font-size: 1.1875rem;
+  @media (width >= 48rem) {
+    font-size: 1.375rem;
+  }
+}

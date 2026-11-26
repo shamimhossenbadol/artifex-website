@@ -125,15 +125,30 @@ test.describe("phone layout (ADR-089)", () => {
     }
   });
 
-  test("© and credit are readable, clear of the floating buttons", async ({ page }) => {
+  test("© and credit sit on one line each, above the floating buttons (ADR-091)", async ({
+    page,
+  }) => {
     await page.goto("/products");
-    const credit = page.getByRole("contentinfo").getByText("Developed by");
-    await credit.scrollIntoViewIfNeeded();
+    const footer = page.getByRole("contentinfo");
+    const copyright = footer.getByText("All rights reserved.");
+    const credit = footer.getByText("Developed by");
+    await expect(credit).toBeAttached();
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await expect(copyright).toBeVisible();
     await expect(credit).toBeVisible();
-    const whatsapp = page.getByRole("link", { name: /Chat with .* on WhatsApp/ });
-    const [creditBox, fabBox] = await Promise.all([credit.boundingBox(), whatsapp.boundingBox()]);
-    expect(creditBox && fabBox).toBeTruthy();
-    if (creditBox && fabBox) expect(creditBox.x + creditBox.width).toBeLessThanOrEqual(fabBox.x);
+    // One line: the © paragraph is no taller than one line of text-small (20 px) plus its padding.
+    const copyrightBox = await copyright.boundingBox();
+    expect(copyrightBox?.height ?? 0).toBeLessThan(30);
+    // Scrolled to the end, the whole floating stack sits below the credit line.
+    const creditBox = await credit.boundingBox();
+    for (const fab of [
+      page.getByRole("link", { name: /Chat with .* on WhatsApp/ }),
+      page.getByRole("link", { name: /on Facebook Messenger/ }),
+    ]) {
+      if ((await fab.count()) === 0) continue;
+      const fabBox = await fab.boundingBox();
+      if (creditBox && fabBox) expect(creditBox.y + creditBox.height).toBeLessThanOrEqual(fabBox.y);
+    }
   });
 
   test("product pages drop the © and credit bar (ADR-071)", async ({ page }) => {

@@ -737,3 +737,14 @@ The measured free space now runs from the end of everything after the items (tot
 - **Homepage Journal section:** one-line title "Journal" (no eyebrow), "All stories" link kept.
 - **Footer on phones:** the © / credit bar uses equal side padding (`px-16`) with `text-balance`, so both lines are centred and still clear of the floating buttons; the © line breaks as "© 2026 Artifex Furniture." / "All rights reserved." when it doesn't fit.
 **Consequences:** No new dependency or token. home.spec expects the "Journal" title. 05 is updated.
+
+### ADR-091 — Phone hero height restored; one-line centred credit; grid-only Journal page; smaller Bangla titles
+**Date:** 2026-11-26 · **Status:** Accepted
+**Context:** The owner preferred the previous phone slider height, saw the © line wrap onto two lines although it fits, didn't want the Journal page title and intro on phones, and found the Bangla journal titles slightly too large.
+**Decision:** Amends ADR-089 and partly reverses ADR-090.
+- **Phone hero:** back to the ADR-089 band (min-height 60vw, about 225 px at 375 px). ADR-090's 7:3 band and its admin hint are reverted.
+- **Footer on phones:** the © / credit bar is centred at full width (no side padding, no text-balance), so each line stays on one line. Its bottom padding (7 rem plus the safe area) is taller than the floating Messenger/WhatsApp stack (about 6.75 rem), so when scrolled to the end the buttons sit below the text. Phone product pages still hide the bar (ADR-071).
+- **Journal page (`/blog`) on phones:** like the product listings, the h1 is screen-reader only and the intro is hidden; posts start right under the header.
+- **Bangla titles:** elements with `lang="bn"` get a step-smaller size than the Latin scale (Hind Siliguri reads larger than Cormorant): `text-h1` 28/40 px, `text-h2` 24/32 px, `text-h3` 19/22 px (phones/md+), as unlayered rules in globals.css.
+- ADR-090's 16:9 uncropped journal images and one-line "Journal" homepage title are kept.
+**Consequences:** No new dependency. The phone footer e2e test checks one-line © and that the floating buttons sit below the credit. 03 and 05 are updated.

@@ -40,7 +40,7 @@ Loaded with `next/font/google` (self-hosted at build, `display: swap`, subsets `
 
 Fallbacks: `Georgia, serif` and `system-ui, sans-serif`.
 
-**Bangla (ADR-089):** `Hind Siliguri` 400/600, Bengali subset only, not preloaded (`--font-hind`). Any element marked `lang="bn"` uses it (journal titles and excerpts are always Bangla): headings 600 with line-height 1.4, text line-height 1.7. Latin characters inside fall through to Inter.
+**Bangla (ADR-089):** `Hind Siliguri` 400/600, Bengali subset only, not preloaded (`--font-hind`). Any element marked `lang="bn"` uses it (journal titles and excerpts are always Bangla): headings 600 with line-height 1.4, text line-height 1.7. Latin characters inside fall through to Inter. Bangla titles are a step smaller than the Latin scale (ADR-091): `text-h1` 28/40 px, `text-h2` 24/32 px, `text-h3` 19/22 px (phones/md+).
 
 ### Type scale (mobile → desktop)
 

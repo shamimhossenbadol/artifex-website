@@ -89,7 +89,7 @@ function PostListSkeleton() {
 
 export default function BlogPage({ searchParams }: Props) {
   return (
-    <Container className="py-8 md:py-12">
+    <Container className="pt-4 pb-8 md:py-12">
       <JsonLd
         data={breadcrumbJsonLd([
           { name: "Home", path: "/" },
@@ -97,8 +97,9 @@ export default function BlogPage({ searchParams }: Props) {
         ])}
       />
       <Breadcrumbs hideOnPhones items={[{ label: "Home", href: "/" }, { label: TITLE }]} />
-      <h1 className="text-h1 md:mt-6">{TITLE}</h1>
-      <p className="text-body-lg mt-3 mb-10 max-w-2xl md:mb-14">
+      {/* Phones (ADR-091): straight to the posts; the heading stays for screen readers. */}
+      <h1 className="text-h1 max-md:sr-only md:mt-6">{TITLE}</h1>
+      <p className="text-body-lg mt-3 mb-10 max-w-2xl max-md:hidden md:mb-14">
         Ideas and practical guides for furnishing a home you love.
       </p>
       <Suspense fallback={<PostListSkeleton />}>

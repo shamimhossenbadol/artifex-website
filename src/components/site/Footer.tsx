@@ -117,9 +117,9 @@ export async function Footer() {
       {/* Phone product pages (ADR-071) drop this bar: on phones it only holds the credit. */}
       <div className="border-line border-t max-md:[body:has([data-product-bar])_&]:hidden">
         {/* © on the left and the credit on the right; on phones the credit sits below. Below md
-            equal side padding keeps both centred lines clear of the floating Messenger/WhatsApp
-            buttons; the © line wraps in balance if it must (ADR-089, ADR-090). */}
-        <Container className="text-small text-muted flex flex-col items-center gap-0 py-2 text-center text-balance max-md:px-16 sm:flex-row sm:justify-between sm:gap-4 sm:py-3 sm:text-left">
+            both lines are centred on one line each, and the bottom padding (taller than the
+            floating Messenger/WhatsApp stack) keeps the buttons below the text (ADR-091). */}
+        <Container className="text-small text-muted flex flex-col items-center gap-0 py-2 text-center max-md:pb-[calc(7rem+env(safe-area-inset-bottom))] sm:flex-row sm:justify-between sm:gap-4 sm:py-3 sm:text-left">
           {/* Shown on every page; the whole bar is hidden on phone product pages only (ADR-071). */}
           <p className="pt-1 sm:py-1">
             © {new Date().getFullYear()} {settings.businessName}. All rights reserved.

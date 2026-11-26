@@ -72,7 +72,9 @@ export function PostCard({
               {formatPostDate(post.publishedAt)}
             </time>
           </p>
+          {/* Journal titles and excerpts are always Bangla (ADR-089): lang="bn" picks the font. */}
           <Heading
+            lang="bn"
             className={cn(
               "text-ink underline-offset-4 group-hover:underline",
               featured ? "text-h2" : "text-h3",
@@ -80,7 +82,10 @@ export function PostCard({
           >
             {post.title}
           </Heading>
-          <p className={cn("line-clamp-3", featured && "text-body-lg", row && "max-md:hidden")}>
+          <p
+            lang="bn"
+            className={cn("line-clamp-3", featured && "text-body-lg", row && "max-md:hidden")}
+          >
             {post.excerpt}
           </p>
         </div>

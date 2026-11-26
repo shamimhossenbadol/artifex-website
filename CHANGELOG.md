@@ -6,6 +6,10 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 ## [Unreleased]
 
 ### Changed
+- 2026-11-26 — Phones: the homepage hero is a photos-only slider (no text or buttons on screen), promo banners show the image alone at 16:9, product and category listings show just the product grid (no path, title, description, count or sorting), breadcrumbs are hidden on every page, and the © and developer credit no longer sit under the floating Messenger/WhatsApp buttons. Tablet and desktop are unchanged (ADR-089).
+- 2026-11-26 — Journal titles and excerpts use the Bangla font Hind Siliguri, downloaded only where Bangla text shows (ADR-089).
+
+### Changed
 - 2026-11-22 — Admin → Invoice: the customer line reads Name (left), Phone (centre), Date (right), with the invoice no. beside the title. The Details card (date, invoice no., salesman) now follows Customer, and the re-advance date is labelled "Paid on" (ADR-088).
 - 2026-11-22 — Admin → Invoice: the authorised signature is on the right by default; Left is still available (ADR-087).
 

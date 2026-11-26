@@ -217,8 +217,8 @@ export default function ContactPage() {
           { name: "Contact", path: "/contact" },
         ])}
       />
-      <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Contact" }]} />
-      <h1 className="text-h1 mt-6">Visit our showroom</h1>
+      <Breadcrumbs hideOnPhones items={[{ label: "Home", href: "/" }, { label: "Contact" }]} />
+      <h1 className="text-h1 md:mt-6">Visit our showroom</h1>
       <p className="text-body-lg mt-3 mb-10 max-w-2xl md:mb-14">
         See the pieces in person in Uttara, or message us on WhatsApp. We&apos;re happy to help you
         choose.

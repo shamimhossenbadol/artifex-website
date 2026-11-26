@@ -11,10 +11,12 @@ function prices(texts: string[]): number[] {
 }
 
 test.describe("catalogue listing (F1.1)", () => {
-  test("category paginates 24 per page with crawlable links", async ({ page }) => {
+  test("category paginates 24 per page with crawlable links", async ({ page, isMobile }) => {
     await page.goto("/categories/sofas");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Sofas");
-    await expect(page.getByText("26 products")).toBeVisible();
+    // Phones show the grid alone (ADR-089): no count or sort bar.
+    if (isMobile) await expect(page.getByText("26 products")).toBeHidden();
+    else await expect(page.getByText("26 products")).toBeVisible();
     await expect(page.locator("main article")).toHaveCount(24);
 
     const next = page.getByRole("link", { name: "Next page" });

@@ -4,7 +4,10 @@ import { Container } from "@/components/ui/Container";
 import { cn } from "@/lib/utils";
 import type { PromoBannerVM } from "@/server/services/home.service";
 
-/** 1–2 wide promo banners (05 §3, F6); hidden when none are active and in date. */
+/**
+ * 1–2 wide promo banners (05 §3, F6); hidden when none are active and in date. Phones show the
+ * image alone at 16:9 (ADR-089); from md, 2:1 with the title, subtitle and link text over a scrim.
+ */
 export function PromoBanners({ banners }: { banners: PromoBannerVM[] }) {
   if (banners.length === 0) return null;
   return (
@@ -20,8 +23,9 @@ export function PromoBanners({ banners }: { banners: PromoBannerVM[] }) {
                 sizes={banners.length > 1 ? "(min-width:768px) 50vw, 100vw" : "100vw"}
                 className="object-cover transition-transform duration-500 ease-out motion-safe:md:group-hover:scale-[1.02]"
               />
-              <div aria-hidden className="bg-ink/35 absolute inset-0" />
-              <div className="text-bg absolute inset-x-0 bottom-0 p-6 md:p-8">
+              {/* Phones (ADR-089): image only, so no scrim and the text is screen-reader only. */}
+              <div aria-hidden className="bg-ink/35 absolute inset-0 max-md:hidden" />
+              <div className="text-bg absolute inset-x-0 bottom-0 p-6 max-md:sr-only md:p-8">
                 <p className="text-h3 text-bg">{banner.title}</p>
                 {banner.subtitle && <p className="mt-2 max-w-md">{banner.subtitle}</p>}
                 {banner.linkHref && (

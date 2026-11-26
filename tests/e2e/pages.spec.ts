@@ -30,6 +30,8 @@ test.describe("Journal (F4)", () => {
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(
       "How to size a chandelier for your living or dining room",
     );
+    // Journal titles are always Bangla: marked lang="bn" for the Bangla font (ADR-089).
+    await expect(page.getByRole("heading", { level: 1 })).toHaveAttribute("lang", "bn");
     await expect(page.getByText(/\d+ min read/)).toBeVisible();
     await expect(page.getByRole("heading", { level: 2, name: "Hanging height" })).toBeVisible();
 

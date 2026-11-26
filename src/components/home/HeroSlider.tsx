@@ -4,9 +4,9 @@
 // It pauses while hovered or focused and while the tab is hidden, and doesn't play at all for
 // people who ask for reduced motion (no pause button, owner's choice).
 //
-// Phones (ADR-051): a short photo band with the heading and description over it and the dots at
-// its foot; the buttons (`actions`) sit below it on ivory. From md the photos fill the whole hero
-// behind the text and buttons. The first photo is the LCP image: preloaded and never faded in;
+// Phones (ADR-089, superseding ADR-051): a photos-only band with the dots at its foot; the text is
+// screen-reader only and there are no buttons. From md the photos fill the whole hero behind the
+// text and buttons. The first photo is the LCP image: preloaded and never faded in;
 // other photos load when they're shown or next in line.
 import Image from "next/image";
 import {
@@ -42,9 +42,9 @@ export function HeroSlider({
   slides: Slide[];
   className: string;
   labelledBy: string;
-  /** Heading and description: over the photo on every size. */
+  /** Heading and description: over the photo from md; screen-reader only on phones. */
   children: ReactNode;
-  /** Buttons: below the photo band on phones, under the text over the photo from md. */
+  /** Buttons: under the text over the photo from md; the caller hides them on phones. */
   actions?: ReactNode;
 }) {
   const count = slides.length;
@@ -145,8 +145,9 @@ export function HeroSlider({
               </div>
             );
           })}
-          {/* Solid scrim (no gradient outside category tiles, 03 §6) for legible text. */}
-          <div aria-hidden className="bg-ink/45 md:bg-ink/35 absolute inset-0" />
+          {/* Solid scrim (no gradient outside category tiles, 03 §6) for legible text. Phones
+              show no text over the photo (ADR-089), so no scrim there. */}
+          <div aria-hidden className="bg-ink/35 absolute inset-0 hidden md:block" />
           {count > 1 && (
             <div
               role="group"

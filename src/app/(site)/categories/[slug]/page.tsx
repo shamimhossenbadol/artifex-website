@@ -58,18 +58,20 @@ async function CategoryContent({ params, searchParams }: Props) {
           { name: category.name, path: category.href },
         ])}
       />
+      {/* Phones (ADR-089): straight to the grid; the heading stays for screen readers. */}
       <Breadcrumbs
+        hideOnPhones
         items={[
           { label: "Home", href: "/" },
           { label: "All furniture", href: "/products" },
           { label: category.name },
         ]}
       />
-      <h1 className="text-h1 mt-6">{category.name}</h1>
+      <h1 className="text-h1 max-md:sr-only md:mt-6">{category.name}</h1>
       {category.description && (
-        <p className="text-body-lg mt-3 mb-10 max-w-2xl">{category.description}</p>
+        <p className="text-body-lg mt-3 mb-10 max-w-2xl max-md:hidden">{category.description}</p>
       )}
-      {!category.description && <div className="mb-10" />}
+      {!category.description && <div className="md:mb-10" />}
       <ProductListing
         basePath={category.href}
         query={query}
@@ -83,7 +85,7 @@ async function CategoryContent({ params, searchParams }: Props) {
 
 export default function CategoryPage(props: Props) {
   return (
-    <Container className="py-8 md:py-12">
+    <Container className="pt-4 pb-8 md:py-12">
       <Suspense fallback={<ListingSkeleton />}>
         <CategoryContent {...props} />
       </Suspense>

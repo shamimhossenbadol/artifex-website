@@ -11,13 +11,14 @@ import { HeroSlider } from "./HeroSlider";
 export function Hero({ hero }: { hero: HomeHeroVM }) {
   const withImage = hero.slides.length > 0;
   const frame = withImage
-    ? // Phones: photo band with the text over it, buttons below on ivory. md+: tall hero, all over
-      // the photo, centred vertically.
+    ? // Phones (ADR-089): photos only, no text or buttons on screen. md+: tall hero, text and
+      // buttons over the photo, centred vertically.
       "relative isolate overflow-hidden bg-bg md:flex md:min-h-[78vh] md:flex-col md:justify-center md:bg-ink"
     : "relative isolate flex items-center overflow-hidden bg-bg md:min-h-[68vh]";
-  // Over the photo on every size: compact on phones (room left at the foot for the dots).
+  // Over the photo from md. Phones (ADR-089) keep it for screen readers and search engines only:
+  // the page still needs its <h1>.
   const photoText = (
-    <Container className="pt-10 pb-10 md:pt-24 md:pb-0">
+    <Container className="max-md:sr-only md:pt-24 md:pb-0">
       <div className="md:max-w-3xl">
         {hero.eyebrow && <p className="animate-rise text-eyebrow text-bg/90">{hero.eyebrow}</p>}
         <h1
@@ -34,9 +35,9 @@ export function Hero({ hero }: { hero: HomeHeroVM }) {
       </div>
     </Container>
   );
-  // Phones: below the band, sharing the full width, ink on ivory. md+: white buttons over the photo.
+  // md+: white buttons over the photo. Phones have none (ADR-089).
   const photoActions = (
-    <Container className="pt-4 md:pt-8 md:pb-24">
+    <Container className="hidden md:block md:pt-8 md:pb-24">
       <div className="animate-rise stagger-2 flex gap-2 md:flex-wrap md:gap-3">
         <ButtonLink
           href={hero.cta.href}

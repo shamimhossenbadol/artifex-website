@@ -549,3 +549,18 @@ dialog.drawer.admin-sidebar::backdrop {
     -webkit-print-color-adjust: exact;
   }
 }
+
+/*
+ * Bangla text (ADR-089): journal titles and excerpts are always Bangla and carry lang="bn".
+ * Unlayered on purpose, so it wins over the type utilities' Latin serif. Hind Siliguri only covers
+ * the Bengali range (unicode-range), so any Latin characters fall through to Inter. Bengali script
+ * needs more line height than the Latin scale gives.
+ */
+[lang="bn"] {
+  font-family: var(--font-hind), var(--font-sans);
+  line-height: 1.7;
+}
+:is(h1, h2, h3)[lang="bn"] {
+  font-weight: 600;
+  line-height: 1.4;
+}

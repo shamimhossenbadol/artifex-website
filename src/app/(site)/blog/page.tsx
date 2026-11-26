@@ -96,8 +96,8 @@ export default function BlogPage({ searchParams }: Props) {
           { name: TITLE, path: "/blog" },
         ])}
       />
-      <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: TITLE }]} />
-      <h1 className="text-h1 mt-6">{TITLE}</h1>
+      <Breadcrumbs hideOnPhones items={[{ label: "Home", href: "/" }, { label: TITLE }]} />
+      <h1 className="text-h1 md:mt-6">{TITLE}</h1>
       <p className="text-body-lg mt-3 mb-10 max-w-2xl md:mb-14">
         Ideas and practical guides for furnishing a home you love.
       </p>

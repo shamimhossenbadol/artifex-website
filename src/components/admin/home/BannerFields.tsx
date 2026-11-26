@@ -27,7 +27,7 @@ export function BannerFields({ banner }: { banner: AdminBannerRow | null }) {
       </FormSection>
       <FormSection
         title="Image"
-        description="Wide images work best: 2400×1200 px (2:1). Shown at 2:1 on desktop and 16:9 on phones, so keep key content away from the far left and right."
+        description="Wide images work best: 2400×1200 px (2:1). Shown at 2:1 with the title over it on desktop, and at 16:9 as the image alone on phones, so keep key content away from the far left and right."
       >
         <ImageField
           key={banner?.imagePath ?? "new"}

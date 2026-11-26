@@ -38,7 +38,9 @@ Loaded with `next/font/google` (self-hosted at build, `display: swap`, subsets `
 | Display / headings | **Cormorant Garamond** | 500, 600 |
 | Body / UI | **Inter** | 400, 500, 600 |
 
-Fallbacks: `Georgia, serif` and `system-ui, sans-serif`. If Bangla is added later, use `Hind Siliguri` as a fallback family.
+Fallbacks: `Georgia, serif` and `system-ui, sans-serif`.
+
+**Bangla (ADR-089):** `Hind Siliguri` 400/600, Bengali subset only, not preloaded (`--font-hind`). Any element marked `lang="bn"` uses it (journal titles and excerpts are always Bangla): headings 600 with line-height 1.4, text line-height 1.7. Latin characters inside fall through to Inter.
 
 ### Type scale (mobile → desktop)
 

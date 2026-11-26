@@ -122,8 +122,12 @@ async function HomeSections() {
 
 function HeroSkeleton() {
   return (
-    <div aria-hidden className="flex min-h-[60svh] items-end md:min-h-[68vh] md:items-center">
-      <Container className="py-16">
+    // Phones: a plain block the size of the photos-only band (ADR-089).
+    <div
+      aria-hidden
+      className="max-md:bg-sand flex min-h-[60vw] items-end md:min-h-[68vh] md:items-center"
+    >
+      <Container className="py-16 max-md:hidden">
         <Skeleton className="h-4 w-40 md:mx-auto" />
         <Skeleton className="mt-6 h-14 w-full max-w-2xl md:mx-auto md:h-20" />
         <Skeleton className="mt-6 h-12 w-64 md:mx-auto" />

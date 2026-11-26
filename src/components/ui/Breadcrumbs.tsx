@@ -4,10 +4,24 @@ import { cn } from "@/lib/utils";
 
 export type BreadcrumbItem = { label: string; href?: string };
 
-/** Small muted trail with "/" separators; the last item is ink and marked as the current page. */
-export function Breadcrumbs({ items, className }: { items: BreadcrumbItem[]; className?: string }) {
+/**
+ * Small muted trail with "/" separators; the last item is ink and marked as the current page.
+ * The public site hides it on phones (`hideOnPhones`, ADR-089); the admin keeps it everywhere.
+ */
+export function Breadcrumbs({
+  items,
+  className,
+  hideOnPhones = false,
+}: {
+  items: BreadcrumbItem[];
+  className?: string;
+  hideOnPhones?: boolean;
+}) {
   return (
-    <nav aria-label="Breadcrumb" className={cn("text-small text-muted", className)}>
+    <nav
+      aria-label="Breadcrumb"
+      className={cn("text-small text-muted", hideOnPhones && "max-md:hidden", className)}
+    >
       <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
         {items.map((item, index) => {
           const isLast = index === items.length - 1;

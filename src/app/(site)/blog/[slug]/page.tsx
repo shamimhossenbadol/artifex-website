@@ -83,13 +83,17 @@ async function PostContent({ params, searchParams }: Props) {
       />
       <div className="mx-auto max-w-3xl">
         <Breadcrumbs
+          hideOnPhones
           items={[
             { label: "Home", href: "/" },
             { label: "Journal", href: "/blog" },
             { label: post.title },
           ]}
         />
-        <h1 className="text-h1 mt-6">{post.title}</h1>
+        {/* Journal titles are always Bangla (ADR-089): Bangla font via lang="bn". */}
+        <h1 lang="bn" className="text-h1 md:mt-6">
+          {post.title}
+        </h1>
         <p className="text-small text-muted mt-4">
           {post.authorName} ·{" "}
           <time dateTime={post.publishedAt.toISOString()}>{formatPostDate(post.publishedAt)}</time>{" "}

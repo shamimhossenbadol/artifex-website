@@ -11,7 +11,7 @@
 |---|---|
 | **Current phase** | Phase 8: SEO, security & performance hardening (in progress; Phase 7 done, 7f skipped) |
 | **Overall state** | ✅ Phase 1 complete. Code is on GitHub (`shamimhossenbadol/artifex-website`, private); CI is green. ✅ **First deploy succeeded 2026-11-12**: https://artifex.codespherestudio.site serves the placeholder page with security headers (via Cloudflare). Migration applied; seed created 7 categories, settings, hero and the admin (`mustChangePassword = 1`); backup saved in `~/backups`. |
-| **Last updated** | 2026-11-22 |
+| **Last updated** | 2026-11-26 |
 | **Next action** | LIVE at https://artifexfurniturebd.com. Owner: add products, category photos and the Facebook Pixel ID; Search Console + Meta domain verification; delete the old test site (owner's call: no redirect). Agent: check the occasional "failed to get redirect response … 127.0.0.1:3000" server log line (Server Action redirects under Passenger); accessibility pass (Phase 8). |
 
 ## Phase overview
@@ -85,6 +85,8 @@ Answer these by editing this list. Agents: use the **default** until an answer i
 ## Session log
 
 Add one line per session, newest first: `YYYY-MM-DD — summary — files touched`.
+
+- 2026-11-26 — ADR-089: phone layout (photos-only hero, image-only 16:9 promo, grid-only listings, breadcrumbs hidden on phones, © / credit clear of the floating buttons) and Hind Siliguri for Bangla journal titles/excerpts. Checked at 375 and 768 px with a temporary no-DB page (removed); unit tests, typecheck, lint pass; e2e added for CI — src/components/{home,product,site,blog,ui}, src/app/(site)/*, src/app/layout.tsx, src/styles/globals.css, tests/e2e, docs
 
 - 2026-11-22 — ADR-088: invoice customer line Name · Phone (centre) · Date (right), invoice no. beside the title; Details form card moved after Customer; re-advance date relabelled "Paid on". Checked with a local Playwright print PDF (temporary no-DB page removed). Unit tests, typecheck, lint pass; not committed/deployed — src/components/admin/invoice/*, tests/e2e, docs
 - 2026-11-22 — ADR-087: invoice signature side defaults to Right; e2e picks Left for the Auto beside-the-totals check. Unit tests, typecheck, lint pass; not committed/deployed — src/components/admin/invoice/InvoiceMaker.tsx, tests/e2e, docs

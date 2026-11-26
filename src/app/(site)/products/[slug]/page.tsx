@@ -116,7 +116,7 @@ async function ProductDetail({ params, searchParams }: Props) {
           <div className="lg:sticky lg:top-24">
             {/* Phones skip the visible path (ADR-065); the BreadcrumbList JSON-LD stays for search. */}
             <Breadcrumbs
-              className="hidden md:block"
+              hideOnPhones
               items={[
                 { label: "Home", href: "/" },
                 { label: product.category.name, href: product.category.href },

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Cormorant_Garamond, Inter } from "next/font/google";
+import { Cormorant_Garamond, Hind_Siliguri, Inter } from "next/font/google";
 import { SITE_NAME, SITE_TAGLINE } from "@/config/site";
 import "@/styles/globals.css";
 
@@ -15,6 +15,16 @@ const inter = Inter({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-inter",
+});
+
+// Bangla (ADR-089): journal titles and excerpts, marked lang="bn". Bengali subset only, so its
+// unicode-range keeps it off Latin text; not preloaded, so it downloads only where Bangla shows.
+const hindSiliguri = Hind_Siliguri({
+  subsets: ["bengali"],
+  weight: ["400", "600"],
+  display: "swap",
+  preload: false,
+  variable: "--font-hind",
 });
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
@@ -35,7 +45,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${cormorant.variable} ${inter.variable}`}>
+    <html lang="en" className={`${cormorant.variable} ${inter.variable} ${hindSiliguri.variable}`}>
       <head>
         {/* 08 §3: start the image CDN connection early (skipped while media is same-origin). */}
         {mediaOrigin && mediaOrigin !== new URL(siteUrl).origin && (

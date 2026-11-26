@@ -91,10 +91,10 @@ export default function AboutPage() {
           { name: "About", path: "/about" },
         ])}
       />
-      <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "About" }]} />
+      <Breadcrumbs hideOnPhones items={[{ label: "Home", href: "/" }, { label: "About" }]} />
 
       <div className="mx-auto max-w-3xl text-center">
-        <p className="text-eyebrow text-walnut mt-10">Our story</p>
+        <p className="text-eyebrow text-walnut md:mt-10">Our story</p>
         <h1 className="text-h1 mt-3">Furniture for the way you live</h1>
       </div>
 

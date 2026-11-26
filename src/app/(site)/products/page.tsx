@@ -40,9 +40,10 @@ async function AllProducts({ searchParams }: Pick<PageProps<"/products">, "searc
   return (
     <>
       <JsonLd data={breadcrumbJsonLd(crumbs)} />
-      <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: TITLE }]} />
-      <h1 className="text-h1 mt-6">{TITLE}</h1>
-      <p className="text-body-lg mt-3 mb-10 max-w-2xl">
+      {/* Phones (ADR-089): straight to the grid; the heading stays for screen readers. */}
+      <Breadcrumbs hideOnPhones items={[{ label: "Home", href: "/" }, { label: TITLE }]} />
+      <h1 className="text-h1 max-md:sr-only md:mt-6">{TITLE}</h1>
+      <p className="text-body-lg mt-3 mb-10 max-w-2xl max-md:hidden">
         Every piece in our collection, made for modern homes in Dhaka.
       </p>
       <ProductListing
@@ -57,7 +58,7 @@ async function AllProducts({ searchParams }: Pick<PageProps<"/products">, "searc
 
 export default function ProductsPage({ searchParams }: PageProps<"/products">) {
   return (
-    <Container className="py-8 md:py-12">
+    <Container className="pt-4 pb-8 md:py-12">
       <Suspense fallback={<ListingSkeleton />}>
         <AllProducts searchParams={searchParams} />
       </Suspense>
